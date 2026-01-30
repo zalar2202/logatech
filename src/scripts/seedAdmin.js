@@ -33,7 +33,7 @@ if (!MONGO_URI) {
  */
 const adminData = {
     name: "Admin User",
-    email: "admin@logatech.com",
+    email: "admin@logatech.net",
     password: "Admin@123",
     role: "admin",
     status: "active",

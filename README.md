@@ -12,10 +12,10 @@ A Next.js 16 app containing **two applications**: a **public marketing website**
 
 ## What’s in this repo
 
-| App | Routes | Purpose |
-|-----|--------|---------|
-| **Website** | `/`, `/services/design`, `/services/develop`, `/services/deploy`, `/services/maintain` | Public marketing site; landing and service pages; own layout and styles |
-| **Admin panel** | `/panel/*` (dashboard, users, notifications, settings, dev/test pages) | Protected dashboard; JWT in httpOnly cookie; user management, FCM notifications |
+| App             | Routes                                                                                 | Purpose                                                                         |
+| --------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Website**     | `/`, `/services/design`, `/services/develop`, `/services/deploy`, `/services/maintain` | Public marketing site; landing and service pages; own layout and styles         |
+| **Admin panel** | `/panel/*` (dashboard, users, notifications, settings, dev/test pages)                 | Protected dashboard; JWT in httpOnly cookie; user management, FCM notifications |
 
 - **Login:** `/login` → redirects to `/panel/dashboard` when authenticated.
 - **Docs:** [docs/PANEL/README.md](docs/PANEL/README.md) (panel), [docs/WEBSITE/](docs/WEBSITE/) (website).
@@ -97,7 +97,7 @@ Optional for notifications (panel): Firebase client + Admin env vars — see [do
 npm run seed:admin
 ```
 
-Creates: **admin@logatech.com** / **Admin@123**
+Creates: **admin@logatech.net** / **Admin@123**
 
 4. **Run dev server**
 
@@ -169,7 +169,7 @@ npm run build        # Production build
 npm run start        # Production server
 npm run lint         # ESLint
 npm run lint:fix     # ESLint --fix
-npm run seed:admin   # Create admin user (admin@logatech.com / Admin@123)
+npm run seed:admin   # Create admin user (admin@logatech.net / Admin@123)
 npm run seed:users   # Seed sample users
 ```
 
@@ -177,38 +177,38 @@ npm run seed:users   # Seed sample users
 
 ## Panel routes (overview)
 
-| Path | Description |
-|------|-------------|
-| `/login` | Auth layout; redirects to `/panel/dashboard` when logged in |
-| `/panel/dashboard` | Dashboard home |
-| `/panel/users` | User list (pagination, search, filters) |
-| `/panel/users/create` | Create user (with avatar) |
-| `/panel/users/[id]` | User detail |
-| `/panel/users/[id]/edit` | Edit user |
-| `/panel/notifications` | Notification list (tabs, filters, mark read, delete) |
-| `/panel/notifications/send` | Send notification (admin/manager) |
-| `/panel/settings` | Settings |
-| `/panel/firebase-test` | FCM test page |
-| `/panel/backend-notification-test` | Backend notification test |
-| `/panel/test-connection` | DB connection test |
-| `/panel/test-axios` | Axios + auth test |
-| `/panel/debug-auth` | Cookie / auth debug |
-| `/panel/components-demo` | Component demos |
-| `/panel/register-admin` | Register admin |
+| Path                               | Description                                                 |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `/login`                           | Auth layout; redirects to `/panel/dashboard` when logged in |
+| `/panel/dashboard`                 | Dashboard home                                              |
+| `/panel/users`                     | User list (pagination, search, filters)                     |
+| `/panel/users/create`              | Create user (with avatar)                                   |
+| `/panel/users/[id]`                | User detail                                                 |
+| `/panel/users/[id]/edit`           | Edit user                                                   |
+| `/panel/notifications`             | Notification list (tabs, filters, mark read, delete)        |
+| `/panel/notifications/send`        | Send notification (admin/manager)                           |
+| `/panel/settings`                  | Settings                                                    |
+| `/panel/firebase-test`             | FCM test page                                               |
+| `/panel/backend-notification-test` | Backend notification test                                   |
+| `/panel/test-connection`           | DB connection test                                          |
+| `/panel/test-axios`                | Axios + auth test                                           |
+| `/panel/debug-auth`                | Cookie / auth debug                                         |
+| `/panel/components-demo`           | Component demos                                             |
+| `/panel/register-admin`            | Register admin                                              |
 
 ---
 
 ## Documentation
 
-| Topic | Location |
-|-------|----------|
-| **Panel overview** | [docs/PANEL/README.md](docs/PANEL/README.md) |
-| **Setup (DB, env, auth)** | [docs/PANEL/setup/](docs/PANEL/setup/) |
-| **Cookie auth** | [docs/PANEL/auth/COOKIE_AUTHENTICATION.md](docs/PANEL/auth/COOKIE_AUTHENTICATION.md) |
-| **Notifications (FCM, UI)** | [docs/PANEL/notifications/README.md](docs/PANEL/notifications/README.md) |
-| **Dark mode, tables, layout** | [docs/PANEL/ui/](docs/PANEL/ui/) |
-| **Pagination, Redux, implementation** | [docs/PANEL/guides/](docs/PANEL/guides/) |
-| **Website (copy, structure)** | [docs/WEBSITE/](docs/WEBSITE/) |
+| Topic                                 | Location                                                                             |
+| ------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Panel overview**                    | [docs/PANEL/README.md](docs/PANEL/README.md)                                         |
+| **Setup (DB, env, auth)**             | [docs/PANEL/setup/](docs/PANEL/setup/)                                               |
+| **Cookie auth**                       | [docs/PANEL/auth/COOKIE_AUTHENTICATION.md](docs/PANEL/auth/COOKIE_AUTHENTICATION.md) |
+| **Notifications (FCM, UI)**           | [docs/PANEL/notifications/README.md](docs/PANEL/notifications/README.md)             |
+| **Dark mode, tables, layout**         | [docs/PANEL/ui/](docs/PANEL/ui/)                                                     |
+| **Pagination, Redux, implementation** | [docs/PANEL/guides/](docs/PANEL/guides/)                                             |
+| **Website (copy, structure)**         | [docs/WEBSITE/](docs/WEBSITE/)                                                       |
 
 ---
 

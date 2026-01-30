@@ -115,10 +115,10 @@ export default function DashboardPage() {
         <ContentWrapper>
             {/* Page Header */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2">
+                <h1 className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
                     Dashboard
                 </h1>
-                <p className="text-[var(--color-text-secondary)]">
+                <p className="text-sm mt-1" style={{ color: "var(--color-text-secondary)" }}>
                     Welcome back! Here is an overview of your admin panel.
                 </p>
             </div>

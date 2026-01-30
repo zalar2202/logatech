@@ -15,7 +15,7 @@ export default function TestAxiosPage() {
     const [authChecking, setAuthChecking] = useState(true);
 
     // Login form state
-    const [email, setEmail] = useState("admin@logatech.com");
+    const [email, setEmail] = useState("admin@logatech.net");
     const [password, setPassword] = useState("Admin@123");
 
     // Check authentication status on mount
@@ -231,7 +231,7 @@ export default function TestAxiosPage() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="admin@logatech.com"
+                            placeholder="admin@logatech.net"
                         />
                         <InputField
                             label="Password"
@@ -258,7 +258,7 @@ export default function TestAxiosPage() {
                         className="mt-3 text-sm text-center"
                         style={{ color: "var(--color-text-secondary)" }}
                     >
-                        Use: admin@logatech.com / Admin@123
+                        Use: admin@logatech.net / Admin@123
                     </p>
                 </Card>
             ) : (

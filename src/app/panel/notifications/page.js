@@ -160,12 +160,15 @@ export default function NotificationsPage() {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1
-                            className="text-3xl font-bold"
+                            className="text-2xl font-bold"
                             style={{ color: "var(--color-text-primary)" }}
                         >
                             Notifications
                         </h1>
-                        <p className="mt-1" style={{ color: "var(--color-text-secondary)" }}>
+                        <p
+                            className="text-sm mt-1"
+                            style={{ color: "var(--color-text-secondary)" }}
+                        >
                             Stay updated with all your notifications
                             {unreadCount > 0 && ` • ${unreadCount} unread`}
                         </p>

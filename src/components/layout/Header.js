@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, User, ChevronDown, LogOut, Settings } from "lucide-react";
+import Link from "next/link";
+import { Menu, User, ChevronDown, LogOut, Settings, Home } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { NotificationDropdown } from "@/components/layout/NotificationDropdown";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,8 +20,9 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
 
     return (
         <header
-            className="sticky top-0 z-30 h-16 backdrop-blur-sm bg-white/80 dark:bg-gray-900/80"
+            className="sticky top-0 z-30 h-16 backdrop-blur-sm"
             style={{
+                backgroundColor: "var(--color-background-elevated)",
                 borderBottom: "1px solid var(--color-border)",
             }}
         >
@@ -40,19 +42,32 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                         <Menu className="w-5 h-5" />
                     </button>
 
-                    {/* Page title */}
-                    <div>
-                        <h2
-                            className="text-xl font-bold hidden sm:block"
-                            style={{ color: "var(--color-text-inverse)" }}
-                        >
-                            Dashboard
-                        </h2>
-                    </div>
+                    {/* Website Home button */}
+                    <Link
+                        href="/"
+                        className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:scale-[1.02] hover:bg-[var(--color-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+                        style={{
+                            color: "var(--color-text-primary)",
+                        }}
+                    >
+                        <Home className="w-5 h-5 flex-shrink-0" />
+                        <span className="font-semibold text-sm">Website Home</span>
+                    </Link>
                 </div>
 
                 {/* Right section */}
                 <div className="flex items-center gap-2">
+                    {/* Website Home (icon only on mobile, since left button is hidden) */}
+                    <Link
+                        href="/"
+                        className="sm:hidden flex items-center justify-center p-2 rounded-lg transition-all hover:bg-[var(--color-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+                        style={{ color: "var(--color-text-secondary)" }}
+                        title="Website Home"
+                        aria-label="Website Home"
+                    >
+                        <Home className="w-5 h-5" />
+                    </Link>
+
                     {/* Theme toggle */}
                     <ThemeToggle />
 
@@ -73,7 +88,7 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                                 <span
                                     className="text-sm font-semibold"
                                     style={{
-                                        color: "var(--color-text-inverse)",
+                                        color: "var(--color-text-primary)",
                                     }}
                                 >
                                     {user?.name || user?.email || "Admin"}
@@ -118,7 +133,7 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                                             className="text-xs"
                                             style={{ color: "var(--color-text-secondary)" }}
                                         >
-                                            {user?.email || "admin@logatech.com"}
+                                            {user?.email || "admin@logatech.net"}
                                         </p>
                                     </div>
 

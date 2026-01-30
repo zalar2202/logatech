@@ -4,7 +4,7 @@
 
 - Firebase Admin credentials in `.env.local`
 - Dev server restarted after env changes
-- Logged in as admin (admin@logatech.com / Admin@123)
+- Logged in as admin (admin@logatech.net / Admin@123)
 
 ---
 
@@ -35,7 +35,7 @@ Open **http://localhost:5555/panel/backend-notification-test**.
 - **Fetch My Notifications** – calls `GET /api/notifications`; shows count and recent items.
 - **Get Unread Count** – calls `GET /api/notifications/count`.
 
-In MongoDB: `db.notifications.find({ recipient: ObjectId("...") })` and `db.users.findOne({ email: "admin@logatech.com" }, { fcmTokens: 1 })`.
+In MongoDB: `db.notifications.find({ recipient: ObjectId("...") })` and `db.users.findOne({ email: "admin@logatech.net" }, { fcmTokens: 1 })`.
 
 ---
 

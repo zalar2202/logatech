@@ -73,7 +73,7 @@ export default function TestAuthPage() {
                             <br />
                             1. Click &quot;Logout & Login Again&quot;
                             <br />
-                            2. Log in with: admin@logatech.com / Admin@123
+                            2. Log in with: admin@logatech.net / Admin@123
                             <br />
                             3. Return to Backend Notification Test page
                         </p>

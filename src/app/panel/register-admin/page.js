@@ -153,7 +153,7 @@ export default function RegisterAdminPage() {
                                             name="email"
                                             label="Email Address"
                                             type="email"
-                                            placeholder="john.doe@logatech.com"
+                                            placeholder="john.doe@logatech.net"
                                             required
                                         />
                                         <InputField

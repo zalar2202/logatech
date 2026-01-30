@@ -36,7 +36,7 @@ npm run seed:admin
 
 Creates an admin:
 
-- **Email:** `admin@logatech.com`
+- **Email:** `admin@logatech.net`
 - **Password:** `Admin@123`
 
 ### 2. Start dev server
@@ -68,9 +68,9 @@ npm run dev
 
 ## Troubleshooting
 
-| Problem | Solution |
-|--------|----------|
-| "JWT_SECRET is not defined" | Add `JWT_SECRET` to `.env.local` (see generator above) |
-| "Cannot connect to MongoDB" | Check MongoDB is running and `MONGO_URI` is correct |
-| Duplicate key when seeding | Admin already exists; you can log in |
+| Problem                            | Solution                                                                                                 |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| "JWT_SECRET is not defined"        | Add `JWT_SECRET` to `.env.local` (see generator above)                                                   |
+| "Cannot connect to MongoDB"        | Check MongoDB is running and `MONGO_URI` is correct                                                      |
+| Duplicate key when seeding         | Admin already exists; you can log in                                                                     |
 | Invalid token when registering FCM | Ensure `JWT_SECRET` in `.env.local` matches the one used at login; restart dev server after changing env |

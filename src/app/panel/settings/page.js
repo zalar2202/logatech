@@ -21,6 +21,7 @@ import { TextareaField } from "@/components/forms/TextareaField";
 import { FileUploadField } from "@/components/forms/FileUploadField";
 import { Loader } from "@/components/common/Loader";
 import { Modal } from "@/components/common/Modal";
+import { ContentWrapper } from "@/components/layout/ContentWrapper";
 import { Avatar } from "@/components/common/Avatar";
 import {
     profileUpdateSchema,
@@ -521,40 +522,44 @@ export default function SettingsPage() {
     ];
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Settings</h1>
-                <p className="text-[var(--color-text-secondary)] mt-2">
-                    Manage your account settings and preferences
-                </p>
+        <ContentWrapper>
+            <div className="max-w-4xl mx-auto">
+                <div className="mb-6">
+                    <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+                        Settings
+                    </h1>
+                    <p className="text-[var(--color-text-secondary)] mt-2">
+                        Manage your account settings and preferences
+                    </p>
+                </div>
+
+                <Tabs
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    onChange={setActiveTab}
+                    variant="line"
+                    size="md"
+                />
+
+                {/* Password Change Modal */}
+                <PasswordChangeModal
+                    isOpen={isPasswordModalOpen}
+                    onClose={() => setIsPasswordModalOpen(false)}
+                />
+
+                {/* Deactivate Account Modal */}
+                <DeactivateAccountModal
+                    isOpen={isDeactivateModalOpen}
+                    onClose={() => setIsDeactivateModalOpen(false)}
+                />
+
+                {/* Delete Account Modal */}
+                <DeleteAccountModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                />
             </div>
-
-            <Tabs
-                tabs={tabs}
-                activeTab={activeTab}
-                onChange={setActiveTab}
-                variant="line"
-                size="md"
-            />
-
-            {/* Password Change Modal */}
-            <PasswordChangeModal
-                isOpen={isPasswordModalOpen}
-                onClose={() => setIsPasswordModalOpen(false)}
-            />
-
-            {/* Deactivate Account Modal */}
-            <DeactivateAccountModal
-                isOpen={isDeactivateModalOpen}
-                onClose={() => setIsDeactivateModalOpen(false)}
-            />
-
-            {/* Delete Account Modal */}
-            <DeleteAccountModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-            />
-        </div>
+        </ContentWrapper>
     );
 }
 

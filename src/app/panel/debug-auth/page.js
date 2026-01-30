@@ -74,7 +74,7 @@ export default function DebugAuthPage() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email: "admin@logatech.com",
+                    email: "admin@logatech.net",
                     password: "Admin@123",
                 }),
             });

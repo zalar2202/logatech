@@ -289,7 +289,7 @@ export default function EditPage({ params }) {
 - AuthContext for auth state management
 - RouteGuard component for client-side route protection
 - Redirect to `/login` if not authenticated
-- Mock admin user: `admin@logatech.com` / `Admin@123`
+- Mock admin user: `admin@logatech.net` / `Admin@123`
 
 **Data Tables:**
 - Custom table components (Table, TableHeader, TableRow, TableCell)
