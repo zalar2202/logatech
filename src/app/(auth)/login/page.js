@@ -170,7 +170,7 @@ export default function LoginPage() {
                                         name="email"
                                         type="email"
                                         label="Email Address"
-                                        placeholder="admin@logatech.com"
+                                        placeholder="admin@logatech.net"
                                         autoComplete="email"
                                     />
 

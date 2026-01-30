@@ -430,7 +430,9 @@ export default function UsersPage() {
                                         </TableCell>
                                         <TableCell align="right">
                                             <TableActions
-                                                onView={() => router.push(`/panel/users/${user._id}`)}
+                                                onView={() =>
+                                                    router.push(`/panel/users/${user._id}`)
+                                                }
                                                 onEdit={() =>
                                                     router.push(`/panel/users/${user._id}/edit`)
                                                 }

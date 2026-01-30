@@ -13,8 +13,8 @@ import { Send, Users, User, Shield, AlertCircle } from "lucide-react";
 import { Formik, Form } from "formik";
 import { sendNotificationSchema } from "@/schemas/notificationSchemas";
 import { sendNotification } from "@/services/notification.service";
+import { userService } from "@/services/user.service";
 import { toast } from "sonner";
-import axios from "@/lib/axios";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
 
 /**
@@ -40,9 +40,9 @@ export default function SendNotificationPage() {
         }
     }, [user, router]);
 
-    // Fetch users for selection
+    // Fetch users for selection (Single User / Multiple Users dropdowns)
     useEffect(() => {
-        const fetchUsers = async () => {
+        const loadUsers = async () => {
             setLoadingUsers(true);
             try {
                 const response = await axios.get("/api/users?limit=1000");
@@ -55,7 +55,7 @@ export default function SendNotificationPage() {
             }
         };
 
-        fetchUsers();
+        loadUsers();
     }, []);
 
     // Handle form submit
@@ -122,10 +122,10 @@ export default function SendNotificationPage() {
         <ContentWrapper>
             {/* Header */}
             <div>
-                <h1 className="text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+                <h1 className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
                     Send Notification
                 </h1>
-                <p className="mt-1 mb-1" style={{ color: "var(--color-text-secondary)" }}>
+                <p className="text-sm mt-1" style={{ color: "var(--color-text-secondary)" }}>
                     Send custom notifications to users
                 </p>
             </div>
@@ -136,6 +136,7 @@ export default function SendNotificationPage() {
                 style={{
                     backgroundColor: "var(--color-info-surface)",
                     borderColor: "var(--color-info)",
+                    marginTop: "1rem",
                     marginBottom: "1rem",
                 }}
             >

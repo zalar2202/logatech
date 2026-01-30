@@ -12,6 +12,7 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "seed:admin": "node src/scripts/seedAdmin.js",
+        "seed:manager": "node src/scripts/seedManager.js",
         "seed:users": "node src/scripts/seedUsers.js"
     },
     "dependencies": {

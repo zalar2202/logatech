@@ -7,6 +7,7 @@ import {
     Network,
     Bell,
     Send,
+    Settings,
 } from "lucide-react";
 
 export const navigation = [
@@ -24,6 +25,11 @@ export const navigation = [
         name: "User Management",
         href: "/panel/users",
         icon: Users,
+    },
+    {
+        name: "Settings",
+        href: "/panel/settings",
+        icon: Settings,
     },
 ];
 
