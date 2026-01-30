@@ -19,16 +19,16 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Accept build-time environment variables from Coolify
-ARG MONGO_URI
-ARG JWT_SECRET
-ARG NEXT_PUBLIC_STORAGE_STRATEGY
-ARG NEXT_PUBLIC_FIREBASE_API_KEY
-ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-ARG NEXT_PUBLIC_FIREBASE_PROJECT_ID
-ARG NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-ARG NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-ARG NEXT_PUBLIC_FIREBASE_APP_ID
+# Accept build-time environment variables from Coolify (with safe defaults for build)
+ARG MONGO_URI=mongodb://placeholder:27017/placeholder
+ARG JWT_SECRET=placeholder-jwt-secret-for-build-only
+ARG NEXT_PUBLIC_STORAGE_STRATEGY=local
+ARG NEXT_PUBLIC_FIREBASE_API_KEY=placeholder
+ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=placeholder
+ARG NEXT_PUBLIC_FIREBASE_PROJECT_ID=placeholder
+ARG NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=placeholder
+ARG NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=placeholder
+ARG NEXT_PUBLIC_FIREBASE_APP_ID=placeholder
 
 # Set them as ENV so the build process can access them
 ENV MONGO_URI=$MONGO_URI
