@@ -8,11 +8,11 @@ export const BottomNav = ({ onMenuClick }) => {
     const pathname = usePathname();
 
     const shortcuts = [
-        { name: "Home", href: "/dashboard", icon: Home },
-        { name: "Users", href: "/users", icon: Users },
+        { name: "Home", href: "/panel/dashboard", icon: Home },
+        { name: "Users", href: "/panel/users", icon: Users },
         { name: "center-menu", type: "menu" }, // Placeholder for center button
-        { name: "Transactions", href: "/transactions", icon: FileText },
-        { name: "Payments", href: "/payments", icon: CreditCard },
+        { name: "Transactions", href: "/panel/transactions", icon: FileText },
+        { name: "Payments", href: "/panel/payments", icon: CreditCard },
     ];
 
     return (

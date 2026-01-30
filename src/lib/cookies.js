@@ -19,7 +19,7 @@ export async function setAuthToken(token, options = {}) {
 
     cookieStore.set(COOKIE_NAMES.TOKEN, token, {
         httpOnly: true, // Cannot be accessed by JavaScript (XSS protection)
-        secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+        secure: process.env.SECURE_AUTH_COOKIE === 'true' || (process.env.NODE_ENV === 'production' && process.env.SECURE_AUTH_COOKIE !== 'false'),
         sameSite: 'lax', // CSRF protection
         maxAge: maxAge,
         path: '/', // Available across entire site
@@ -67,7 +67,7 @@ export async function setCookie(name, value, options = {}) {
     const cookieStore = await cookies();
     cookieStore.set(name, value, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.SECURE_AUTH_COOKIE === 'true' || (process.env.NODE_ENV === 'production' && process.env.SECURE_AUTH_COOKIE !== 'false'),
         sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60, // 7 days default
         path: '/',

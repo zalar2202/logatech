@@ -217,6 +217,15 @@ export async function POST(request) {
     } catch (error) {
         console.error('Create user error:', error);
 
+        // Handle Mongoose validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map((err) => err.message);
+            return NextResponse.json(
+                { success: false, message: messages[0] || 'Validation failed', errors: error.errors },
+                { status: 400 }
+            );
+        }
+
         // Handle duplicate key error
         if (error.code === 11000) {
             return NextResponse.json(
@@ -228,8 +237,9 @@ export async function POST(request) {
         return NextResponse.json(
             {
                 success: false,
-                message: 'Failed to create user',
-                error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+                message: error.message || 'Failed to create user',
+                error: error.message,
+                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
             },
             { status: 500 }
         );

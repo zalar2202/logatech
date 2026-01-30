@@ -2,9 +2,8 @@ import mongoose from 'mongoose';
 
 const MONGO_URI = process.env.MONGO_URI;
 
-if (!MONGO_URI) {
-    throw new Error('Please define the MONGO_URI environment variable inside .env.local');
-}
+// Module level validation is removed to prevent build-time crashes. 
+// Validation is performed inside the connectDB function.
 
 /**
  * Global is used here to maintain a cached connection across hot reloads
@@ -23,6 +22,9 @@ if (!cached) {
  * @returns {Promise<typeof mongoose>} Mongoose connection
  */
 async function connectDB() {
+    if (!MONGO_URI) {
+        throw new Error('Please define the MONGO_URI environment variable inside .env.local');
+    }
     // If already connected, return the cached connection
     if (cached.conn) {
         console.log('✅ Using cached MongoDB connection');
@@ -33,6 +35,8 @@ async function connectDB() {
     if (!cached.promise) {
         const opts = {
             bufferCommands: false, // Disable mongoose buffering
+            serverSelectionTimeoutMS: 5000,
+            connectTimeoutMS: 10000,
         };
 
         console.log('🔄 Connecting to MongoDB...');

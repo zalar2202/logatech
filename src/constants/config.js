@@ -4,8 +4,10 @@
  */
 
 // API Configuration
-export const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || process.env.DEV_BASE_URL || "http://localhost:5555";
+// In browser, we default to relative paths to avoid CORS/Network errors if env vars are missing
+const DEFAULT_API_URL = typeof window !== 'undefined' ? '' : (process.env.DEV_BASE_URL || "http://localhost:3000");
+
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || DEFAULT_API_URL;
 export const API_TIMEOUT = 30000; // 30 seconds
 
 // JWT Configuration

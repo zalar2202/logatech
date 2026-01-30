@@ -22,7 +22,7 @@ export default function CreateUserPage() {
         try {
             await dispatch(createUser(values)).unwrap();
             toast.success("User created successfully");
-            router.push("/users");
+            router.push("/panel/users");
         } catch (error) {
             toast.error(error.message || "Failed to create user");
 

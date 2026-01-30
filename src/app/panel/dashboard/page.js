@@ -47,7 +47,7 @@ export default function DashboardPage() {
             icon: Users,
             color: "blue",
             gradient: "from-blue-500 to-cyan-500",
-            link: "/users",
+            link: "/panel/users",
         },
         {
             title: "Companies",
@@ -56,7 +56,7 @@ export default function DashboardPage() {
             icon: Building2,
             color: "green",
             gradient: "from-green-500 to-emerald-500",
-            link: "/companies",
+            link: "/panel/companies",
         },
         {
             title: "Transactions",
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             icon: Receipt,
             color: "purple",
             gradient: "from-purple-500 to-pink-500",
-            link: "/transactions",
+            link: "/panel/transactions",
         },
         {
             title: "Packages",
@@ -74,7 +74,7 @@ export default function DashboardPage() {
             icon: Package,
             color: "orange",
             gradient: "from-orange-500 to-red-500",
-            link: "/packages",
+            link: "/panel/packages",
         },
     ];
 
@@ -84,7 +84,7 @@ export default function DashboardPage() {
             title: "User Management",
             description: "View and manage all users",
             icon: Users,
-            link: "/users",
+            link: "/panel/users",
             badge: `${totalUsers} users`,
             variant: "primary",
         },
@@ -92,7 +92,7 @@ export default function DashboardPage() {
             title: "Payments",
             description: "Track payment records",
             icon: CreditCard,
-            link: "/payments",
+            link: "/panel/payments",
             badge: "Coming Soon",
             variant: "secondary",
         },
@@ -100,7 +100,7 @@ export default function DashboardPage() {
             title: "Promotions",
             description: "Manage promo codes",
             icon: Tag,
-            link: "/promotions",
+            link: "/panel/promotions",
             badge: "Coming Soon",
             variant: "secondary",
         },
@@ -215,7 +215,7 @@ export default function DashboardPage() {
                                 {recentUsers.map((user) => (
                                     <Link
                                         key={user._id || user.id}
-                                        href={`/users/${user._id || user.id}`}
+                                        href={`/panel/users/${user._id || user.id}`}
                                     >
                                         <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--color-hover)] transition-colors cursor-pointer">
                                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
@@ -247,7 +247,7 @@ export default function DashboardPage() {
                             </div>
                         )}
                         {!loading && recentUsers.length > 0 && (
-                            <Link href="/users">
+                            <Link href="/panel/users">
                                 <div className="mt-4 text-center text-sm text-[var(--color-primary)] hover:underline cursor-pointer">
                                     View all users →
                                 </div>

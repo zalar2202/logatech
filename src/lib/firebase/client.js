@@ -29,14 +29,29 @@ const firebaseConfig = {
 };
 
 /**
+ * Check if Firebase config is valid (not placeholder values)
+ */
+const isValidFirebaseConfig = () => {
+    const apiKey = firebaseConfig.apiKey;
+    return apiKey && apiKey !== "placeholder" && apiKey.length > 10;
+};
+
+/**
  * Initialize Firebase app (singleton pattern)
  * Prevents multiple initializations
+ * Only initializes if valid config is present
  */
-let firebaseApp;
-if (typeof window !== "undefined" && !getApps().length) {
-    firebaseApp = initializeApp(firebaseConfig);
-} else if (typeof window !== "undefined") {
-    firebaseApp = getApps()[0];
+let firebaseApp = null;
+if (typeof window !== "undefined" && isValidFirebaseConfig()) {
+    try {
+        if (!getApps().length) {
+            firebaseApp = initializeApp(firebaseConfig);
+        } else {
+            firebaseApp = getApps()[0];
+        }
+    } catch (error) {
+        console.warn("Firebase initialization failed:", error.message);
+    }
 }
 
 /**

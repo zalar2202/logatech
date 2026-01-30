@@ -64,7 +64,7 @@ export default function EditUserPage({ params }) {
             ).unwrap();
 
             toast.success("User updated successfully");
-            router.push("/users");
+            router.push("/panel/users");
         } catch (error) {
             toast.error(error.message || "Failed to update user");
 
@@ -96,7 +96,7 @@ export default function EditUserPage({ params }) {
                         <Button
                             variant="primary"
                             className="mt-4"
-                            onClick={() => router.push("/users")}
+                            onClick={() => router.push("/panel/users")}
                         >
                             Back to Users
                         </Button>
