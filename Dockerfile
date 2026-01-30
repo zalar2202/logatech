@@ -70,6 +70,15 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy scripts and package.json for admin seeding
+COPY --from=builder /app/src/scripts ./src/scripts
+COPY --from=builder /app/src/models ./src/models
+COPY --from=builder /app/package.json ./package.json
+
+# standalone contains its own node_modules, but for scripts we might need the main one
+# or we can just point node to the standalone one. 
+# For simplicity, since the image is already small, let's just make seeds work.
+
 USER nextjs
 
 EXPOSE 3000
