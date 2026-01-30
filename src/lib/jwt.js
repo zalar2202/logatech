@@ -3,9 +3,8 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
-if (!JWT_SECRET) {
-    throw new Error("Please define the JWT_SECRET environment variable inside .env.local");
-}
+// Module level validation is removed to prevent build-time crashes. 
+// Validation is performed inside each function that requires the secret.
 
 /**
  * Generate JWT token for a user
@@ -16,6 +15,9 @@ if (!JWT_SECRET) {
  * @returns {string} JWT token
  */
 export function generateToken(payload) {
+    if (!JWT_SECRET) {
+        throw new Error("JWT_SECRET is missing. Please define it in environment variables.");
+    }
     try {
         const token = jwt.sign(
             {
@@ -44,6 +46,9 @@ export function generateToken(payload) {
  * @throws {Error} If token is invalid or expired
  */
 export function verifyToken(token) {
+    if (!JWT_SECRET) {
+        throw new Error("JWT_SECRET is missing. Please define it in environment variables.");
+    }
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
             issuer: "logatech-admin-panel",
