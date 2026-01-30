@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import {
@@ -12,6 +12,9 @@ import {
 } from "@/lib/firebase/client";
 import { toast } from "sonner";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
+
+// Force dynamic rendering to avoid SSR issues with navigator
+export const dynamic = "force-dynamic";
 
 /**
  * Firebase Cloud Messaging Test Page
@@ -27,9 +30,18 @@ import { ContentWrapper } from "@/components/layout/ContentWrapper";
  */
 export default function FirebaseTestPage() {
     const [token, setToken] = useState(null);
-    const [permission, setPermission] = useState(() => getNotificationPermission());
+    const [permission, setPermission] = useState(null);
     const [loading, setLoading] = useState(false);
     const [listening, setListening] = useState(false);
+    const [serviceWorkerSupported, setServiceWorkerSupported] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Only run browser-specific checks after component mounts
+    useEffect(() => {
+        setIsMounted(true);
+        setPermission(getNotificationPermission());
+        setServiceWorkerSupported(typeof navigator !== "undefined" && "serviceWorker" in navigator);
+    }, []);
 
     const handleRequestPermission = async () => {
         setLoading(true);
@@ -186,10 +198,10 @@ export default function FirebaseTestPage() {
                         </span>
                         <span
                             className={`font-semibold ${
-                                "serviceWorker" in navigator ? "text-green-600" : "text-red-600"
+                                serviceWorkerSupported ? "text-green-600" : "text-red-600"
                             }`}
                         >
-                            {"serviceWorker" in navigator ? "✅ Supported" : "❌ Not Supported"}
+                            {serviceWorkerSupported ? "✅ Supported" : "❌ Not Supported"}
                         </span>
                     </div>
                 </div>
