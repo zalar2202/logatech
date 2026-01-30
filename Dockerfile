@@ -12,6 +12,9 @@ RUN npm ci
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+
+# Cache buster - change this value to force rebuild
+ARG CACHEBUST=1
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
