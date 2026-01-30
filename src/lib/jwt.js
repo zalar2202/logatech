@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 if (!JWT_SECRET) {
-    throw new Error('Please define the JWT_SECRET environment variable inside .env.local');
+    throw new Error("Please define the JWT_SECRET environment variable inside .env.local");
 }
 
 /**
@@ -26,14 +26,14 @@ export function generateToken(payload) {
             JWT_SECRET,
             {
                 expiresIn: JWT_EXPIRES_IN,
-                issuer: 'befix-admin-panel',
+                issuer: "logatech-admin-panel",
             }
         );
 
         return token;
     } catch (error) {
-        console.error('Error generating JWT token:', error);
-        throw new Error('Token generation failed');
+        console.error("Error generating JWT token:", error);
+        throw new Error("Token generation failed");
     }
 }
 
@@ -46,17 +46,17 @@ export function generateToken(payload) {
 export function verifyToken(token) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
-            issuer: 'befix-admin-panel',
+            issuer: "logatech-admin-panel",
         });
 
         return decoded;
     } catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            throw new Error('Token has expired');
-        } else if (error.name === 'JsonWebTokenError') {
-            throw new Error('Invalid token');
+        if (error.name === "TokenExpiredError") {
+            throw new Error("Token has expired");
+        } else if (error.name === "JsonWebTokenError") {
+            throw new Error("Invalid token");
         } else {
-            throw new Error('Token verification failed');
+            throw new Error("Token verification failed");
         }
     }
 }
@@ -70,7 +70,7 @@ export function decodeToken(token) {
     try {
         return jwt.decode(token);
     } catch (error) {
-        console.error('Error decoding JWT token:', error);
+        console.error("Error decoding JWT token:", error);
         return null;
     }
 }
@@ -81,10 +81,9 @@ export function decodeToken(token) {
  * @returns {string|null} Token or null if not found
  */
 export function extractTokenFromHeader(authHeader) {
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return null;
     }
 
     return authHeader.substring(7); // Remove 'Bearer ' prefix
 }
-

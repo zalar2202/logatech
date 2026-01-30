@@ -1,4 +1,4 @@
-// BeFix Admin Panel - SASS Mixins
+// LogaTech Admin Panel - SASS Mixins
 // Reusable mixins for responsive design and common patterns
 
 @use "variables" as *;
@@ -392,4 +392,3 @@
     grid-template-columns: repeat(auto-fill, minmax($min-width, 1fr));
     gap: $spacing-6;
 }
-

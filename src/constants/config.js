@@ -4,25 +4,26 @@
  */
 
 // API Configuration
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.DEV_BASE_URL || 'http://localhost:3000';
+export const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || process.env.DEV_BASE_URL || "http://localhost:5555";
 export const API_TIMEOUT = 30000; // 30 seconds
 
 // JWT Configuration
 export const JWT_SECRET = process.env.JWT_SECRET;
-export const JWT_EXPIRY = '7d'; // 7 days
+export const JWT_EXPIRY = "7d"; // 7 days
 
 // Feature Flags
-export const USE_MOCK_API = process.env.NEXT_PUBLIC_USE_MOCK_API === 'true';
+export const USE_MOCK_API = process.env.NEXT_PUBLIC_USE_MOCK_API === "true";
 
 // Storage Keys (for localStorage - not for JWT token which is in httpOnly cookie)
 export const STORAGE_KEYS = {
-    USER: 'befix_user', // Optional: store non-sensitive user data for UI
-    THEME: 'befix_theme',
+    USER: "logatech_user", // Optional: store non-sensitive user data for UI
+    THEME: "logatech_theme",
 };
 
 // Cookie Names (server-side only, httpOnly)
 export const COOKIE_NAMES = {
-    TOKEN: 'befix_auth_token', // JWT token stored as httpOnly cookie
+    TOKEN: "logatech_auth_token", // JWT token stored as httpOnly cookie
 };
 
 // Pagination
@@ -33,8 +34,8 @@ export const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 export const MONGO_URI = process.env.MONGO_URI;
 
 // Environment
-export const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
-export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
+export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 export default {
     API_BASE_URL,
@@ -49,4 +50,3 @@ export default {
     IS_DEVELOPMENT,
     IS_PRODUCTION,
 };
-

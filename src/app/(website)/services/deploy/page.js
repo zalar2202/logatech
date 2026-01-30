@@ -1,0 +1,35 @@
+import DeployHero from "@/components/website/deploy/DeployHero";
+import DeployTargetClients from "@/components/website/deploy/DeployTargetClients";
+import DeployServices from "@/components/website/deploy/DeployServices";
+import DeployProcess from "@/components/website/deploy/DeployProcess";
+import DeployDeliverables from "@/components/website/deploy/DeployDeliverables";
+import DeployPricing from "@/components/website/deploy/DeployPricing";
+import DeployTechStack from "@/components/website/deploy/DeployTechStack";
+import DeployWhyLoga from "@/components/website/deploy/DeployWhyLoga";
+import DeployBundleBanner from "@/components/website/deploy/DeployBundleBanner";
+import DeployFAQ from "@/components/website/deploy/DeployFAQ";
+import DeployCTA from "@/components/website/deploy/DeployCTA";
+
+export const metadata = {
+    title: "Deployment Services | Loga Tech",
+    description:
+        "Launch your web application with confidence. Enterprise-grade cloud infrastructure, CI/CD automation, and zero-downtime deployments.",
+};
+
+export default function DeployServicePage() {
+    return (
+        <div className="page deploy-page main-content">
+            <DeployHero />
+            <DeployTargetClients />
+            <DeployServices />
+            <DeployProcess />
+            <DeployDeliverables />
+            <DeployTechStack />
+            <DeployPricing />
+            <DeployWhyLoga />
+            <DeployBundleBanner />
+            <DeployFAQ />
+            <DeployCTA />
+        </div>
+    );
+}

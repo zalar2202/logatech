@@ -51,13 +51,13 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                                         "linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)",
                                 }}
                             >
-                                BF
+                                LT
                             </div>
                             <h1
                                 className="text-lg font-bold tracking-tight"
                                 style={{ color: "var(--color-text-primary)" }}
                             >
-                                BeFix Panel
+                                LogaTech Panel
                             </h1>
                         </div>
                     ) : (
@@ -73,7 +73,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                                         "linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)",
                                 }}
                             >
-                                BF
+                                LT
                             </div>
                         </button>
                     )}
@@ -124,24 +124,14 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                                 className={`
                                     group relative flex items-center gap-3 px-3 rounded-lg
                                     transition-all duration-200
-                                    ${
-                                        isCollapsed
-                                            ? "justify-center py-3"
-                                            : "py-2.5"
-                                    }
-                                    ${
-                                        isActive
-                                            ? "shadow-sm"
-                                            : "hover:translate-x-0.5"
-                                    }
+                                    ${isCollapsed ? "justify-center py-3" : "py-2.5"}
+                                    ${isActive ? "shadow-sm" : "hover:translate-x-0.5"}
                                 `}
                                 style={{
                                     backgroundColor: isActive
                                         ? "var(--color-primary)"
                                         : "transparent",
-                                    color: isActive
-                                        ? "#ffffff"
-                                        : "var(--color-text-secondary)",
+                                    color: isActive ? "#ffffff" : "var(--color-text-secondary)",
                                 }}
                                 title={isCollapsed ? item.name : undefined}
                             >
@@ -161,9 +151,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                                     }`}
                                 />
                                 {!isCollapsed && (
-                                    <span className="font-medium text-sm">
-                                        {item.name}
-                                    </span>
+                                    <span className="font-medium text-sm">{item.name}</span>
                                 )}
 
                                 {/* Tooltip for collapsed state */}
@@ -178,83 +166,80 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                     })}
 
                     {/* Admin Navigation (Admins and Managers Only) */}
-                    {user && ['admin', 'manager'].includes(user.role) && adminNavigation.length > 0 && (
-                        <>
-                            {!isCollapsed && (
-                                <div className="px-3 pt-4 pb-2">
-                                    <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--color-text-tertiary)" }}>
-                                        Admin Tools
-                                    </p>
-                                </div>
-                            )}
-                            {adminNavigation.map((item) => {
-                                const isActive = pathname === item.href;
-                                const Icon = item.icon;
+                    {user &&
+                        ["admin", "manager"].includes(user.role) &&
+                        adminNavigation.length > 0 && (
+                            <>
+                                {!isCollapsed && (
+                                    <div className="px-3 pt-4 pb-2">
+                                        <p
+                                            className="text-xs font-semibold uppercase tracking-wider"
+                                            style={{ color: "var(--color-text-tertiary)" }}
+                                        >
+                                            Admin Tools
+                                        </p>
+                                    </div>
+                                )}
+                                {adminNavigation.map((item) => {
+                                    const isActive = pathname === item.href;
+                                    const Icon = item.icon;
 
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        onClick={() => {
-                                            if (window.innerWidth < 1024) {
-                                                onClose();
-                                            }
-                                        }}
-                                        className={`
+                                    return (
+                                        <Link
+                                            key={item.name}
+                                            href={item.href}
+                                            onClick={() => {
+                                                if (window.innerWidth < 1024) {
+                                                    onClose();
+                                                }
+                                            }}
+                                            className={`
                                             group relative flex items-center gap-3 px-3 rounded-lg
                                             transition-all duration-200
-                                            ${
-                                                isCollapsed
-                                                    ? "justify-center py-3"
-                                                    : "py-2.5"
-                                            }
-                                            ${
-                                                isActive
-                                                    ? "shadow-sm"
-                                                    : "hover:translate-x-0.5"
-                                            }
+                                            ${isCollapsed ? "justify-center py-3" : "py-2.5"}
+                                            ${isActive ? "shadow-sm" : "hover:translate-x-0.5"}
                                         `}
-                                        style={{
-                                            backgroundColor: isActive
-                                                ? "var(--color-primary)"
-                                                : "transparent",
-                                            color: isActive
-                                                ? "#ffffff"
-                                                : "var(--color-text-secondary)",
-                                        }}
-                                        title={isCollapsed ? item.name : undefined}
-                                    >
-                                        {isActive && !isCollapsed && (
-                                            <div
-                                                className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full"
-                                                style={{
-                                                    backgroundColor: "#ffffff",
-                                                }}
+                                            style={{
+                                                backgroundColor: isActive
+                                                    ? "var(--color-primary)"
+                                                    : "transparent",
+                                                color: isActive
+                                                    ? "#ffffff"
+                                                    : "var(--color-text-secondary)",
+                                            }}
+                                            title={isCollapsed ? item.name : undefined}
+                                        >
+                                            {isActive && !isCollapsed && (
+                                                <div
+                                                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full"
+                                                    style={{
+                                                        backgroundColor: "#ffffff",
+                                                    }}
+                                                />
+                                            )}
+
+                                            <Icon
+                                                className={`flex-shrink-0 transition-transform group-hover:scale-110 ${
+                                                    isCollapsed ? "w-6 h-6" : "w-5 h-5"
+                                                }`}
                                             />
-                                        )}
+                                            {!isCollapsed && (
+                                                <span className="font-medium text-sm">
+                                                    {item.name}
+                                                </span>
+                                            )}
 
-                                        <Icon
-                                            className={`flex-shrink-0 transition-transform group-hover:scale-110 ${
-                                                isCollapsed ? "w-6 h-6" : "w-5 h-5"
-                                            }`}
-                                        />
-                                        {!isCollapsed && (
-                                            <span className="font-medium text-sm">
-                                                {item.name}
-                                            </span>
-                                        )}
-
-                                        {isCollapsed && (
-                                            <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-lg">
-                                                {item.name}
-                                                <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
-                                            </div>
-                                        )}
-                                    </Link>
-                                );
-                            })}
-                        </>
-                    )}
+                                            {isCollapsed && (
+                                                <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-lg">
+                                                    {item.name}
+                                                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                                                </div>
+                                            )}
+                                        </Link>
+                                    );
+                                })}
+                            </>
+                        )}
                 </nav>
 
                 {/* Expand button when collapsed */}
@@ -285,7 +270,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                     {!isCollapsed ? (
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                                BF
+                                LT
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p
@@ -294,7 +279,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                                         color: "var(--color-text-primary)",
                                     }}
                                 >
-                                    BeFix Trade
+                                    LogaTech
                                 </p>
                                 <p
                                     className="text-xs truncate mt-0.5"
@@ -308,7 +293,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                         </div>
                     ) : (
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold mx-auto">
-                            BF
+                            LT
                         </div>
                     )}
                 </div>
@@ -316,4 +301,3 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
         </>
     );
 };
-

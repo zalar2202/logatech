@@ -1,10 +1,28 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export const ThemeToggle = () => {
-    const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme, resolvedTheme } = useTheme();
+
+    const getIcon = () => {
+        if (theme === "system") {
+            return <Monitor className="w-5 h-5" />;
+        }
+        return resolvedTheme === "dark" ? (
+            <Sun className="w-5 h-5" />
+        ) : (
+            <Moon className="w-5 h-5" />
+        );
+    };
+
+    const getLabel = () => {
+        if (theme === "system") {
+            return `System (${resolvedTheme})`;
+        }
+        return theme === "dark" ? "Dark mode" : "Light mode";
+    };
 
     return (
         <button
@@ -13,14 +31,10 @@ export const ThemeToggle = () => {
             style={{
                 color: "var(--color-text-secondary)",
             }}
-            aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+            aria-label={`Current: ${getLabel()}. Click to change.`}
+            title={getLabel()}
         >
-            {theme === "light" ? (
-                <Moon className="w-5 h-5" />
-            ) : (
-                <Sun className="w-5 h-5" />
-            )}
+            {getIcon()}
         </button>
     );
 };
-

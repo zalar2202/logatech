@@ -1,46 +1,46 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Formik, Form } from 'formik';
-import { InputField } from '@/components/forms/InputField';
-import { Button } from '@/components/common/Button';
-import { Card } from '@/components/common/Card';
-import { useAuth } from '@/contexts/AuthContext';
-import { loginSchema, loginInitialValues } from '@/schemas/auth.schema';
-import { LogIn, Shield, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Formik, Form } from "formik";
+import { InputField } from "@/components/forms/InputField";
+import { Button } from "@/components/common/Button";
+import { Card } from "@/components/common/Card";
+import { useAuth } from "@/contexts/AuthContext";
+import { loginSchema, loginInitialValues } from "@/schemas/auth.schema";
+import { LogIn, Shield, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
     const router = useRouter();
     const { login } = useAuth();
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const handleSubmit = async (values, { setSubmitting }) => {
-        setError('');
+        setError("");
 
         try {
             const result = await login(values.email, values.password);
 
             if (result.success) {
-                toast.success('Login successful! Welcome back.');
-                
+                toast.success("Login successful! Welcome back.");
+
                 // Check if there's a redirect path
-                const redirectPath = sessionStorage.getItem('redirect_after_login');
-                
+                const redirectPath = sessionStorage.getItem("redirect_after_login");
+
                 if (redirectPath) {
-                    sessionStorage.removeItem('redirect_after_login');
+                    sessionStorage.removeItem("redirect_after_login");
                     router.push(redirectPath);
                 } else {
-                    router.push('/');
+                    router.push("/panel/dashboard");
                 }
             } else {
-                setError(result.message || 'Login failed. Please try again.');
-                toast.error(result.message || 'Login failed');
+                setError(result.message || "Login failed. Please try again.");
+                toast.error(result.message || "Login failed");
             }
         } catch (err) {
-            setError('An unexpected error occurred. Please try again.');
-            toast.error('An unexpected error occurred');
+            setError("An unexpected error occurred. Please try again.");
+            toast.error("An unexpected error occurred");
         } finally {
             setSubmitting(false);
         }
@@ -52,46 +52,50 @@ export default function LoginPage() {
                 {/* Left Side - Branding */}
                 <div className="hidden md:block">
                     <div className="text-center md:text-left">
-                        <div 
+                        <div
                             className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6"
-                            style={{ backgroundColor: 'var(--color-primary)' }}
+                            style={{ backgroundColor: "var(--color-primary)" }}
                         >
-                            <Shield size={40} style={{ color: 'white' }} />
+                            <Shield size={40} style={{ color: "white" }} />
                         </div>
-                        
-                        <h1 
+
+                        <h1
                             className="text-4xl font-bold mb-4"
-                            style={{ color: 'var(--color-text-primary)' }}
+                            style={{ color: "var(--color-text-primary)" }}
                         >
-                            BeFix Admin Panel
+                            LogaTech Admin Panel
                         </h1>
-                        
-                        <p 
+
+                        <p
                             className="text-lg mb-8"
-                            style={{ color: 'var(--color-text-secondary)' }}
+                            style={{ color: "var(--color-text-secondary)" }}
                         >
-                            Secure authentication with httpOnly cookies. 
-                            Manage your business with confidence.
+                            Secure authentication with httpOnly cookies. Manage your business with
+                            confidence.
                         </p>
 
                         <div className="space-y-4">
                             {[
-                                { icon: '🔒', title: 'Secure', desc: 'XSS & CSRF protected' },
-                                { icon: '⚡', title: 'Fast', desc: 'Optimized performance' },
-                                { icon: '🎨', title: 'Modern', desc: 'Beautiful UI with dark mode' },
+                                { icon: "🔒", title: "Secure", desc: "XSS & CSRF protected" },
+                                { icon: "⚡", title: "Fast", desc: "Optimized performance" },
+                                {
+                                    icon: "🎨",
+                                    title: "Modern",
+                                    desc: "Beautiful UI with dark mode",
+                                },
                             ].map((feature, index) => (
                                 <div key={index} className="flex items-center gap-3">
                                     <span className="text-3xl">{feature.icon}</span>
                                     <div>
-                                        <p 
+                                        <p
                                             className="font-semibold"
-                                            style={{ color: 'var(--color-text-primary)' }}
+                                            style={{ color: "var(--color-text-primary)" }}
                                         >
                                             {feature.title}
                                         </p>
-                                        <p 
+                                        <p
                                             className="text-sm"
-                                            style={{ color: 'var(--color-text-secondary)' }}
+                                            style={{ color: "var(--color-text-secondary)" }}
                                         >
                                             {feature.desc}
                                         </p>
@@ -107,52 +111,49 @@ export default function LoginPage() {
                     <div className="p-8">
                         {/* Mobile Logo */}
                         <div className="md:hidden text-center mb-6">
-                            <div 
+                            <div
                                 className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4"
-                                style={{ backgroundColor: 'var(--color-primary)' }}
+                                style={{ backgroundColor: "var(--color-primary)" }}
                             >
-                                <Shield size={32} style={{ color: 'white' }} />
+                                <Shield size={32} style={{ color: "white" }} />
                             </div>
-                            <h2 
+                            <h2
                                 className="text-2xl font-bold"
-                                style={{ color: 'var(--color-text-primary)' }}
+                                style={{ color: "var(--color-text-primary)" }}
                             >
-                                BeFix Admin
+                                LogaTech Admin
                             </h2>
                         </div>
 
-                        <h2 
+                        <h2
                             className="text-2xl font-bold mb-2 hidden md:block"
-                            style={{ color: 'var(--color-text-primary)' }}
+                            style={{ color: "var(--color-text-primary)" }}
                         >
                             Welcome Back
                         </h2>
-                        
-                        <p 
+
+                        <p
                             className="mb-6 hidden md:block"
-                            style={{ color: 'var(--color-text-secondary)' }}
+                            style={{ color: "var(--color-text-secondary)" }}
                         >
                             Sign in to your admin account
                         </p>
 
                         {/* Error Message */}
                         {error && (
-                            <div 
+                            <div
                                 className="mb-6 p-4 rounded-lg flex items-start gap-3"
-                                style={{ 
-                                    backgroundColor: 'var(--color-error-light)',
-                                    borderLeft: '4px solid var(--color-error)',
+                                style={{
+                                    backgroundColor: "var(--color-error-light)",
+                                    borderLeft: "4px solid var(--color-error)",
                                 }}
                             >
-                                <AlertCircle 
-                                    size={20} 
-                                    style={{ color: 'var(--color-error)' }}
+                                <AlertCircle
+                                    size={20}
+                                    style={{ color: "var(--color-error)" }}
                                     className="flex-shrink-0 mt-0.5"
                                 />
-                                <p 
-                                    className="text-sm"
-                                    style={{ color: 'var(--color-error)' }}
-                                >
+                                <p className="text-sm" style={{ color: "var(--color-error)" }}>
                                     {error}
                                 </p>
                             </div>
@@ -169,7 +170,7 @@ export default function LoginPage() {
                                         name="email"
                                         type="email"
                                         label="Email Address"
-                                        placeholder="admin@befix.com"
+                                        placeholder="admin@logatech.com"
                                         autoComplete="email"
                                     />
 
@@ -189,39 +190,15 @@ export default function LoginPage() {
                                         size="lg"
                                     >
                                         {!isSubmitting && <LogIn className="mr-2" size={20} />}
-                                        {isSubmitting ? 'Signing in...' : 'Sign In'}
+                                        {isSubmitting ? "Signing in..." : "Sign In"}
                                     </Button>
                                 </Form>
                             )}
                         </Formik>
 
-                        {/* Demo Credentials */}
-                        <div 
-                            className="mt-6 p-4 rounded-lg"
-                            style={{ backgroundColor: 'var(--color-background-secondary)' }}
-                        >
-                            <p 
-                                className="text-sm font-semibold mb-2"
-                                style={{ color: 'var(--color-text-primary)' }}
-                            >
-                                Demo Credentials:
-                            </p>
-                            <p 
-                                className="text-sm"
-                                style={{ color: 'var(--color-text-secondary)' }}
-                            >
-                                <strong>Email:</strong> admin@befix.com
-                                <br />
-                                <strong>Password:</strong> Admin@123
-                            </p>
-                        </div>
-
                         {/* Security Note */}
                         <div className="mt-6 text-center">
-                            <p 
-                                className="text-xs"
-                                style={{ color: 'var(--color-text-secondary)' }}
-                            >
+                            <p className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
                                 🔒 Secured with httpOnly cookies
                                 <br />
                                 Protected against XSS and CSRF attacks
@@ -233,4 +210,3 @@ export default function LoginPage() {
         </div>
     );
 }
-

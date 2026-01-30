@@ -1,21 +1,21 @@
 /**
  * Notification Helper Functions
- * 
+ *
  * Unified notification system that:
  * 1. Creates notification in database
  * 2. Sends push notification via FCM
  * 3. (Future) Broadcasts via Socket.io for real-time updates
- * 
+ *
  * Use these functions throughout the app to trigger notifications.
  */
 
-import Notification from '@/models/Notification';
-import User from '@/models/User';
-import { sendPushNotification, sendBatchPushNotifications } from '@/lib/firebase/admin';
+import Notification from "@/models/Notification";
+import User from "@/models/User";
+import { sendPushNotification, sendBatchPushNotifications } from "@/lib/firebase/admin";
 
 /**
  * Send a notification to a single user
- * 
+ *
  * @param {Object} options - Notification options
  * @param {string} options.recipientId - User ID to send notification to
  * @param {string} options.title - Notification title
@@ -32,7 +32,7 @@ export const sendNotification = async ({
     recipientId,
     title,
     message,
-    type = 'info',
+    type = "info",
     senderId = null,
     actionUrl = null,
     actionLabel = null,
@@ -60,20 +60,20 @@ export const sendNotification = async ({
         // 2. Get user's FCM tokens
         const user = await User.findById(recipientId);
         if (!user) {
-            console.error('❌ User not found:', recipientId);
+            console.error("❌ User not found:", recipientId);
             return { notification, pushSent: false };
         }
 
         // Check if user has push notifications enabled
         if (!user.preferences?.pushNotifications) {
-            console.log('ℹ️ User has push notifications disabled');
+            console.log("ℹ️ User has push notifications disabled");
             return { notification, pushSent: false };
         }
 
         const fcmTokens = user.getActiveFcmTokens();
 
         if (fcmTokens.length === 0) {
-            console.log('ℹ️ No FCM tokens found for user');
+            console.log("ℹ️ No FCM tokens found for user");
             return { notification, pushSent: false };
         }
 
@@ -84,26 +84,31 @@ export const sendNotification = async ({
                 body: message,
                 data: {
                     notificationId: notification._id.toString(),
-                    actionUrl: actionUrl || '/notifications',
+                    actionUrl: actionUrl || "/notifications",
                     type,
                 },
             }).catch((error) => {
-                console.error(`❌ Failed to send push to token: ${token.substring(0, 20)}...`, error.message);
+                console.error(
+                    `❌ Failed to send push to token: ${token.substring(0, 20)}...`,
+                    error.message
+                );
                 return null;
             })
         );
 
         const pushResults = await Promise.allSettled(pushPromises);
-        const successCount = pushResults.filter((r) => r.status === 'fulfilled' && r.value).length;
+        const successCount = pushResults.filter((r) => r.status === "fulfilled" && r.value).length;
 
         // Update notification delivery status
         if (successCount > 0) {
             await notification.markPushDelivered();
         } else {
-            await notification.markPushDelivered('All push attempts failed');
+            await notification.markPushDelivered("All push attempts failed");
         }
 
-        console.log(`✅ Notification sent to user ${recipientId}: ${successCount}/${fcmTokens.length} push delivered`);
+        console.log(
+            `✅ Notification sent to user ${recipientId}: ${successCount}/${fcmTokens.length} push delivered`
+        );
 
         return {
             notification,
@@ -112,14 +117,14 @@ export const sendNotification = async ({
             totalTokens: fcmTokens.length,
         };
     } catch (error) {
-        console.error('❌ Error sending notification:', error);
+        console.error("❌ Error sending notification:", error);
         throw error;
     }
 };
 
 /**
  * Send notification to multiple users
- * 
+ *
  * @param {Object} options - Notification options
  * @param {Array<string>} options.recipientIds - Array of user IDs
  * @param {string} options.title - Notification title
@@ -134,7 +139,7 @@ export const sendBulkNotification = async ({
     recipientIds,
     title,
     message,
-    type = 'info',
+    type = "info",
     senderId = null,
     actionUrl = null,
     actionLabel = null,
@@ -172,18 +177,20 @@ export const sendBulkNotification = async ({
             }
         }
 
-        console.log(`✅ Bulk notification sent: ${results.created}/${results.total} created, ${results.pushSent} push delivered`);
+        console.log(
+            `✅ Bulk notification sent: ${results.created}/${results.total} created, ${results.pushSent} push delivered`
+        );
 
         return results;
     } catch (error) {
-        console.error('❌ Error sending bulk notification:', error);
+        console.error("❌ Error sending bulk notification:", error);
         throw error;
     }
 };
 
 /**
  * Send notification to all users (broadcast)
- * 
+ *
  * @param {Object} options - Notification options
  * @param {string} options.title - Notification title
  * @param {string} options.message - Notification message
@@ -195,20 +202,20 @@ export const sendBulkNotification = async ({
 export const broadcastNotification = async ({
     title,
     message,
-    type = 'info',
+    type = "info",
     senderId = null,
     filters = {},
 }) => {
     try {
         // Build query based on filters
-        const query = { status: 'active' }; // Only send to active users
+        const query = { status: "active" }; // Only send to active users
 
         if (filters.role) {
             query.role = filters.role;
         }
 
         // Get all matching users
-        const users = await User.find(query).select('_id');
+        const users = await User.find(query).select("_id");
         const recipientIds = users.map((u) => u._id.toString());
 
         console.log(`📢 Broadcasting to ${recipientIds.length} users`);
@@ -222,7 +229,7 @@ export const broadcastNotification = async ({
             senderId,
         });
     } catch (error) {
-        console.error('❌ Error broadcasting notification:', error);
+        console.error("❌ Error broadcasting notification:", error);
         throw error;
     }
 };
@@ -240,12 +247,12 @@ export const notifyUserCreated = async (newUserId, createdByUserId) => {
 
     return await sendNotification({
         recipientId: newUserId,
-        title: 'Welcome to BeFix Panel!',
+        title: "Welcome to LogaTech Panel!",
         message: `Your account has been created by ${createdBy.name}. You can now log in and start using the platform.`,
-        type: 'success',
+        type: "success",
         senderId: createdByUserId,
-        actionUrl: '/login',
-        actionLabel: 'Log In',
+        actionUrl: "/login",
+        actionLabel: "Log In",
     });
 };
 
@@ -254,16 +261,18 @@ export const notifyUserStatusChanged = async (userId, oldStatus, newStatus, chan
     if (!changedBy) return;
 
     const messages = {
-        active: 'Your account has been activated and you can now access the platform.',
-        inactive: 'Your account has been deactivated. Contact support if you have questions.',
-        suspended: 'Your account has been suspended. Please contact support for more information.',
+        active: "Your account has been activated and you can now access the platform.",
+        inactive: "Your account has been deactivated. Contact support if you have questions.",
+        suspended: "Your account has been suspended. Please contact support for more information.",
     };
 
     return await sendNotification({
         recipientId: userId,
-        title: 'Account Status Changed',
-        message: messages[newStatus] || `Your account status has been changed from ${oldStatus} to ${newStatus}.`,
-        type: newStatus === 'active' ? 'success' : 'warning',
+        title: "Account Status Changed",
+        message:
+            messages[newStatus] ||
+            `Your account status has been changed from ${oldStatus} to ${newStatus}.`,
+        type: newStatus === "active" ? "success" : "warning",
         senderId: changedByUserId,
     });
 };
@@ -274,18 +283,18 @@ export const notifyUserRoleChanged = async (userId, oldRole, newRole, changedByU
 
     return await sendNotification({
         recipientId: userId,
-        title: 'Role Updated',
+        title: "Role Updated",
         message: `Your role has been changed from ${oldRole} to ${newRole} by ${changedBy.name}.`,
-        type: 'info',
+        type: "info",
         senderId: changedByUserId,
     });
 };
 
 export const notifySystemMaintenance = async (scheduledAt, duration) => {
     return await broadcastNotification({
-        title: 'Scheduled Maintenance',
+        title: "Scheduled Maintenance",
         message: `System maintenance is scheduled for ${scheduledAt}. Expected downtime: ${duration} minutes.`,
-        type: 'warning',
+        type: "warning",
         senderId: null,
     });
 };
@@ -294,8 +303,7 @@ export const notifySystemAnnouncement = async (title, message, senderId) => {
     return await broadcastNotification({
         title,
         message,
-        type: 'info',
+        type: "info",
         senderId,
     });
 };
-

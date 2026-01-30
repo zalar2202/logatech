@@ -33,8 +33,7 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                         className="lg:hidden p-2 rounded-lg transition-all hover:scale-105"
                         style={{
                             color: "var(--color-text-secondary)",
-                            backgroundColor:
-                                "var(--color-background-secondary)",
+                            backgroundColor: "var(--color-background-secondary)",
                         }}
                         aria-label="Toggle menu"
                     >
@@ -96,7 +95,7 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                                     className="fixed inset-0 z-40"
                                     onClick={() => setShowUserMenu(false)}
                                 />
-                                
+
                                 {/* Menu */}
                                 <div
                                     className="absolute right-0 mt-2 w-56 rounded-lg shadow-lg z-50"
@@ -105,7 +104,10 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                                         border: "1px solid var(--color-border)",
                                     }}
                                 >
-                                    <div className="p-3 border-b" style={{ borderColor: "var(--color-border)" }}>
+                                    <div
+                                        className="p-3 border-b"
+                                        style={{ borderColor: "var(--color-border)" }}
+                                    >
                                         <p
                                             className="text-sm font-semibold"
                                             style={{ color: "var(--color-text-primary)" }}
@@ -116,7 +118,7 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                                             className="text-xs"
                                             style={{ color: "var(--color-text-secondary)" }}
                                         >
-                                            {user?.email || "admin@befix.com"}
+                                            {user?.email || "admin@logatech.com"}
                                         </p>
                                     </div>
 
@@ -124,7 +126,7 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                                         <button
                                             onClick={() => {
                                                 setShowUserMenu(false);
-                                                router.push('/settings');
+                                                router.push("/panel/settings");
                                             }}
                                             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                                             style={{ color: "var(--color-text-primary)" }}
@@ -151,4 +153,3 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
         </header>
     );
 };
-

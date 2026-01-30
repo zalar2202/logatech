@@ -1,6 +1,6 @@
-# BeFix Admin Panel
+# LogaTech
 
-A modern, full-featured admin panel built with Next.js 16 and React 19, featuring authentication, user management, dark mode, and a comprehensive component library.
+A Next.js 16 app containing **two applications**: a **public marketing website** (Loga Tech – Design · Develop · Deploy · Maintain) and a **protected admin panel** (user management, notifications, FCM). Built with React 19, Tailwind v4, Redux Toolkit, and MongoDB.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0.1-black)
 ![React](https://img.shields.io/badge/React-19.2.0-blue)
@@ -8,340 +8,242 @@ A modern, full-featured admin panel built with Next.js 16 and React 19, featurin
 ![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-2.5.0-764abc)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## 🚀 Features
+---
 
-- **🔐 Authentication System** - JWT-based authentication with httpOnly cookies
-- **👥 User Management** - Complete CRUD operations with search, filters, and pagination
-- **🎨 Dark Mode** - Seamless theme switching with system preference detection
-- **📱 Responsive Design** - Mobile-first approach with adaptive layouts and bottom navigation
-- **🔄 State Management** - Hybrid approach using Redux Toolkit for business data and React Context for auth/theme
-- **📝 Form Management** - Formik + Yup for robust form handling and validation
-- **🗄️ Database Integration** - MongoDB with Mongoose ODM
-- **📁 File Upload System** - Abstracted storage layer supporting local and cloud providers
-- **🎭 Component Library** - Comprehensive set of reusable UI components
-- **⚡ Performance Optimized** - React Server Components, lazy loading, and caching strategies
+## What’s in this repo
 
-## 🛠️ Tech Stack
+| App | Routes | Purpose |
+|-----|--------|---------|
+| **Website** | `/`, `/services/design`, `/services/develop`, `/services/deploy`, `/services/maintain` | Public marketing site; landing and service pages; own layout and styles |
+| **Admin panel** | `/panel/*` (dashboard, users, notifications, settings, dev/test pages) | Protected dashboard; JWT in httpOnly cookie; user management, FCM notifications |
 
-### Core
+- **Login:** `/login` → redirects to `/panel/dashboard` when authenticated.
+- **Docs:** [docs/PANEL/README.md](docs/PANEL/README.md) (panel), [docs/WEBSITE/](docs/WEBSITE/) (website).
 
-- **Framework:** Next.js 16.0.1 (App Router)
-- **UI Library:** React 19.2.0
-- **Language:** JavaScript (ES6+)
+---
 
-### Styling & UI
+## Features
 
-- **CSS Framework:** Tailwind CSS v4
-- **Styling Approach:** Pure CSS with CSS Custom Properties
-- **Icons:** Lucide React (1000+ tree-shakeable icons)
-- **Notifications:** Sonner (modern toast notifications)
+### Website (public)
 
-### State & Data Management
+- Landing page with hero, services, process, tech stack, FAQ, CTA
+- Service pages: Design, Develop, Deploy, Maintain
+- Scroll animations, dark mode, responsive layout
+- No auth; Server Components where possible
 
-- **State Management:** Redux Toolkit 2.5.0 + React Context
-- **Forms:** Formik + Yup validation
-- **HTTP Client:** Axios 1.7.9
-- **Database:** MongoDB with Mongoose 8.9.2
+### Admin panel (protected)
 
-### File Handling
+- **Auth:** JWT in **httpOnly cookie** (`logatech_auth_token`); route guard for `/panel/*`
+- **User management:** CRUD, list with server-side pagination, search/filters, avatar upload
+- **Notifications:** Firebase Cloud Messaging (push + in-app dropdown and full page); send as admin; 30s polling for unread count
+- **Layout:** Sidebar (collapsible), header (notifications bell, theme toggle, user menu)
+- **Dark mode:** CSS custom properties; theme persisted in localStorage
+- **File upload:** Abstracted storage (local by default; cloud-ready)
+- **State:** Redux (users, notifications) + React Context (auth, theme)
 
-- **Storage:** Abstracted layer (local filesystem, cloud-ready)
-- **Upload:** Multipart form-data with validation
+---
 
-### Development Tools
+## Tech stack
 
-- **Linting:** ESLint 9 (flat config)
-- **Code Formatting:** Prettier
-- **React Optimization:** React Compiler enabled
+- **Framework:** Next.js 16 (App Router), React 19
+- **Styling:** Tailwind CSS v4 + CSS custom properties (no SASS in build)
+- **State:** Redux Toolkit (panel business data) + React Context (auth, theme)
+- **Forms:** Formik + Yup
+- **HTTP:** Axios (withCredentials for cookies)
+- **DB:** MongoDB with Mongoose
+- **Push:** Firebase Cloud Messaging (FCM)
+- **UI:** Sonner toasts, Lucide icons, custom table/layout components
+- **Tooling:** ESLint 9, Prettier, React Compiler
 
-## 📦 Installation
+---
+
+## Installation
 
 ### Prerequisites
 
-- Node.js 18+ and npm/yarn/pnpm
-- MongoDB instance (local or cloud)
+- Node.js 18+
+- MongoDB (local or Atlas)
 
-### Setup Steps
+### Setup
 
-1. **Clone the repository**
+1. **Clone and install**
 
 ```bash
 git clone <repository-url>
-cd befix-panel
-```
-
-2. **Install dependencies**
-
-```bash
+cd logatech-en
 npm install
-# or
-yarn install
-# or
-pnpm install
 ```
 
-3. **Configure environment variables**
+2. **Environment**
 
-Create a `.env.local` file in the root directory:
+Create `.env.local` in the project root:
 
 ```env
-# Database
-MONGODB_URI=mongodb://localhost:27017/befix-admin
+# Database (app reads MONGO_URI)
+MONGO_URI=mongodb://localhost:27017/logatech-admin
 
-# JWT Secret
+# JWT (required for panel login and API auth)
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 
-# Storage Strategy (local, cloudinary, s3, vercel-blob)
+# Storage (panel file uploads)
 NEXT_PUBLIC_STORAGE_STRATEGY=local
-
-# API Configuration
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
 ```
 
-4. **Seed the database** (optional)
+Optional for notifications (panel): Firebase client + Admin env vars — see [docs/PANEL/notifications/FIREBASE_SETUP.md](docs/PANEL/notifications/FIREBASE_SETUP.md).
+
+3. **Seed admin user** (for panel login)
 
 ```bash
-# Seed admin user (email: admin@befix.com, password: Admin@123)
-node src/scripts/seed-admin.js
-
-# Seed sample users
-node src/scripts/seed-users.js
+npm run seed:admin
 ```
 
-5. **Run the development server**
+Creates: **admin@logatech.com** / **Admin@123**
+
+4. **Run dev server**
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+- **Website:** [http://localhost:5555](http://localhost:5555)
+- **Panel:** [http://localhost:5555/panel/dashboard](http://localhost:5555/panel/dashboard) (after [http://localhost:5555/login](http://localhost:5555/login))
 
-## 🗂️ Project Structure
+---
+
+## Project structure
 
 ```
-befix-panel/
+logatech-en/
 ├── src/
-│   ├── app/                      # Next.js App Router pages
-│   │   ├── (auth)/              # Authentication routes
-│   │   │   └── login/
-│   │   ├── (dashboard)/         # Protected dashboard routes
-│   │   │   ├── users/          # User management
-│   │   │   ├── companies/      # Company management
-│   │   │   ├── transactions/   # Transaction tracking
-│   │   │   ├── packages/       # Package management
-│   │   │   ├── payments/       # Payment records
-│   │   │   ├── promotions/     # Promo codes
-│   │   │   └── settings/       # User settings (planned)
-│   │   ├── api/                # API routes
-│   │   └── globals.css         # Tailwind + CSS variables
-│   ├── components/             # Reusable UI components
-│   │   ├── common/            # Buttons, Cards, Modals, etc.
-│   │   ├── forms/             # Form field components
-│   │   ├── tables/            # Table components
-│   │   └── layout/            # Layout components
-│   ├── features/              # Redux slices (feature-based)
-│   │   └── users/             # User feature slice
-│   ├── services/              # API service layer
-│   ├── lib/                   # Utilities and configs
-│   │   ├── storage/          # File storage abstraction
-│   │   ├── store.js          # Redux store
-│   │   ├── hooks.js          # Custom hooks
-│   │   └── axios.js          # Axios configuration
-│   ├── contexts/              # React Context providers
-│   │   ├── AuthContext.js    # Authentication
-│   │   └── ThemeContext.js   # Theme switching
-│   ├── models/                # Mongoose models
-│   ├── schemas/               # Yup validation schemas
-│   ├── hooks/                 # Custom React hooks
-│   ├── constants/             # App constants
-│   └── scripts/               # Database seed scripts
+│   ├── app/
+│   │   ├── (auth)/              # Login layout + /login
+│   │   ├── (website)/           # Public site: /, /services/*
+│   │   │   ├── layout.js        # WebsiteHeader, main, WebsiteFooter
+│   │   │   ├── (homepage)/
+│   │   │   └── services/        # design, develop, deploy, maintain
+│   │   ├── panel/               # Protected dashboard
+│   │   │   ├── layout.js        # Sidebar + Header
+│   │   │   ├── dashboard/
+│   │   │   ├── users/           # List, create, [id], [id]/edit
+│   │   │   ├── notifications/   # List, send
+│   │   │   ├── settings/
+│   │   │   └── ...              # firebase-test, backend-notification-test, etc.
+│   │   └── api/                 # Auth, users, notifications, upload, files, ...
+│   ├── components/
+│   │   ├── website/             # Website-only (default exports)
+│   │   │   ├── homepage/, layout/, design/, develop/, deploy/, maintain/, shared/
+│   │   ├── common/              # Panel: Buttons, Cards, Modals, ThemeToggle, ...
+│   │   ├── forms/               # Panel: Input, Select, FileUpload, ...
+│   │   ├── tables/              # Panel: Table, TableHeader, TableRow, ...
+│   │   └── layout/              # Panel: Sidebar, Header, NotificationDropdown
+│   ├── features/                # Redux slices (panel)
+│   │   ├── users/
+│   │   └── notifications/
+│   ├── services/                # API layer (panel)
+│   ├── lib/                     # store, StoreProvider, hooks, axios, cookies, jwt, firebase, storage
+│   ├── contexts/                # AuthContext, ThemeContext, NotificationContext
+│   ├── models/                  # User, Notification (Mongoose)
+│   ├── hooks/                   # useScrollAnimation (website), ...
+│   ├── styles/                  # tokens.css (shared colors), website.css, panel.css; variables.scss/mixins.scss (reference)
+│   ├── constants/               # config, navigation
+│   ├── schemas/                 # Yup (auth, notifications, ...)
+│   └── scripts/                 # seedAdmin.js, seedUsers.js
 ├── public/
-│   └── assets/
-│       └── storage/           # Local file uploads
-└── docs/                      # Documentation
-    └── IMPLEMENTATION_PLAN.md # Detailed implementation guide
+│   ├── firebase-messaging-sw.js
+│   └── assets/storage/          # Local uploads (gitignored)
+├── docs/
+│   ├── PANEL/                   # Panel docs (setup, auth, notifications, ui, guides)
+│   │   ├── README.md            # Entry + quick links
+│   │   ├── setup/, auth/, notifications/, ui/, guides/
+│   └── WEBSITE/                 # Website specs (Overview, DesignLandingPage, ...)
+└── .cursor/rules/               # Cursor AI rules (panel + website)
 ```
 
-## 🔑 Default Login Credentials
+---
 
-**Admin Account:**
-
-- Email: `admin@befix.com`
-- Password: `Admin@123`
-
-> ⚠️ **Important:** Change these credentials in production!
-
-## 📝 Available Scripts
+## Scripts
 
 ```bash
-# Development
-npm run dev          # Start dev server (http://localhost:3000)
-
-# Production
-npm run build        # Build for production
-npm run start        # Start production server
-
-# Code Quality
-npm run lint         # Run ESLint
-npm run lint:fix     # Fix ESLint issues automatically
-
-# Database
-node src/scripts/seed-admin.js   # Seed admin user
-node src/scripts/seed-users.js   # Seed sample users
+npm run dev          # Dev server (port 5555)
+npm run build        # Production build
+npm run start        # Production server
+npm run lint         # ESLint
+npm run lint:fix     # ESLint --fix
+npm run seed:admin   # Create admin user (admin@logatech.com / Admin@123)
+npm run seed:users   # Seed sample users
 ```
 
-## 🎯 Key Features & Pages
+---
 
-### ✅ Completed Features
+## Panel routes (overview)
 
-#### Authentication
+| Path | Description |
+|------|-------------|
+| `/login` | Auth layout; redirects to `/panel/dashboard` when logged in |
+| `/panel/dashboard` | Dashboard home |
+| `/panel/users` | User list (pagination, search, filters) |
+| `/panel/users/create` | Create user (with avatar) |
+| `/panel/users/[id]` | User detail |
+| `/panel/users/[id]/edit` | Edit user |
+| `/panel/notifications` | Notification list (tabs, filters, mark read, delete) |
+| `/panel/notifications/send` | Send notification (admin/manager) |
+| `/panel/settings` | Settings |
+| `/panel/firebase-test` | FCM test page |
+| `/panel/backend-notification-test` | Backend notification test |
+| `/panel/test-connection` | DB connection test |
+| `/panel/test-axios` | Axios + auth test |
+| `/panel/debug-auth` | Cookie / auth debug |
+| `/panel/components-demo` | Component demos |
+| `/panel/register-admin` | Register admin |
 
-- JWT-based login with httpOnly cookies
-- Route protection with client-side guards
-- Automatic session management
-- User menu with logout
+---
 
-#### Dashboard
+## Documentation
 
-- Statistics cards (users, companies, transactions)
-- Recent activity feed
-- Quick action shortcuts
-- System status indicators
+| Topic | Location |
+|-------|----------|
+| **Panel overview** | [docs/PANEL/README.md](docs/PANEL/README.md) |
+| **Setup (DB, env, auth)** | [docs/PANEL/setup/](docs/PANEL/setup/) |
+| **Cookie auth** | [docs/PANEL/auth/COOKIE_AUTHENTICATION.md](docs/PANEL/auth/COOKIE_AUTHENTICATION.md) |
+| **Notifications (FCM, UI)** | [docs/PANEL/notifications/README.md](docs/PANEL/notifications/README.md) |
+| **Dark mode, tables, layout** | [docs/PANEL/ui/](docs/PANEL/ui/) |
+| **Pagination, Redux, implementation** | [docs/PANEL/guides/](docs/PANEL/guides/) |
+| **Website (copy, structure)** | [docs/WEBSITE/](docs/WEBSITE/) |
 
-#### User Management
+---
 
-- **List View:** Search, filters, pagination, sortable columns
-- **Create User:** Form with validation (name, email, phone, role, status, avatar)
-- **Edit User:** Update existing users with pre-populated data
-- **View Details:** Comprehensive user profile display
-- **Delete:** Confirmation modal with cascade handling
-- **Avatar Upload:** Drag-and-drop image upload with preview
+## Security (panel)
 
-#### Layout & Navigation
+- JWT in **httpOnly cookie** (not localStorage)
+- Passwords hashed with bcrypt
+- Input validation (client + server)
+- File upload validation (type, size)
+- Auth required for all `/panel/*` and protected API routes
 
-- Responsive sidebar with collapse/expand
-- Top header with theme toggle and user menu
-- Mobile bottom navigation with center menu button
-- Breadcrumb navigation
-- Dark mode with smooth transitions
+---
 
-#### Component Library
+## Deployment
 
-- **Forms:** Input, Select, Textarea, Checkbox, Date/Time pickers, File upload
-- **UI:** Buttons, Cards, Badges, Modals, Tabs, Pagination
-- **Tables:** Sortable headers, action buttons, responsive design
-- **Feedback:** Loader, Skeleton, Empty states, Toast notifications
+Production `.env` should include:
 
-### 🚧 Planned Features
+- `MONGO_URI` – production MongoDB URI
+- `JWT_SECRET` – strong random secret
+- `NEXT_PUBLIC_STORAGE_STRATEGY` – e.g. `cloudinary` or `s3` if using cloud storage
+- Firebase env vars if using FCM in production
 
-- **Settings & Profile Management** (Phase 8.7)
-    - User profile editing
-    - Password change
-    - Notification preferences
-    - Account deletion (GDPR compliance)
-- **Company Management** (Phase 8.2)
-- **Transaction Tracking** (Phase 8.3)
-- **Package Management** (Phase 8.4)
-- **Payment Records** (Phase 8.5)
-- **Promotion Codes** (Phase 8.6)
-- **In-App Notifications** (Phase 10)
-
-## 🎨 Customization
-
-### Theme Configuration
-
-Edit `src/app/globals.css` to customize colors:
-
-```css
-:root {
-    --color-primary: #2563eb;
-    --color-background: #ffffff;
-    --color-text-primary: #1f2937;
-    /* ... more variables ... */
-}
-
-[data-theme="dark"] {
-    --color-primary: #60a5fa;
-    --color-background: #0f1117;
-    --color-text-primary: #f9fafb;
-    /* ... dark mode overrides ... */
-}
-```
-
-### Adding New Features
-
-1. Create Redux slice in `src/features/[feature]/`
-2. Add API routes in `src/app/api/[feature]/`
-3. Create service layer in `src/services/[feature].service.js`
-4. Add validation schema in `src/schemas/[feature]Schemas.js`
-5. Build UI pages in `src/app/(dashboard)/[feature]/`
-
-See `docs/IMPLEMENTATION_PLAN.md` for detailed patterns.
-
-## 🔐 Security Features
-
-- ✅ JWT token authentication with httpOnly cookies
-- ✅ Password hashing with bcrypt
-- ✅ Input validation (client + server)
-- ✅ CSRF protection ready
-- ✅ File upload validation (type, size)
-- ✅ SQL injection prevention (Mongoose)
-- ✅ XSS protection (React escaping)
-
-## 🚀 Deployment
-
-### Environment Variables for Production
-
-```env
-MONGODB_URI=your-production-mongodb-uri
-JWT_SECRET=your-secure-random-jwt-secret
-NEXT_PUBLIC_STORAGE_STRATEGY=cloudinary  # or s3, vercel-blob
-# Add cloud storage credentials as needed
-```
-
-### Build & Deploy
+Then:
 
 ```bash
 npm run build
 npm run start
 ```
 
-### Recommended Platforms
+---
 
-- **Vercel** - Seamless Next.js deployment
-- **Railway** - Full-stack hosting with MongoDB
-- **DigitalOcean** - VPS for complete control
-- **AWS/Azure/GCP** - Enterprise-grade infrastructure
+## License
 
-## 📚 Documentation
-
-- **Implementation Plan:** `docs/IMPLEMENTATION_PLAN.md` - Comprehensive development roadmap
-- **Pagination Patterns:** `docs/PAGINATION_PATTERNS.md` - Server-side pagination implementation guide
-- **Component Examples:** Available at `/components-demo` (when logged in)
-- **API Documentation:** Coming soon
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Author
-
-**BeFix Trade**
-
-## 🙏 Acknowledgments
-
-- Next.js team for the amazing framework
-- Vercel for hosting and deployment solutions
-- Open source community for the incredible tools and libraries
+MIT. See the LICENSE file for details.
 
 ---
 
-**Built with ❤️ using Next.js 16, React 19, and Tailwind CSS v4**
+**LogaTech** – Built with Next.js 16, React 19, and Tailwind CSS v4
