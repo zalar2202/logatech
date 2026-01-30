@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 
 # Cache buster - change this value to force rebuild
-ARG CACHEBUST=3
+ARG CACHEBUST=4
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
