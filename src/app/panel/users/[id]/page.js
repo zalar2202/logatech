@@ -87,7 +87,7 @@ export default function ViewUserPage({ params }) {
                         <Button
                             variant="primary"
                             className="mt-4"
-                            onClick={() => router.push("/users")}
+                            onClick={() => router.push("/panel/users")}
                         >
                             Back to Users
                         </Button>
@@ -127,7 +127,7 @@ export default function ViewUserPage({ params }) {
                     <Button
                         variant="primary"
                         icon={<Edit size={18} />}
-                        onClick={() => router.push(`/users/${unwrappedParams.id}/edit`)}
+                        onClick={() => router.push(`/panel/users/${unwrappedParams.id}/edit`)}
                     >
                         Edit User
                     </Button>

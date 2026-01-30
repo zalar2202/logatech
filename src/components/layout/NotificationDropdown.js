@@ -258,7 +258,7 @@ export const NotificationDropdown = () => {
                             style={{ borderColor: "var(--color-border)" }}
                         >
                             <Link
-                                href="/notifications"
+                                href="/panel/notifications"
                                 onClick={() => setIsOpen(false)}
                                 className="block text-center text-sm font-medium hover:underline"
                                 style={{ color: "var(--color-primary)" }}

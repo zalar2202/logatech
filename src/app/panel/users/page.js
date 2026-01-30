@@ -260,7 +260,7 @@ export default function UsersPage() {
                     </p>
                 </div>
                 <Button
-                    onClick={() => router.push("/users/create")}
+                    onClick={() => router.push("/panel/users/create")}
                     icon={<Plus size={18} />}
                     className="w-full md:w-auto"
                 >
@@ -430,9 +430,9 @@ export default function UsersPage() {
                                         </TableCell>
                                         <TableCell align="right">
                                             <TableActions
-                                                onView={() => router.push(`/users/${user._id}`)}
+                                                onView={() => router.push(`/panel/users/${user._id}`)}
                                                 onEdit={() =>
-                                                    router.push(`/users/${user._id}/edit`)
+                                                    router.push(`/panel/users/${user._id}/edit`)
                                                 }
                                                 onDelete={() => handleDeleteClick(user)}
                                             />

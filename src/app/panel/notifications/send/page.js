@@ -36,7 +36,7 @@ export default function SendNotificationPage() {
     useEffect(() => {
         if (user && !["admin", "manager"].includes(user.role)) {
             toast.error("Access denied: Admin or Manager role required");
-            router.push("/notifications");
+            router.push("/panel/notifications");
         }
     }, [user, router]);
 
@@ -45,7 +45,7 @@ export default function SendNotificationPage() {
         const fetchUsers = async () => {
             setLoadingUsers(true);
             try {
-                const response = await axios.get("/users?limit=1000");
+                const response = await axios.get("/api/users?limit=1000");
                 setUsers(response.data.data || []);
             } catch (error) {
                 console.error("Error fetching users:", error);
@@ -363,7 +363,7 @@ export default function SendNotificationPage() {
                                 <Button
                                     type="button"
                                     variant="secondary"
-                                    onClick={() => router.push("/notifications")}
+                                    onClick={() => router.push("/panel/notifications")}
                                 >
                                     Cancel
                                 </Button>
