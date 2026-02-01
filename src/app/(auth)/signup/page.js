@@ -7,7 +7,7 @@ import { InputField } from "@/components/forms/InputField";
 import { Button } from "@/components/common/Button";
 import { Card } from "@/components/common/Card";
 import { signupSchema, signupInitialValues } from "@/schemas/auth.schema";
-import { UserPlus, Shield, AlertCircle, LogIn } from "lucide-react";
+import { UserPlus, Shield, AlertCircle, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import axios from "axios";
@@ -15,6 +15,17 @@ import axios from "axios";
 export default function SignupPage() {
     const router = useRouter();
     const [error, setError] = useState("");
+
+    const generatePassword = (setFieldValue) => {
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+        let password = "";
+        for (let i = 0; i < 12; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        setFieldValue("password", password);
+        setFieldValue("confirmPassword", password);
+        toast.info("Secure password generated!");
+    };
 
     const handleSubmit = async (values, { setSubmitting }) => {
         setError("");
@@ -159,7 +170,7 @@ export default function SignupPage() {
                             validationSchema={signupSchema}
                             onSubmit={handleSubmit}
                         >
-                            {({ isSubmitting }) => (
+                            {({ isSubmitting, setFieldValue }) => (
                                 <Form className="space-y-4">
                                     <InputField
                                         name="name"
@@ -183,6 +194,17 @@ export default function SignupPage() {
                                             label="Password"
                                             placeholder="••••••••"
                                             autoComplete="new-password"
+                                            action={
+                                                <button
+                                                    type="button"
+                                                    onClick={() => generatePassword(setFieldValue)}
+                                                    className="text-xs font-bold flex items-center gap-1 hover:underline transition-all"
+                                                    style={{ color: "var(--color-primary)" }}
+                                                >
+                                                    <Wand2 size={12} />
+                                                    Generate
+                                                </button>
+                                            }
                                         />
                                         <InputField
                                             name="confirmPassword"
