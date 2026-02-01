@@ -39,6 +39,11 @@ export async function POST(request) {
 
         const body = await request.json();
         
+        // Sanitize linkedUser to avoid cast error for empty string
+        if (body.linkedUser === "") {
+            body.linkedUser = undefined;
+        }
+
         // 2. Create Client
         const client = await Client.create(body);
 
