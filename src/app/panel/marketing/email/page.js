@@ -8,7 +8,7 @@ import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { InputField } from "@/components/forms/InputField";
 import { SelectField } from "@/components/forms/SelectField";
-import { TextareaField } from "@/components/forms/TextareaField";
+import { RichEditor } from "@/components/forms/RichEditor";
 import { Formik, Form } from "formik";
 import { toast } from "sonner";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
@@ -208,11 +208,13 @@ export default function MarketingEmailPage() {
                                                     placeholder="e.g., Summer Sale Starts Now" 
                                                 />
 
-                                                <TextareaField 
-                                                    name="content" 
-                                                    label="Body Content (HTML allowed)" 
-                                                    placeholder="Write your message here..." 
-                                                    rows={8}
+                                                <RichEditor
+                                                    label="Body Content"
+                                                    value={values.content}
+                                                    onChange={(content) => setFieldValue("content", content)}
+                                                    error={undefined} // Formik error handling if needed
+                                                    touched={undefined}
+                                                    height="400px"
                                                 />
 
                                                 <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-white/5 p-4 rounded-lg">
