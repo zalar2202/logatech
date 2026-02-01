@@ -29,7 +29,7 @@ const NotificationSchema = new mongoose.Schema(
         },
         type: {
             type: String,
-            enum: ['system', 'admin', 'manager', 'info', 'warning', 'success', 'error'],
+            enum: ['system', 'admin', 'manager', 'info', 'warning', 'success', 'error', 'marketing'],
             default: 'info',
             index: true,
         },
