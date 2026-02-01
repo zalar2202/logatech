@@ -20,15 +20,21 @@ export const RichEditor = ({
     const editorRef = useRef(null);
     const [isFocused, setIsFocused] = useState(false);
     
-    // Sync external value to editor content (only if different to prevent cursor jumps)
+    // Sync external value to editor content
     useEffect(() => {
-        if (editorRef.current && value !== editorRef.current.innerHTML) {
-            // Only update if the content is functionally different to avoid loops
-            // For simple cases, we might just set it if it's empty
-            if (value === "" && editorRef.current.innerHTML !== "") {
-                editorRef.current.innerHTML = "";
-            } else if (value && editorRef.current.innerHTML === "") {
-                editorRef.current.innerHTML = value;
+        const editor = editorRef.current;
+        if (editor) {
+            // 1. Initial Load: If editor is empty but value exists, set it.
+            if (value && editor.innerHTML.trim() === "" && value !== "<p><br></p>") {
+                editor.innerHTML = value;
+                return;
+            }
+            
+            // 2. External Updates: If we are NOT focused (e.g. template selection), update content.
+            // We skip this if focused to prevent cursor jumping while typing.
+            const isActive = document.activeElement === editor;
+            if (!isActive && value !== editor.innerHTML) {
+                 editor.innerHTML = value || "";
             }
         }
     }, [value]);
@@ -132,7 +138,6 @@ export const RichEditor = ({
                         minHeight: "150px",
                         color: "var(--color-text-primary)"
                     }}
-                    dangerouslySetInnerHTML={{ __html: value }}
                 />
             </div>
 
