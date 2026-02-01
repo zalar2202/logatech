@@ -87,7 +87,15 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 
 # Storage (panel file uploads)
 NEXT_PUBLIC_STORAGE_STRATEGY=local
+
+# Email (SMTP) - Required for notifications/invoices
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=info@logatech.net
+SMTP_PASS=your-app-password
 ```
+
+See [docs/PANEL/setup/EMAIL_SETUP.md](docs/PANEL/setup/EMAIL_SETUP.md) for detailed email configuration.
 
 Optional for notifications (panel): Firebase client + Admin env vars — see [docs/PANEL/notifications/FIREBASE_SETUP.md](docs/PANEL/notifications/FIREBASE_SETUP.md).
 
