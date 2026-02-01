@@ -1,57 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form } from "formik";
 import { InputField } from "@/components/forms/InputField";
 import { Button } from "@/components/common/Button";
 import { Card } from "@/components/common/Card";
-import { useAuth } from "@/contexts/AuthContext";
-import { loginSchema, loginInitialValues } from "@/schemas/auth.schema";
-import { LogIn, Shield, AlertCircle } from "lucide-react";
+import { signupSchema, signupInitialValues } from "@/schemas/auth.schema";
+import { UserPlus, Shield, AlertCircle, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import axios from "axios";
 
-export default function LoginPage() {
+export default function SignupPage() {
     const router = useRouter();
-    const { login } = useAuth();
     const [error, setError] = useState("");
-
-    useEffect(() => {
-        // Check for error in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const errorParam = urlParams.get("error");
-        if (errorParam) {
-            setError(errorParam);
-            toast.error(errorParam);
-        }
-    }, []);
 
     const handleSubmit = async (values, { setSubmitting }) => {
         setError("");
 
         try {
-            const result = await login(values.email, values.password);
+            const response = await axios.post("/api/auth/signup", {
+                name: values.name,
+                email: values.email,
+                password: values.password,
+            });
 
-            if (result.success) {
-                toast.success("Login successful! Welcome back.");
-
-                // Check if there's a redirect path
-                const redirectPath = sessionStorage.getItem("redirect_after_login");
-
-                if (redirectPath) {
-                    sessionStorage.removeItem("redirect_after_login");
-                    router.push(redirectPath);
-                } else {
-                    router.push("/panel/dashboard");
-                }
+            if (response.data.success) {
+                toast.success("Account created successfully! Welcome.");
+                router.push("/panel/dashboard");
             } else {
-                setError(result.message || "Login failed. Please try again.");
-                toast.error(result.message || "Login failed");
+                setError(response.data.message || "Signup failed. Please try again.");
+                toast.error(response.data.message || "Signup failed");
             }
         } catch (err) {
-            setError("An unexpected error occurred. Please try again.");
-            toast.error("An unexpected error occurred");
+            const message = err.response?.data?.message || "An unexpected error occurred. Please try again.";
+            setError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }
@@ -74,25 +59,24 @@ export default function LoginPage() {
                             className="text-4xl font-bold mb-4"
                             style={{ color: "var(--color-text-primary)" }}
                         >
-                            LogaTech Admin Panel
+                            LogaTech User Panel
                         </h1>
 
                         <p
                             className="text-lg mb-8"
                             style={{ color: "var(--color-text-secondary)" }}
                         >
-                            Secure authentication with httpOnly cookies. Manage your business with
-                            confidence.
+                            Join our community and manage your business with ease.
                         </p>
 
                         <div className="space-y-4">
                             {[
-                                { icon: "🔒", title: "Secure", desc: "XSS & CSRF protected" },
-                                { icon: "⚡", title: "Fast", desc: "Optimized performance" },
+                                { icon: "🚀", title: "Join Today", desc: "Get started in seconds" },
+                                { icon: "🛡️", title: "Secure", desc: "Your data is always protected" },
                                 {
-                                    icon: "🎨",
-                                    title: "Modern",
-                                    desc: "Beautiful UI with dark mode",
+                                    icon: "📱",
+                                    title: "Flexible",
+                                    desc: "Access from any device",
                                 },
                             ].map((feature, index) => (
                                 <div key={index} className="flex items-center gap-3">
@@ -117,7 +101,7 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                {/* Right Side - Login Form */}
+                {/* Right Side - Signup Form */}
                 <Card className="w-full">
                     <div className="p-8">
                         {/* Mobile Logo */}
@@ -132,7 +116,7 @@ export default function LoginPage() {
                                 className="text-2xl font-bold"
                                 style={{ color: "var(--color-text-primary)" }}
                             >
-                                LogaTech Admin
+                                LogaTech
                             </h2>
                         </div>
 
@@ -140,14 +124,14 @@ export default function LoginPage() {
                             className="text-2xl font-bold mb-2 hidden md:block"
                             style={{ color: "var(--color-text-primary)" }}
                         >
-                            Welcome Back
+                            Create Account
                         </h2>
 
                         <p
                             className="mb-6 hidden md:block"
                             style={{ color: "var(--color-text-secondary)" }}
                         >
-                            Sign in to your admin account
+                            Get started with your new account
                         </p>
 
                         {/* Error Message */}
@@ -171,27 +155,43 @@ export default function LoginPage() {
                         )}
 
                         <Formik
-                            initialValues={loginInitialValues}
-                            validationSchema={loginSchema}
+                            initialValues={signupInitialValues}
+                            validationSchema={signupSchema}
                             onSubmit={handleSubmit}
                         >
                             {({ isSubmitting }) => (
-                                <Form className="space-y-6">
+                                <Form className="space-y-4">
+                                    <InputField
+                                        name="name"
+                                        label="Full Name"
+                                        placeholder="John Doe"
+                                        autoComplete="name"
+                                    />
+
                                     <InputField
                                         name="email"
                                         type="email"
                                         label="Email Address"
-                                        placeholder="admin@logatech.net"
+                                        placeholder="john@example.com"
                                         autoComplete="email"
                                     />
 
-                                    <InputField
-                                        name="password"
-                                        type="password"
-                                        label="Password"
-                                        placeholder="Enter your password"
-                                        autoComplete="current-password"
-                                    />
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <InputField
+                                            name="password"
+                                            type="password"
+                                            label="Password"
+                                            placeholder="••••••••"
+                                            autoComplete="new-password"
+                                        />
+                                        <InputField
+                                            name="confirmPassword"
+                                            type="password"
+                                            label="Confirm Password"
+                                            placeholder="••••••••"
+                                            autoComplete="new-password"
+                                        />
+                                    </div>
 
                                     <Button
                                         type="submit"
@@ -199,9 +199,10 @@ export default function LoginPage() {
                                         loading={isSubmitting}
                                         fullWidth
                                         size="lg"
+                                        className="mt-2"
                                     >
-                                        {!isSubmitting && <LogIn className="mr-2" size={20} />}
-                                        {isSubmitting ? "Signing in..." : "Sign In"}
+                                        {!isSubmitting && <UserPlus className="mr-2" size={20} />}
+                                        {isSubmitting ? "Creating account..." : "Create Account"}
                                     </Button>
                                 </Form>
                             )}
@@ -222,55 +223,27 @@ export default function LoginPage() {
                             fullWidth
                             size="lg"
                             className="bg-white border border-gray-300 hover:bg-gray-50 flex items-center justify-center gap-3 py-3"
-                            onClick={() => (window.location.href = "/api/auth/google")}
+                            onClick={() => window.location.href = '/api/auth/google'}
                         >
-                            <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M23.5 12.235c0-.822-.066-1.644-.206-2.441H12v4.628h6.456a5.57 5.57 0 0 1-2.407 3.65v3.016h3.882c2.269-2.087 3.569-5.161 3.569-8.853z"
-                                    fill="#4285F4"
-                                />
-                                <path
-                                    d="M12 24c3.24 0 5.957-1.071 7.942-2.912l-3.882-3.016c-1.077.729-2.464 1.156-4.06 1.156-3.114 0-5.751-2.099-6.696-4.918H1.423v3.111C3.401 21.365 7.426 24 12 24z"
-                                    fill="#34A853"
-                                />
-                                <path
-                                    d="M5.304 14.31a7.197 7.197 0 0 1 0-4.619V6.58H1.423a12.003 12.003 0 0 0 0 10.84l3.881-3.11z"
-                                    fill="#FBBC04"
-                                />
-                                <path
-                                    d="M12 4.75c1.763 0 3.344.604 4.588 1.789l3.447-3.447C17.952 1.189 15.234 0 12 0 7.426 0 3.401 2.635 1.423 6.58L5.304 9.69C6.249 6.871 8.886 4.75 12 4.75z"
-                                    fill="#EA4335"
-                                />
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M23.5 12.235c0-.822-.066-1.644-.206-2.441H12v4.628h6.456a5.57 5.57 0 0 1-2.407 3.65v3.016h3.882c2.269-2.087 3.569-5.161 3.569-8.853z" fill="#4285F4"/>
+                                <path d="M12 24c3.24 0 5.957-1.071 7.942-2.912l-3.882-3.016c-1.077.729-2.464 1.156-4.06 1.156-3.114 0-5.751-2.099-6.696-4.918H1.423v3.111C3.401 21.365 7.426 24 12 24z" fill="#34A853"/>
+                                <path d="M5.304 14.31a7.197 7.197 0 0 1 0-4.619V6.58H1.423a12.003 12.003 0 0 0 0 10.84l3.881-3.11z" fill="#FBBC04"/>
+                                <path d="M12 4.75c1.763 0 3.344.604 4.588 1.789l3.447-3.447C17.952 1.189 15.234 0 12 0 7.426 0 3.401 2.635 1.423 6.58L5.304 9.69C6.249 6.871 8.886 4.75 12 4.75z" fill="#EA4335"/>
                             </svg>
                             <span className="text-gray-700 font-medium">Continue with Google</span>
                         </Button>
 
                         <div className="mt-6 text-center">
                             <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                                Don't have an account?{" "}
+                                Already have an account?{" "}
                                 <Link
-                                    href="/signup"
+                                    href="/login"
                                     className="font-bold hover:underline"
                                     style={{ color: "var(--color-primary)" }}
                                 >
-                                    Sign Up
+                                    Sign In
                                 </Link>
-                            </p>
-                        </div>
-
-
-                        {/* Security Note */}
-                        <div className="mt-6 text-center">
-                            <p className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
-                                🔒 Secured with httpOnly cookies
-                                <br />
-                                Protected against XSS and CSRF attacks
                             </p>
                         </div>
                     </div>
