@@ -30,7 +30,7 @@ export default function DashboardPage() {
     const dispatch = useAppDispatch();
     const { list: users, loading } = useAppSelector((state) => state.users);
 
-    const [counts, setCounts] = useState({ packages: 0, promotions: 0 });
+    const [counts, setCounts] = useState({ packages: 0, promotions: 0, clients: 0 });
 
     useEffect(() => {
         // Fetch users to display stats
@@ -39,13 +39,15 @@ export default function DashboardPage() {
         // Fetch other stats
         const fetchStats = async () => {
             try {
-                const [pkgRes, promoRes] = await Promise.all([
+                const [pkgRes, promoRes, clientRes] = await Promise.all([
                     axios.get("/api/packages"),
-                    axios.get("/api/promotions?all=true")
+                    axios.get("/api/promotions?all=true"),
+                    axios.get("/api/clients")
                 ]);
                 setCounts({
                     packages: pkgRes.data.data?.length || 0,
-                    promotions: promoRes.data.data?.length || 0
+                    promotions: promoRes.data.data?.length || 0,
+                    clients: clientRes.data.data?.length || 0
                 });
             } catch (e) { console.error("Stats fetch error", e); }
         };
@@ -74,8 +76,8 @@ export default function DashboardPage() {
         },
         {
             title: "Clients",
-            value: "0",
-            change: "Coming Soon",
+            value: counts.clients,
+            change: "Manage Accounts",
             icon: Building2,
             color: "green",
             gradient: "from-green-500 to-emerald-500",
