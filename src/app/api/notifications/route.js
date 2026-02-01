@@ -146,7 +146,7 @@ export async function POST(request) {
         }
 
         // Validate notification type
-        const validTypes = ['system', 'admin', 'manager', 'info', 'warning', 'success', 'error'];
+        const validTypes = ['system', 'admin', 'manager', 'info', 'warning', 'success', 'error', 'marketing'];
         if (!validTypes.includes(type)) {
             return NextResponse.json(
                 { error: `Invalid type. Must be one of: ${validTypes.join(', ')}` },
