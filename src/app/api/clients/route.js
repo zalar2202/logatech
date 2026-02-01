@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import Client from '@/models/Client';
 import User from '@/models/User'; // Ensure User model is loaded
 import { verifyAuth } from '@/lib/auth';
-import dbConnect from '@/lib/db';
+import dbConnect from '@/lib/mongodb';
 
 export async function GET(request) {
     try {
