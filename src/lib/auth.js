@@ -1,21 +1,23 @@
 import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/jwt';
+import { verifyToken, extractTokenFromHeader } from '@/lib/jwt';
+import { COOKIE_NAMES } from '@/constants/config';
 import User from '@/models/User';
 import dbConnect from '@/lib/mongodb';
 
-// Helper to get db connection - checking if verifyAuth or mongodb.js is better
-// Standard practice is often lib/mongodb.js or lib/db.js
-// Based on previous file list, it is 'lib/mongodb.js' for connection logic usually, 
-// OR checking if there is a 'lib/db.js'. 
-// Let's assume standard mongoose connection import.
-// WAIT, the previous file list shows: mongodb.js inside lib.
-// But some files imported '@/lib/db'. I should check if '@/lib/db' exists or if it's mapped.
-// Let's safely try to use the most robust connection method. 
-// I will check if lib/db.js exists first.
-
 export async function verifyAuth(request) {
     try {
-        const token = (await cookies()).get('token')?.value;
+        const cookieStore = await cookies();
+        let token = cookieStore.get(COOKIE_NAMES.TOKEN)?.value || 
+                   cookieStore.get('token')?.value || 
+                   cookieStore.get('om_token')?.value;
+
+        if (!token && request) {
+            // Fallback to Header
+            const authHeader = request.headers.get('authorization');
+            if (authHeader) {
+                token = extractTokenFromHeader(authHeader);
+            }
+        }
 
         if (!token) {
             return null;
