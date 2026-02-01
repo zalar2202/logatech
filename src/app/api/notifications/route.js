@@ -125,6 +125,7 @@ export async function POST(request) {
             type = 'info',
             actionUrl = null,
             actionLabel = null,
+            email = false,
         } = await request.json();
 
         // Validate required fields
@@ -173,6 +174,7 @@ export async function POST(request) {
                     senderId: sender._id.toString(),
                     actionUrl,
                     actionLabel,
+                    email,
                 });
                 break;
 
@@ -192,6 +194,7 @@ export async function POST(request) {
                     senderId: sender._id.toString(),
                     actionUrl,
                     actionLabel,
+                    email,
                 });
                 break;
 
@@ -201,6 +204,7 @@ export async function POST(request) {
                     message,
                     type,
                     senderId: sender._id.toString(),
+                    email,
                 });
                 break;
 
@@ -226,6 +230,7 @@ export async function POST(request) {
                     type,
                     senderId: sender._id.toString(),
                     filters: { role: recipients },
+                    email,
                 });
                 break;
 

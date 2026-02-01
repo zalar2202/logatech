@@ -9,6 +9,7 @@ import {
     Send,
     Settings,
     Tag,
+    Mail,
 } from "lucide-react";
 
 export const navigation = [
@@ -54,6 +55,12 @@ export const adminNavigation = [
         href: "/panel/notifications/send",
         icon: Send,
         roles: ["admin", "manager"], // Only visible to admin and manager
+    },
+    {
+        name: "Email Marketing",
+        href: "/panel/marketing/email",
+        icon: Mail,
+        roles: ["admin", "manager"],
     },
 ];
 

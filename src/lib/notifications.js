@@ -12,6 +12,7 @@
 import Notification from "@/models/Notification";
 import User from "@/models/User";
 import { sendPushNotification, sendBatchPushNotifications } from "@/lib/firebase/admin";
+import { sendMail } from "@/lib/mail";
 
 /**
  * Send a notification to a single user
@@ -24,6 +25,7 @@ import { sendPushNotification, sendBatchPushNotifications } from "@/lib/firebase
  * @param {string} options.senderId - User ID of sender (null for system)
  * @param {string} options.actionUrl - URL to navigate to on click (optional)
  * @param {string} options.actionLabel - Button label for action (optional)
+ * @param {boolean} options.email - Whether to send via email as well (optional)
  * @param {Object} options.metadata - Additional data (optional)
  * @param {Date} options.expiresAt - Expiration date (optional)
  * @returns {Promise<Object>} Created notification and delivery status
@@ -36,6 +38,7 @@ export const sendNotification = async ({
     senderId = null,
     actionUrl = null,
     actionLabel = null,
+    email = false,
     metadata = {},
     expiresAt = null,
 }) => {
@@ -57,27 +60,58 @@ export const sendNotification = async ({
             },
         });
 
-        // 2. Get user's FCM tokens
+        // 2. Get user
         const user = await User.findById(recipientId);
         if (!user) {
             console.error("❌ User not found:", recipientId);
-            return { notification, pushSent: false };
+            return { notification, pushSent: false, emailSent: false };
         }
 
+        // 3. Handle Email Delivery
+        let emailSent = false;
+        if (email && user.email) {
+            // Check if user has email notifications enabled (default true)
+            if (user.preferences?.emailNotifications !== false) {
+                const emailResult = await sendMail({
+                    to: user.email,
+                    subject: title,
+                    html: `
+                        <div style="margin-bottom: 20px;">
+                            <span class="badge" style="text-transform: uppercase; font-weight: bold;">${type}</span>
+                        </div>
+                        <h2 style="color: #111827; margin-top: 0;">${title}</h2>
+                        <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">${message}</p>
+                        ${actionUrl ? `
+                            <div style="margin-top: 30px;">
+                                <a href="${process.env.NEXT_PUBLIC_APP_URL || ''}${actionUrl}" class="button">
+                                    ${actionLabel || 'View Details'}
+                                </a>
+                            </div>
+                        ` : ''}
+                    `,
+                    fromType: 'INFO'
+                });
+                emailSent = emailResult.success;
+            } else {
+                console.log("ℹ️ User has email notifications disabled");
+            }
+        }
+
+        // 4. Handle Push Notification
         // Check if user has push notifications enabled
         if (!user.preferences?.pushNotifications) {
             console.log("ℹ️ User has push notifications disabled");
-            return { notification, pushSent: false };
+            return { notification, pushSent: false, emailSent };
         }
 
         const fcmTokens = user.getActiveFcmTokens();
 
         if (fcmTokens.length === 0) {
             console.log("ℹ️ No FCM tokens found for user");
-            return { notification, pushSent: false };
+            return { notification, pushSent: false, emailSent };
         }
 
-        // 3. Send push notification to all user's devices
+        // 5. Send push notification to all user's devices
         const pushPromises = fcmTokens.map((token) =>
             sendPushNotification(token, {
                 title,
@@ -107,12 +141,13 @@ export const sendNotification = async ({
         }
 
         console.log(
-            `✅ Notification sent to user ${recipientId}: ${successCount}/${fcmTokens.length} push delivered`
+            `✅ Notification sent to user ${recipientId}: ${successCount}/${fcmTokens.length} push, email: ${emailSent}`
         );
 
         return {
             notification,
             pushSent: successCount > 0,
+            emailSent,
             pushCount: successCount,
             totalTokens: fcmTokens.length,
         };
@@ -143,12 +178,14 @@ export const sendBulkNotification = async ({
     senderId = null,
     actionUrl = null,
     actionLabel = null,
+    email = false,
 }) => {
     try {
         const results = {
             total: recipientIds.length,
             created: 0,
             pushSent: 0,
+            emailSent: 0,
             errors: [],
         };
 
@@ -163,11 +200,15 @@ export const sendBulkNotification = async ({
                     senderId,
                     actionUrl,
                     actionLabel,
+                    email,
                 });
 
                 results.created++;
                 if (result.pushSent) {
                     results.pushSent++;
+                }
+                if (result.emailSent) {
+                    results.emailSent++;
                 }
             } catch (error) {
                 results.errors.push({
@@ -178,7 +219,7 @@ export const sendBulkNotification = async ({
         }
 
         console.log(
-            `✅ Bulk notification sent: ${results.created}/${results.total} created, ${results.pushSent} push delivered`
+            `✅ Bulk notification sent: ${results.created}/${results.total} created, ${results.pushSent} push, ${results.emailSent} email`
         );
 
         return results;
@@ -196,6 +237,7 @@ export const sendBulkNotification = async ({
  * @param {string} options.message - Notification message
  * @param {string} options.type - Notification type
  * @param {string} options.senderId - User ID of sender
+ * @param {boolean} options.email - Whether to send via email as well (optional)
  * @param {Object} options.filters - User filters (role, status, etc.)
  * @returns {Promise<Object>} Delivery summary
  */
@@ -204,6 +246,7 @@ export const broadcastNotification = async ({
     message,
     type = "info",
     senderId = null,
+    email = false,
     filters = {},
 }) => {
     try {
@@ -218,7 +261,7 @@ export const broadcastNotification = async ({
         const users = await User.find(query).select("_id");
         const recipientIds = users.map((u) => u._id.toString());
 
-        console.log(`📢 Broadcasting to ${recipientIds.length} users`);
+        console.log(`📢 Broadcasting to ${recipientIds.length} users (Email: ${email})`);
 
         // Use bulk send
         return await sendBulkNotification({
@@ -227,6 +270,7 @@ export const broadcastNotification = async ({
             message,
             type,
             senderId,
+            email,
         });
     } catch (error) {
         console.error("❌ Error broadcasting notification:", error);

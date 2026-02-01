@@ -18,12 +18,12 @@ const smtpConfig = {
     },
 };
 
-// Default Senders
+// Default Senders (Independent of SMTP_USER login)
 const SENDERS = {
-    INFO: `"LogaTech Info" <${process.env.SMTP_USER || 'info@logatech.net'}>`,
-    BILLING: `"LogaTech Billing" <${process.env.SMTP_BILLING_USER || process.env.SMTP_USER || 'billing@logatech.net'}>`,
-    SUPPORT: `"LogaTech Support" <${process.env.SMTP_SUPPORT_USER || process.env.SMTP_USER || 'support@logatech.net'}>`,
-    CONTACT: `"LogaTech Contact" <${process.env.SMTP_CONTACT_USER || process.env.SMTP_USER || 'contact@logatech.net'}>`,
+    INFO: `"LogaTech Info" <${process.env.SMTP_FROM_INFO || 'info@logatech.net'}>`,
+    BILLING: `"LogaTech Billing" <${process.env.SMTP_FROM_BILLING || 'billing@logatech.net'}>`,
+    SUPPORT: `"LogaTech Support" <${process.env.SMTP_FROM_SUPPORT || 'support@logatech.net'}>`,
+    CONTACT: `"LogaTech Contact" <${process.env.SMTP_FROM_CONTACT || 'contact@logatech.net'}>`,
 };
 
 /**
