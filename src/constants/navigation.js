@@ -8,6 +8,7 @@ import {
     Bell,
     Send,
     Settings,
+    Tag,
 } from "lucide-react";
 
 export const navigation = [
@@ -35,6 +36,18 @@ export const navigation = [
 
 // Admin-only navigation items
 export const adminNavigation = [
+    {
+        name: "Packages",
+        href: "/panel/packages",
+        icon: Blocks,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Promotions",
+        href: "/panel/promotions",
+        icon: Tag,
+        roles: ["admin", "manager"],
+    },
     {
         name: "Send Notification",
         href: "/panel/notifications/send",

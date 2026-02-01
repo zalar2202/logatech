@@ -131,10 +131,10 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: 'Invalid token' }, { status: 401 });
         }
 
-        // Check if user is admin
-        if (decoded.role !== 'admin') {
+        // Check if user is admin or manager
+        if (!['admin', 'manager'].includes(decoded.role)) {
             return NextResponse.json(
-                { success: false, message: 'Forbidden - Admin access required' },
+                { success: false, message: 'Forbidden - Insufficient permissions' },
                 { status: 403 }
             );
         }
@@ -160,6 +160,14 @@ export async function POST(request) {
             // JSON (without avatar)
             const body = await request.json();
             ({ name, email, password, role, status, phone } = body);
+        }
+
+        // Managers cannot create admins
+        if (decoded.role === 'manager' && role === 'admin') {
+            return NextResponse.json(
+                { success: false, message: 'Forbidden - Managers cannot create administrator accounts' },
+                { status: 403 }
+            );
         }
 
         // Validate required fields

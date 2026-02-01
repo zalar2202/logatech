@@ -77,9 +77,9 @@ export async function PUT(request, { params }) {
         }
 
         // Check if user is admin
-        if (decoded.role !== 'admin') {
+        if (!['admin', 'manager'].includes(decoded.role)) {
             return NextResponse.json(
-                { success: false, message: 'Forbidden - Admin access required' },
+                { success: false, message: 'Forbidden - Insufficient permissions' },
                 { status: 403 }
             );
         }
@@ -113,9 +113,24 @@ export async function PUT(request, { params }) {
             avatarFile = formData.get('avatar');
             removeAvatar = formData.get('removeAvatar') === 'true';
         } else {
-            // JSON (without avatar)
             const body = await request.json();
             ({ name, email, password, role, status, phone, removeAvatar } = body);
+        }
+
+        // Managers cannot update admins or promote to admin
+        if (decoded.role === 'manager') {
+            if (user.role === 'admin') {
+                return NextResponse.json(
+                    { success: false, message: 'Forbidden - Managers cannot modify administrator accounts' },
+                    { status: 403 }
+                );
+            }
+            if (role === 'admin') {
+                return NextResponse.json(
+                    { success: false, message: 'Forbidden - Managers cannot promote users to administrator' },
+                    { status: 403 }
+                );
+            }
         }
 
         // Update fields
@@ -201,9 +216,9 @@ export async function DELETE(request, { params }) {
         }
 
         // Check if user is admin
-        if (decoded.role !== 'admin') {
+        if (!['admin', 'manager'].includes(decoded.role)) {
             return NextResponse.json(
-                { success: false, message: 'Forbidden - Admin access required' },
+                { success: false, message: 'Forbidden - Insufficient permissions' },
                 { status: 403 }
             );
         }
@@ -227,6 +242,14 @@ export async function DELETE(request, { params }) {
 
         if (!user) {
             return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+        }
+
+        // Managers cannot delete admins
+        if (decoded.role === 'manager' && user.role === 'admin') {
+            return NextResponse.json(
+                { success: false, message: 'Forbidden - Managers cannot delete administrator accounts' },
+                { status: 403 }
+            );
         }
 
         // Delete avatar file if exists
