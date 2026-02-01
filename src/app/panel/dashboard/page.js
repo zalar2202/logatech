@@ -73,13 +73,13 @@ export default function DashboardPage() {
             hide: !["admin", "manager"].includes(user?.role),
         },
         {
-            title: "Companies",
+            title: "Clients",
             value: "0",
             change: "Coming Soon",
             icon: Building2,
             color: "green",
             gradient: "from-green-500 to-emerald-500",
-            link: "/panel/companies",
+            link: "/panel/clients",
         },
         {
             title: "Transactions",

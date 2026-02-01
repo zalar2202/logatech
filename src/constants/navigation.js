@@ -10,6 +10,7 @@ import {
     Settings,
     Tag,
     Mail,
+    Building2,
 } from "lucide-react";
 
 export const navigation = [
@@ -36,6 +37,12 @@ export const adminNavigation = [
         name: "User Management",
         href: "/panel/users",
         icon: Users,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Clients",
+        href: "/panel/clients",
+        icon: Building2,
         roles: ["admin", "manager"],
     },
     {
