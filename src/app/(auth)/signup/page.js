@@ -11,10 +11,13 @@ import { UserPlus, Shield, AlertCircle, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import axios from "axios";
+import { Captcha } from "@/components/forms/Captcha";
 
 export default function SignupPage() {
     const router = useRouter();
     const [error, setError] = useState("");
+    const [isCaptchaSolved, setIsCaptchaSolved] = useState(false);
+    const [captchaError, setCaptchaError] = useState("");
 
     const generatePassword = (setFieldValue) => {
         const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
@@ -29,6 +32,13 @@ export default function SignupPage() {
 
     const handleSubmit = async (values, { setSubmitting }) => {
         setError("");
+        setCaptchaError("");
+
+        if (!isCaptchaSolved) {
+            setCaptchaError("Please solve the security check correctly.");
+            setSubmitting(false);
+            return;
+        }
 
         try {
             const response = await axios.post("/api/auth/signup", {
@@ -214,6 +224,14 @@ export default function SignupPage() {
                                             autoComplete="new-password"
                                         />
                                     </div>
+
+                                    <Captcha 
+                                        error={captchaError}
+                                        onVerify={(solved) => {
+                                            setIsCaptchaSolved(solved);
+                                            if(solved) setCaptchaError("");
+                                        }}
+                                    />
 
                                     <Button
                                         type="submit"

@@ -11,11 +11,14 @@ import { loginSchema, loginInitialValues } from "@/schemas/auth.schema";
 import { LogIn, Shield, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { Captcha } from "@/components/forms/Captcha";
 
 export default function LoginPage() {
     const router = useRouter();
     const { login } = useAuth();
     const [error, setError] = useState("");
+    const [isCaptchaSolved, setIsCaptchaSolved] = useState(false);
+    const [captchaError, setCaptchaError] = useState("");
 
     useEffect(() => {
         // Check for error in URL
@@ -29,6 +32,13 @@ export default function LoginPage() {
 
     const handleSubmit = async (values, { setSubmitting }) => {
         setError("");
+        setCaptchaError("");
+
+        if (!isCaptchaSolved) {
+            setCaptchaError("Please solve the security check correctly.");
+            setSubmitting(false);
+            return;
+        }
 
         try {
             const result = await login(values.email, values.password);
@@ -191,6 +201,14 @@ export default function LoginPage() {
                                         label="Password"
                                         placeholder="Enter your password"
                                         autoComplete="current-password"
+                                    />
+
+                                    <Captcha 
+                                        error={captchaError}
+                                        onVerify={(solved) => {
+                                            setIsCaptchaSolved(solved);
+                                            if(solved) setCaptchaError("");
+                                        }}
                                     />
 
                                     <Button
