@@ -12,6 +12,9 @@ import { Plus, Edit, Trash2, Package as PackageIcon, Save, X } from "lucide-reac
 import { toast } from "sonner";
 import axios from "axios";
 import * as Yup from "yup";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { Clock, RefreshCw, Star } from "lucide-react";
 
 const PackageSchema = Yup.object().shape({
     name: Yup.string().required("Required"),
@@ -21,10 +24,18 @@ const PackageSchema = Yup.object().shape({
 });
 
 export default function PackagesPage() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPackage, setEditingPackage] = useState(null);
+
+    useEffect(() => {
+        if (!authLoading && (!user || !["admin", "manager"].includes(user.role))) {
+            router.push("/panel/dashboard");
+        }
+    }, [user, authLoading, router]);
 
     const fetchPackages = async () => {
         try {
@@ -82,6 +93,14 @@ export default function PackagesPage() {
         setIsModalOpen(true);
     };
 
+    if (authLoading || !user || !["admin", "manager"].includes(user.role)) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-primary)]"></div>
+            </div>
+        );
+    }
+
     return (
         <ContentWrapper>
             <div className="flex justify-between items-center mb-8">
@@ -89,9 +108,27 @@ export default function PackagesPage() {
                     <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Packages</h1>
                     <p className="text-[var(--color-text-secondary)]">Manage your service packages and pricing</p>
                 </div>
-                <Button onClick={openCreateModal} icon={<Plus size={18} />}>
-                    Add Package
-                </Button>
+                <div className="flex gap-3">
+                    {["admin", "manager"].includes(user.role) && (
+                        <Button 
+                            variant="secondary" 
+                            onClick={async () => {
+                                if(confirm("This will replace current design/dev/maintenance packages and all promotions with defaults. Continue?")) {
+                                    try {
+                                        await axios.post("/api/packages/seed");
+                                        toast.success("Data seeded!");
+                                        fetchPackages();
+                                    } catch(e) { toast.error("Seeding failed"); }
+                                }
+                            }}
+                        >
+                            Seed Base Data
+                        </Button>
+                    )}
+                    <Button onClick={openCreateModal} icon={<Plus size={18} />}>
+                        Add Package
+                    </Button>
+                </div>
             </div>
 
             {loading ? (
@@ -120,6 +157,19 @@ export default function PackagesPage() {
                                 <div className="mb-5">
                                     <span className="text-3xl font-bold text-[var(--color-primary)]">{pkg.startingPrice}</span>
                                     {pkg.priceRange && <span className="text-sm text-[var(--color-text-secondary)] ml-2">({pkg.priceRange})</span>}
+                                </div>
+
+                                <div className="space-y-2 mb-4">
+                                    {pkg.deliveryTime && (
+                                        <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
+                                            <Clock size={14} /> {pkg.deliveryTime}
+                                        </div>
+                                    )}
+                                    {pkg.revisions && (
+                                        <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
+                                            <RefreshCw size={14} /> {pkg.revisions}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <ul className="mb-6 space-y-2">
@@ -170,6 +220,9 @@ export default function PackagesPage() {
                         category: "design",
                         startingPrice: "",
                         priceRange: "",
+                        deliveryTime: "",
+                        revisions: "",
+                        badge: "",
                         description: "",
                         features: [],
                         isActive: true,
@@ -206,6 +259,13 @@ export default function PackagesPage() {
                                 <InputField name="startingPrice" label="Starting Price" placeholder="$800" required />
                                 <InputField name="priceRange" label="Price Range" placeholder="$800 - $1500" />
                             </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <InputField name="deliveryTime" label="Delivery Time" placeholder="e.g. 5-7 days" />
+                                <InputField name="revisions" label="Revisions" placeholder="e.g. 3 Revisions" />
+                            </div>
+
+                            <InputField name="badge" label="Badge (Optional)" placeholder="e.g. Most Popular" />
 
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-[var(--color-text-primary)]">Features (one per line)</label>

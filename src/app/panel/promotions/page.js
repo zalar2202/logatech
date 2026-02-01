@@ -12,6 +12,8 @@ import { Plus, Edit, Trash2, Tag, Calendar, Save, Percent } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import * as Yup from "yup";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 const PromotionSchema = Yup.object().shape({
     title: Yup.string().required("Required"),
@@ -22,10 +24,18 @@ const PromotionSchema = Yup.object().shape({
 });
 
 export default function PromotionsPage() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [promotions, setPromotions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPromotion, setEditingPromotion] = useState(null);
+
+    useEffect(() => {
+        if (!authLoading && (!user || !["admin", "manager"].includes(user.role))) {
+            router.push("/panel/dashboard");
+        }
+    }, [user, authLoading, router]);
 
     const fetchPromotions = async () => {
         try {
@@ -72,6 +82,14 @@ export default function PromotionsPage() {
             toast.error("Failed to delete");
         }
     };
+
+    if (authLoading || !user || !["admin", "manager"].includes(user.role)) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-primary)]"></div>
+            </div>
+        );
+    }
 
     return (
         <ContentWrapper>

@@ -23,11 +23,6 @@ export const navigation = [
         icon: Bell,
     },
     {
-        name: "User Management",
-        href: "/panel/users",
-        icon: Users,
-    },
-    {
         name: "Settings",
         href: "/panel/settings",
         icon: Settings,
@@ -36,6 +31,12 @@ export const navigation = [
 
 // Admin-only navigation items
 export const adminNavigation = [
+    {
+        name: "User Management",
+        href: "/panel/users",
+        icon: Users,
+        roles: ["admin", "manager"],
+    },
     {
         name: "Packages",
         href: "/panel/packages",

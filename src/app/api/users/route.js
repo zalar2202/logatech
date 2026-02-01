@@ -31,6 +31,14 @@ export async function GET(request) {
             return NextResponse.json({ success: false, message: 'Invalid token' }, { status: 401 });
         }
 
+        // Only admins and managers can list all users
+        if (!['admin', 'manager'].includes(decoded.role)) {
+            return NextResponse.json(
+                { success: false, message: 'Forbidden - Insufficient permissions' },
+                { status: 403 }
+            );
+        }
+
         // Connect to database
         await connectDB();
 

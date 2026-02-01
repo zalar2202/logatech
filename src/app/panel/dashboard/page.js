@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchUsers } from "@/features/users/usersSlice";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
@@ -18,19 +19,40 @@ import {
     Activity,
 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Dashboard Home Page
  * Displays overview statistics and quick actions
  */
 export default function DashboardPage() {
+    const { user } = useAuth();
     const dispatch = useAppDispatch();
     const { list: users, loading } = useAppSelector((state) => state.users);
+
+    const [counts, setCounts] = useState({ packages: 0, promotions: 0 });
 
     useEffect(() => {
         // Fetch users to display stats
         dispatch(fetchUsers({ page: 1, limit: 100 }));
-    }, [dispatch]);
+
+        // Fetch other stats
+        const fetchStats = async () => {
+            try {
+                const [pkgRes, promoRes] = await Promise.all([
+                    axios.get("/api/packages"),
+                    axios.get("/api/promotions?all=true")
+                ]);
+                setCounts({
+                    packages: pkgRes.data.data?.length || 0,
+                    promotions: promoRes.data.data?.length || 0
+                });
+            } catch (e) { console.error("Stats fetch error", e); }
+        };
+        if (user && ["admin", "manager"].includes(user.role)) {
+            fetchStats();
+        }
+    }, [dispatch, user]);
 
     // Calculate user statistics
     const totalUsers = users.length;
@@ -48,6 +70,7 @@ export default function DashboardPage() {
             color: "blue",
             gradient: "from-blue-500 to-cyan-500",
             link: "/panel/users",
+            hide: !["admin", "manager"].includes(user?.role),
         },
         {
             title: "Companies",
@@ -69,12 +92,23 @@ export default function DashboardPage() {
         },
         {
             title: "Packages",
-            value: "0",
-            change: "Coming Soon",
+            value: counts.packages,
+            change: "Customizable Packages",
             icon: Package,
             color: "orange",
             gradient: "from-orange-500 to-red-500",
             link: "/panel/packages",
+            hide: !["admin", "manager"].includes(user?.role),
+        },
+        {
+            title: "Promotions",
+            value: counts.promotions,
+            change: "Active Offers",
+            icon: Tag,
+            color: "pink",
+            gradient: "from-pink-500 to-rose-500",
+            link: "/panel/promotions",
+            hide: !["admin", "manager"].includes(user?.role),
         },
     ];
 
@@ -87,6 +121,7 @@ export default function DashboardPage() {
             link: "/panel/users",
             badge: `${totalUsers} users`,
             variant: "primary",
+            hide: !["admin", "manager"].includes(user?.role),
         },
         {
             title: "Payments",
@@ -97,12 +132,22 @@ export default function DashboardPage() {
             variant: "secondary",
         },
         {
+            title: "Packages",
+            description: "Manage service packages",
+            icon: Package,
+            link: "/panel/packages",
+            badge: "Active",
+            variant: "primary",
+            hide: !["admin", "manager"].includes(user?.role),
+        },
+        {
             title: "Promotions",
             description: "Manage promo codes",
             icon: Tag,
             link: "/panel/promotions",
-            badge: "Coming Soon",
-            variant: "secondary",
+            badge: "Active",
+            variant: "primary",
+            hide: !["admin", "manager"].includes(user?.role),
         },
     ];
 
@@ -125,7 +170,7 @@ export default function DashboardPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {stats.map((stat, index) => {
+                {stats.filter(s => !s.hide).map((stat, index) => {
                     const Icon = stat.icon;
                     return (
                         <Link key={index} href={stat.link}>
@@ -171,7 +216,7 @@ export default function DashboardPage() {
                             Quick Actions
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {quickActions.map((action, index) => {
+                            {quickActions.filter(a => !a.hide).map((action, index) => {
                                 const Icon = action.icon;
                                 return (
                                     <Link key={index} href={action.link}>
@@ -195,11 +240,12 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Recent Activity */}
-                <div>
-                    <Card>
-                        <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-4">
-                            Recent Users
-                        </h2>
+                {["admin", "manager"].includes(user?.role) && (
+                    <div>
+                        <Card>
+                            <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-4">
+                                Recent Users
+                            </h2>
                         {loading ? (
                             <div className="space-y-3">
                                 {[1, 2, 3, 4, 5].map((i) => (
@@ -253,8 +299,9 @@ export default function DashboardPage() {
                                 </div>
                             </Link>
                         )}
-                    </Card>
-                </div>
+                        </Card>
+                    </div>
+                )}
             </div>
 
             {/* System Status */}

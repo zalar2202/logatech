@@ -1,42 +1,39 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-
-const pricingTiers = [
-    {
-        type: "Marketing / Landing Page",
-        startingFrom: "$1,000",
-        range: "$1,000 – $2,500",
-    },
-    {
-        type: "Custom Content Site (CMS)",
-        startingFrom: "$2,500",
-        range: "$2,500 – $5,000",
-    },
-    {
-        type: "Web Application (MVP)",
-        startingFrom: "$5,000",
-        range: "$5,000 – $10,000",
-    },
-    {
-        type: "Full SaaS / Platform",
-        startingFrom: "$10,000+",
-        range: "$10,000 – $25,000+",
-    },
-];
-
-const pricingFactors = [
-    "Functionality complexity (Auth, Payments)",
-    "Third-party API integrations",
-    "Data migration needs",
-    "Real-time features (Chat, Notifications)",
-];
+import axios from "axios";
 
 /**
  * DevPricing - Investment overview section for Develop page
  */
 export default function DevPricing() {
     const { ref, isVisible } = useScrollAnimation();
+    const [packages, setPackages] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPackages = async () => {
+            try {
+                const res = await axios.get("/api/packages?category=development");
+                if (res.data.success) {
+                    setPackages(res.data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch dev packages:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPackages();
+    }, []);
+
+    const pricingFactors = [
+        "Functionality complexity (Auth, Payments)",
+        "Third-party API integrations",
+        "Data migration needs",
+        "Real-time features (Chat, Notifications)",
+    ];
 
     return (
         <section id="pricing" className="section pricing-section">
@@ -46,24 +43,36 @@ export default function DevPricing() {
             </p>
             <div ref={ref} className={`pricing-content ${isVisible ? "visible" : ""}`}>
                 <div className="pricing-table-wrapper">
-                    <table className="pricing-table">
-                        <thead>
-                            <tr>
-                                <th>Project Type</th>
-                                <th>Starting From</th>
-                                <th>Typical Range</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {pricingTiers.map((tier, index) => (
-                                <tr key={index} style={{ transitionDelay: `${index * 100}ms` }}>
-                                    <td className="pricing-type">{tier.type}</td>
-                                    <td className="pricing-starting">{tier.startingFrom}</td>
-                                    <td className="pricing-range">{tier.range}</td>
+                    {loading ? (
+                        <div className="flex justify-center py-10">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+                        </div>
+                    ) : (
+                        <table className="pricing-table">
+                            <thead>
+                                <tr>
+                                    <th>Project Type</th>
+                                    <th>Starting From</th>
+                                    <th>Typical Range</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {packages.length > 0 ? (
+                                    packages.map((tier, index) => (
+                                        <tr key={tier._id} style={{ transitionDelay: `${index * 100}ms` }}>
+                                            <td className="pricing-type">{tier.name}</td>
+                                            <td className="pricing-starting">{tier.startingPrice}</td>
+                                            <td className="pricing-range">{tier.priceRange || "Custom Quote"}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="3" className="text-center py-4">No packages available. Contact us for a technical quote!</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
 
                 <div className="pricing-factors">

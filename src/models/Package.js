@@ -26,6 +26,18 @@ const PackageSchema = new mongoose.Schema(
                 trim: true,
             },
         ],
+        deliveryTime: {
+            type: String,
+            trim: true,
+        },
+        revisions: {
+            type: String,
+            trim: true,
+        },
+        badge: {
+            type: String,
+            trim: true,
+        },
         description: {
             type: String,
             trim: true,
