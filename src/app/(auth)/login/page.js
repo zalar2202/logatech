@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form } from "formik";
 import { InputField } from "@/components/forms/InputField";
@@ -15,6 +15,16 @@ export default function LoginPage() {
     const router = useRouter();
     const { login } = useAuth();
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        // Check for error in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorParam = urlParams.get("error");
+        if (errorParam) {
+            setError(errorParam);
+            toast.error(errorParam);
+        }
+    }, []);
 
     const handleSubmit = async (values, { setSubmitting }) => {
         setError("");
@@ -195,6 +205,33 @@ export default function LoginPage() {
                                 </Form>
                             )}
                         </Formik>
+
+                        {/* Divider */}
+                        <div className="my-6 flex items-center gap-4">
+                            <div className="h-px flex-1 bg-[var(--color-border)]"></div>
+                            <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">
+                                Or continue with
+                            </span>
+                            <div className="h-px flex-1 bg-[var(--color-border)]"></div>
+                        </div>
+
+                        {/* Google Login Button */}
+                        <Button
+                            variant="secondary"
+                            fullWidth
+                            size="lg"
+                            className="bg-white border border-gray-300 hover:bg-gray-50 flex items-center justify-center gap-3 py-3"
+                            onClick={() => window.location.href = '/api/auth/google'}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M23.5 12.235c0-.822-.066-1.644-.206-2.441H12v4.628h6.456a5.57 5.57 0 0 1-2.407 3.65v3.016h3.882c2.269-2.087 3.569-5.161 3.569-8.853z" fill="#4285F4"/>
+                                <path d="M12 24c3.24 0 5.957-1.071 7.942-2.912l-3.882-3.016c-1.077.729-2.464 1.156-4.06 1.156-3.114 0-5.751-2.099-6.696-4.918H1.423v3.111C3.401 21.365 7.426 24 12 24z" fill="#34A853"/>
+                                <path d="M5.304 14.31a7.197 7.197 0 0 1 0-4.619V6.58H1.423a12.003 12.003 0 0 0 0 10.84l3.881-3.11z" fill="#FBBC04"/>
+                                <path d="M12 4.75c1.763 0 3.344.604 4.588 1.789l3.447-3.447C17.952 1.189 15.234 0 12 0 7.426 0 3.401 2.635 1.423 6.58L5.304 9.69C6.249 6.871 8.886 4.75 12 4.75z" fill="#EA4335"/>
+                            </svg>
+                            <span className="text-gray-700 font-medium">Continue with Google</span>
+                        </Button>
+
 
                         {/* Security Note */}
                         <div className="mt-6 text-center">
