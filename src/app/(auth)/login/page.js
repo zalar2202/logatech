@@ -69,16 +69,16 @@ export default function LoginPage() {
 
     return (
         <div className="w-full max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-4 items-center">
                 {/* Left Side - Branding */}
                 <div className="hidden md:block">
                     <div className="text-center md:text-left">
-                        <div
-                            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6"
-                            style={{ backgroundColor: "var(--color-primary)" }}
-                        >
-                            <Shield size={40} style={{ color: "white" }} />
-                        </div>
+                            <div
+                                className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4"
+                                style={{ backgroundColor: "var(--color-primary)" }}
+                            >
+                                <Shield size={32} style={{ color: "white" }} />
+                            </div>
 
                         <h1
                             className="text-4xl font-bold mb-4"
@@ -129,7 +129,7 @@ export default function LoginPage() {
 
                 {/* Right Side - Login Form */}
                 <Card className="w-full">
-                    <div className="p-8">
+                    <div className="p-6">
                         {/* Mobile Logo */}
                         <div className="md:hidden text-center mb-6">
                             <div
@@ -147,14 +147,14 @@ export default function LoginPage() {
                         </div>
 
                         <h2
-                            className="text-2xl font-bold mb-2 hidden md:block"
+                            className="text-xl font-bold mb-1 hidden md:block"
                             style={{ color: "var(--color-text-primary)" }}
                         >
                             Welcome Back
                         </h2>
 
                         <p
-                            className="mb-6 hidden md:block"
+                            className="mb-4 hidden md:block"
                             style={{ color: "var(--color-text-secondary)" }}
                         >
                             Sign in to your admin account
@@ -186,7 +186,7 @@ export default function LoginPage() {
                             onSubmit={handleSubmit}
                         >
                             {({ isSubmitting }) => (
-                                <Form className="space-y-6">
+                                <Form className="space-y-4">
                                     <InputField
                                         name="email"
                                         type="email"

@@ -502,80 +502,7 @@ export default function SettingsPage() {
         );
     };
 
-    // System Tab Content (Admin/Manager Only)
-    const SystemTab = () => {
-        const [testing, setTesting] = useState(false);
-
-        const handleTestEmail = async () => {
-            setTesting(true);
-            try {
-                const response = await axios.post("/api/test-email", {
-                    subject: "System Connectivity Test",
-                    body: "If you are reading this, your SMTP configuration on Coolify/Local environment is working perfectly!"
-                });
-                if (response.data.success) {
-                    toast.success("Test email sent! Please check your inbox.");
-                } else {
-                    toast.error(response.data.message || "Failed to send test email");
-                }
-            } catch (error) {
-                console.error("Email test error:", error);
-                toast.error(error.response?.data?.message || "Email system not configured or connection failed");
-            } finally {
-                setTesting(false);
-            }
-        };
-
-        return (
-            <div className="space-y-6">
-                <Card className="p-6">
-                    <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
-                        <Mail className="w-5 h-5" />
-                        Email System Connection
-                    </h3>
-                    <p className="text-[var(--color-text-secondary)] mb-6">
-                        Verify that your SMTP settings (SMTP_HOST, SMTP_USER, SMTP_PASS) are correctly configured in your environment variables.
-                    </p>
-                    
-                    <div className="p-4 bg-[var(--color-background-secondary)] rounded-lg border border-[var(--color-border)] mb-6">
-                        <p className="text-sm font-mono text-[var(--color-text-primary)]">
-                            SMTP Status: <span className="text-blue-500 font-bold">READY</span>
-                        </p>
-                        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
-                            Current sender: {user.email} (as test recipient)
-                        </p>
-                    </div>
-
-                    <Button 
-                        onClick={handleTestEmail} 
-                        loading={testing}
-                        disabled={testing}
-                        icon={<Mail className="w-4 h-4" />}
-                    >
-                        Send Test Email
-                    </Button>
-                </Card>
-
-                <Card className="p-6">
-                    <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
-                        <Terminal className="w-5 h-5" />
-                        Developer Tools
-                    </h3>
-                    <p className="text-[var(--color-text-secondary)] mb-4">
-                        Quick access to system maintenance tools.
-                    </p>
-                    <div className="flex gap-3">
-                        <Button 
-                            variant="secondary" 
-                            onClick={() => window.open("/api/test-db", "_blank")}
-                        >
-                            Test DB Connection
-                        </Button>
-                    </div>
-                </Card>
-            </div>
-        );
-    };
+    // System Tab content removed
 
     // Tab configuration
     const tabs = [
@@ -597,13 +524,7 @@ export default function SettingsPage() {
             icon: <Shield className="w-4 h-4" />,
             content: <AccountTab />,
         },
-        // Add System tab for Admins and Managers
-        ...(user && ["admin", "manager"].includes(user.role) ? [{
-            id: "system",
-            label: "System",
-            icon: <Terminal className="w-4 h-4" />,
-            content: <SystemTab />,
-        }] : []),
+        // System tab removed as per request
     ];
 
     return (
