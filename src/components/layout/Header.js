@@ -7,9 +7,11 @@ import { Menu, User, ChevronDown, LogOut, Settings, Home, ShoppingCart } from "l
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { NotificationDropdown } from "@/components/layout/NotificationDropdown";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 
 export const Header = ({ onMenuClick, sidebarCollapsed }) => {
     const { user, logout } = useAuth();
+    const { cartCount } = useCart();
     const router = useRouter();
     const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -80,6 +82,11 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                             title="My Cart"
                         >
                             <ShoppingCart className="w-5 h-5" />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-indigo-600 rounded-full border-2 border-[var(--color-background-elevated)] leading-none transition-all animate-in zoom-in">
+                                    {cartCount}
+                                </span>
+                            )}
                         </Link>
                     )}
                     <NotificationDropdown />

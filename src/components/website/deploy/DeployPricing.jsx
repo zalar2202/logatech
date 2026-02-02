@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ShoppingCart } from "lucide-react";
 import SmartCTA from "@/components/website/shared/SmartCTA";
+import { useCart } from "@/contexts/CartContext";
 
 const pricingFactors = [
     "Cloud Provider Choice (AWS vs Vercel)",
@@ -19,6 +20,7 @@ const pricingFactors = [
 export default function DeployPricing() {
     const { ref, isVisible } = useScrollAnimation();
     const { user } = useAuth();
+    const { refreshCart } = useCart();
     const router = useRouter();
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -44,6 +46,7 @@ export default function DeployPricing() {
                     onClick: () => router.push("/panel/cart")
                 }
             });
+            refreshCart();
         } catch (error) {
             toast.error("Failed to add to cart");
         } finally {

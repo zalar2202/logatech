@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import WebsiteThemeToggle from "@/components/website/layout/WebsiteThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { ShoppingCart, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
 
 /**
@@ -17,6 +18,7 @@ export default function WebsiteHeader() {
     const dropdownRef = useRef(null);
     const pathname = usePathname();
     const { user } = useAuth();
+    const { cartCount } = useCart();
 
     const isHomepage = pathname === "/";
 
@@ -199,8 +201,13 @@ export default function WebsiteHeader() {
                         {user ? (
                             <>
                                 {user.role === 'user' && (
-                                    <Link href="/panel/cart" className="navbar-cart-link" title="My Cart">
+                                    <Link href="/panel/cart" className="navbar-cart-link relative" title="My Cart">
                                         <ShoppingCart className="w-5 h-5" />
+                                        {cartCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-indigo-600 rounded-full border-2 border-[var(--color-background)] leading-none">
+                                                {cartCount}
+                                            </span>
+                                        )}
                                     </Link>
                                 )}
                                 <Link href="/panel/dashboard" className="loga-btn nav-dashboard-btn" title="Go to Dashboard">

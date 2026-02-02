@@ -8,10 +8,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ShoppingCart } from "lucide-react";
 import SmartCTA from "@/components/website/shared/SmartCTA";
+import { useCart } from "@/contexts/CartContext";
 
 export default function MaintainPricing() {
     const { ref, isVisible } = useScrollAnimation();
     const { user } = useAuth();
+    const { refreshCart } = useCart();
     const router = useRouter();
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -37,6 +39,7 @@ export default function MaintainPricing() {
                     onClick: () => router.push("/panel/cart")
                 }
             });
+            refreshCart();
         } catch (error) {
             toast.error("Failed to add to cart");
         } finally {

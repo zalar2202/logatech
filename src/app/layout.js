@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { StoreProvider } from "@/lib/StoreProvider";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { CartProvider } from "@/contexts/CartContext";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -64,7 +65,9 @@ export default function RootLayout({ children }) {
                 <ThemeProvider>
                     <AuthProvider>
                         <StoreProvider>
-                            <NotificationProvider>{children}</NotificationProvider>
+                            <CartProvider>
+                                <NotificationProvider>{children}</NotificationProvider>
+                            </CartProvider>
                             <Toaster position="top-right" richColors />
                         </StoreProvider>
                     </AuthProvider>
