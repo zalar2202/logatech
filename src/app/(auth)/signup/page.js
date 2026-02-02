@@ -7,7 +7,7 @@ import { InputField } from "@/components/forms/InputField";
 import { Button } from "@/components/common/Button";
 import { Card } from "@/components/common/Card";
 import { signupSchema, signupInitialValues } from "@/schemas/auth.schema";
-import { UserPlus, Shield, AlertCircle, Wand2 } from "lucide-react";
+import { UserPlus, Shield, AlertCircle, Wand2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import axios from "axios";
@@ -123,8 +123,17 @@ export default function SignupPage() {
                 </div>
 
                 {/* Right Side - Signup Form */}
-                <Card className="w-full">
+                <Card className="w-full relative">
                     <div className="p-8">
+                        {/* Homepage Button */}
+                        <Link 
+                            href="/" 
+                            className="absolute top-4 right-6 flex items-center gap-1 text-sm font-medium transition-colors hover:opacity-80"
+                            style={{ color: "var(--color-primary)" }}
+                        >
+                            <ArrowLeft size={16} />
+                            Homepage
+                        </Link>
                         {/* Mobile Logo */}
                         <div className="md:hidden text-center mb-6">
                             <div

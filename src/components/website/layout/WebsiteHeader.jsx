@@ -215,11 +215,8 @@ export default function WebsiteHeader() {
                             </>
                         ) : (
                             <>
-                                <Link href="/login" className="loga-link-btn" title="Login to your account">
-                                    <LogIn className="w-4 h-4 mr-1" /> Login
-                                </Link>
-                                <Link href="/signup" className="loga-btn nav-signup-btn" title="Create a new account">
-                                    <UserPlus className="w-4 h-4 mr-1" /> Sign Up
+                                <Link href="/login" className="loga-btn nav-signup-btn" title="Login or Create account">
+                                    <UserPlus className="w-4 h-4 mr-1" /> Login / Sign Up
                                 </Link>
                                 <Link
                                     href="/login"
@@ -271,17 +268,10 @@ export default function WebsiteHeader() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="loga-btn mobile-cta-btn secondary"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    Login
-                                </Link>
-                                <Link
-                                    href="/signup"
                                     className="loga-btn mobile-cta-btn"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
-                                    Sign Up
+                                    Login / Sign Up
                                 </Link>
                             </>
                         )}
