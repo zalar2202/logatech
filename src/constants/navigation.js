@@ -17,6 +17,7 @@ import {
     Activity,
     ShoppingCart,
     Store,
+    Bot,
 } from "lucide-react";
 
 export const navigation = [
@@ -106,6 +107,12 @@ export const adminNavigation = [
         name: "Email Marketing",
         href: "/panel/marketing/email",
         icon: Mail,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "AI Assistant",
+        href: "/panel/admin/ai-assistant",
+        icon: Bot,
         roles: ["admin", "manager"],
     },
 ];

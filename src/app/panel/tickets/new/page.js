@@ -42,17 +42,24 @@ export default function NewTicketPage() {
     return (
         <ContentWrapper>
             <div className="max-w-3xl mx-auto">
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: "var(--color-text-primary)" }}>
-                            <Ticket className="w-6 h-6 text-purple-600" />
+                        <h1 className="text-3xl font-bold flex items-center gap-3 tracking-tight" style={{ color: "var(--color-text-primary)" }}>
+                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                <Ticket className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                            </div>
                             Open New Ticket
                         </h1>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-[var(--color-text-secondary)] mt-2">
                             Tell us what's on your mind and we'll get back to you as soon as possible.
                         </p>
                     </div>
-                    <Button variant="secondary" icon={<ArrowLeft className="w-4 h-4" />} onClick={() => router.back()}>
+                    <Button 
+                        variant="secondary" 
+                        icon={<ArrowLeft className="w-4 h-4" />} 
+                        onClick={() => router.back()}
+                        className="w-full md:w-auto"
+                    >
                         Back
                     </Button>
                 </div>

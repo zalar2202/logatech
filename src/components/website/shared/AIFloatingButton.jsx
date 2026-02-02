@@ -1,0 +1,204 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { Bot, X, Send, MessageSquare, Sparkles } from "lucide-react";
+import axios from "axios";
+
+export default function AIFloatingButton() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [settings, setSettings] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [showGreeting, setShowGreeting] = useState(false);
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const { data } = await axios.get("/api/admin/ai-assistant");
+                if (data.success && data.data && data.data.isActive) {
+                    setSettings(data.data);
+                    setMessages([{ role: 'assistant', content: data.data.welcomeMessage }]);
+                    // Show greeting bubble after 3 seconds
+                    setTimeout(() => setShowGreeting(true), 3000);
+                }
+            } catch (error) {
+                console.error("Failed to load AI settings:", error);
+            }
+        };
+        fetchSettings();
+    }, []);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
+
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if (!input.trim() || loading) return;
+
+        const userMessage = input.trim();
+        setInput("");
+        setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+        setLoading(true);
+        setShowGreeting(false);
+
+        try {
+            const { data } = await axios.post(settings.webhookUrl, {
+                message: userMessage,
+                history: messages.slice(-5) // Send last 5 messages for context if needed
+            });
+
+            // Assuming n8n returns { output: "..." } or similar
+            const botResponse = data.output || data.message || data.text || "I'm processing your request...";
+            setMessages(prev => [...prev, { role: 'assistant', content: botResponse }]);
+        } catch (error) {
+            console.error("AI Chat Error:", error);
+            setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I'm having trouble connecting right now. Please try again later." }]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!settings || !settings.isActive) return null;
+
+    const Icon = settings.buttonIcon === 'message' ? MessageSquare : settings.buttonIcon === 'spark' ? Sparkles : Bot;
+
+    return (
+        <div className={`fixed z-[9999] transition-all duration-500 ease-in-out ${settings.position === 'bottom-left' ? 'left-6' : 'right-6'} bottom-6`}>
+            {/* Chat Window */}
+            <div className={`
+                absolute bottom-20 ${settings.position === 'bottom-left' ? 'left-0' : 'right-0'}
+                w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)]
+                bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden
+                flex flex-col border border-gray-100 dark:border-gray-800
+                transition-all duration-500 transform
+                ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}
+            `}>
+                {/* Header */}
+                <div 
+                    className="p-6 text-white flex items-center justify-between"
+                    style={{ background: `linear-gradient(135deg, ${settings.primaryColor} 0%, #7c3aed 100%)` }}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                            <Bot className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-lg leading-tight">{settings.title}</h3>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">AI Online</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                    {messages.map((msg, i) => (
+                        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}>
+                            <div className={`
+                                max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed
+                                ${msg.role === 'user' 
+                                    ? 'bg-indigo-600 text-white rounded-tr-none shadow-lg shadow-indigo-200 dark:shadow-none' 
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none border border-gray-200/50 dark:border-gray-700'}
+                            `}>
+                                {msg.content}
+                            </div>
+                        </div>
+                    ))}
+                    {loading && (
+                        <div className="flex justify-start animate-fade-in">
+                            <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none">
+                                <span className="flex gap-1">
+                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+
+                {/* Input Area */}
+                <form onSubmit={handleSend} className="p-6 border-t dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
+                    <div className="relative flex items-center gap-2">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Type your message..."
+                            className="w-full bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl px-5 py-3 pr-12 text-sm focus:outline-none focus:border-indigo-500 transition-all dark:text-white"
+                        />
+                        <button 
+                            type="submit" 
+                            disabled={!input.trim() || loading}
+                            className="absolute right-2 p-2 text-indigo-600 hover:scale-110 disabled:opacity-50 disabled:scale-100 transition-all"
+                        >
+                            <Send className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <p className="text-[10px] text-center text-gray-400 mt-3 font-medium">Powered by Loga AI Engine</p>
+                </form>
+            </div>
+
+            {/* Greeting Prompt */}
+            {!isOpen && showGreeting && (
+                <div 
+                    className={`
+                        absolute bottom-20 ${settings.position === 'bottom-left' ? 'left-0' : 'right-0'}
+                        bg-white dark:bg-gray-900 shadow-2xl rounded-2xl p-4 border border-indigo-100 dark:border-indigo-900/30
+                        w-[220px] animate-fade-in-up cursor-pointer hover:shadow-indigo-500/10 transition-all
+                    `}
+                    onClick={() => {
+                        setIsOpen(true);
+                        setShowGreeting(false);
+                    }}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600">
+                            <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">AI Support</p>
+                            <p className="text-xs font-semibold dark:text-white truncate">How can I help you today?</p>
+                        </div>
+                    </div>
+                    <button 
+                        className="absolute -top-2 -right-2 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-md flex items-center justify-center text-gray-400 hover:text-red-500"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowGreeting(false);
+                        }}
+                    >
+                        <X className="w-3 h-3" />
+                    </button>
+                </div>
+            )}
+
+            {/* Floating Toggle Button */}
+            <button
+                onClick={() => {
+                    setIsOpen(!isOpen);
+                    setShowGreeting(false);
+                }}
+                className={`
+                    w-16 h-16 rounded-full flex items-center justify-center shadow-2xl 
+                    transition-all duration-300 transform hover:scale-110 active:scale-95
+                    ${isOpen ? 'rotate-90' : 'rotate-0'}
+                `}
+                style={{ background: `linear-gradient(135deg, ${settings.primaryColor} 0%, #7c3aed 100%)` }}
+            >
+                {isOpen ? <X className="w-7 h-7 text-white" /> : <Icon className="w-8 h-8 text-white animate-float" />}
+            </button>
+        </div>
+    );
+}
