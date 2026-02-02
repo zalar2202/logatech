@@ -12,7 +12,7 @@ import { SelectField } from "@/components/forms/SelectField";
 import { TextareaField } from "@/components/forms/TextareaField";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { toast } from "sonner";
-import { FileText, Plus, Search, Trash2, Edit, Download, MoreVertical, CheckCircle, Clock, XCircle } from "lucide-react";
+import { FileText, Plus, Search, Trash2, Edit, Download, MoreVertical, CheckCircle, Clock, XCircle, Send, Mail } from "lucide-react";
 import * as Yup from "yup";
 
 const invoiceSchema = Yup.object().shape({
@@ -41,6 +41,7 @@ export default function InvoicesPage() {
     
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [sendingId, setSendingId] = useState(null);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
 
     useEffect(() => {
@@ -102,6 +103,25 @@ export default function InvoicesPage() {
             fetchInvoices();
         } catch (error) {
             toast.error("Failed to delete invoice");
+        }
+    };
+
+    const handleSendInvoice = async (inv) => {
+        if (!inv.client?.email) {
+            toast.error("Client has no email address");
+            return;
+        }
+        setSendingId(inv._id);
+        try {
+            const { data } = await axios.post(`/api/invoices/${inv._id}/send`);
+            if (data.success) {
+                toast.success(data.message || "Invoice sent!");
+                fetchInvoices();
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.error || "Failed to send invoice");
+        } finally {
+            setSendingId(null);
         }
     };
 
@@ -195,6 +215,14 @@ export default function InvoicesPage() {
                                         </td>
                                         <td className="p-4">
                                             <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); handleSendInvoice(inv); }} 
+                                                    disabled={sendingId === inv._id}
+                                                    className="p-1.5 rounded hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 transition-colors disabled:opacity-50"
+                                                    title="Send to client"
+                                                >
+                                                    {sendingId === inv._id ? <span className="animate-spin">⏳</span> : <Mail className="w-4 h-4" />}
+                                                </button>
                                                 <button onClick={() => openEditModal(inv)} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 transition-colors">
                                                     <Edit className="w-4 h-4" />
                                                 </button>

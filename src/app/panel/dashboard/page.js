@@ -17,6 +17,7 @@ import {
     Tag,
     TrendingUp,
     Activity,
+    Ticket,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,15 +40,19 @@ export default function DashboardPage() {
         // Fetch other stats
         const fetchStats = async () => {
             try {
-                const [pkgRes, promoRes, clientRes] = await Promise.all([
+                const [pkgRes, promoRes, clientRes, payRes, ticketRes] = await Promise.all([
                     axios.get("/api/packages"),
                     axios.get("/api/promotions?all=true"),
-                    axios.get("/api/clients")
+                    axios.get("/api/clients"),
+                    axios.get("/api/payments"),
+                    axios.get("/api/tickets")
                 ]);
                 setCounts({
                     packages: pkgRes.data.data?.length || 0,
                     promotions: promoRes.data.data?.length || 0,
-                    clients: clientRes.data.data?.length || 0
+                    clients: clientRes.data.data?.length || 0,
+                    payments: payRes.data.data?.length || 0,
+                    tickets: ticketRes.data.data?.filter(t => !['resolved', 'closed'].includes(t.status))?.length || 0
                 });
             } catch (e) { console.error("Stats fetch error", e); }
         };
@@ -84,13 +89,13 @@ export default function DashboardPage() {
             link: "/panel/clients",
         },
         {
-            title: "Transactions",
-            value: "0",
-            change: "Coming Soon",
+            title: "Payments",
+            value: counts.payments || "0",
+            change: "View Transactions",
             icon: Receipt,
             color: "purple",
             gradient: "from-purple-500 to-pink-500",
-            link: "/panel/transactions",
+            link: "/panel/payments",
         },
         {
             title: "Packages",
@@ -110,6 +115,16 @@ export default function DashboardPage() {
             color: "pink",
             gradient: "from-pink-500 to-rose-500",
             link: "/panel/promotions",
+            hide: !["admin", "manager"].includes(user?.role),
+        },
+        {
+            title: "Open Tickets",
+            value: counts.tickets || 0,
+            change: "Support Requests",
+            icon: Ticket,
+            color: "indigo",
+            gradient: "from-indigo-500 to-purple-500",
+            link: "/panel/tickets",
             hide: !["admin", "manager"].includes(user?.role),
         },
     ];

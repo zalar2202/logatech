@@ -12,6 +12,8 @@ import {
     Mail,
     Building2,
     FileText,
+    CreditCard,
+    Ticket,
 } from "lucide-react";
 
 export const navigation = [
@@ -53,6 +55,18 @@ export const adminNavigation = [
         roles: ["admin", "manager"],
     },
     {
+        name: "Payments",
+        href: "/panel/payments",
+        icon: CreditCard,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Support Tickets",
+        href: "/panel/tickets",
+        icon: Ticket,
+        roles: ["admin", "manager"],
+    },
+    {
         name: "Packages",
         href: "/panel/packages",
         icon: Blocks,
@@ -68,7 +82,7 @@ export const adminNavigation = [
         name: "Send Notification",
         href: "/panel/notifications/send",
         icon: Send,
-        roles: ["admin", "manager"], // Only visible to admin and manager
+        roles: ["admin", "manager"],
     },
     {
         name: "Email Marketing",
