@@ -8,12 +8,14 @@ export async function GET(request, { params }) {
     try {
         await dbConnect();
         
+        const { id } = await params; // Await params for Next.js 15+
+
         const user = await verifyAuth(request);
         if (!user || !['admin', 'manager'].includes(user.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const client = await Client.findById(params.id).populate('linkedUser', 'name email avatar');
+        const client = await Client.findById(id).populate('linkedUser', 'name email avatar');
         
         if (!client) {
             return NextResponse.json({ error: 'Client not found' }, { status: 404 });
@@ -30,6 +32,8 @@ export async function PUT(request, { params }) {
     try {
         await dbConnect();
 
+        const { id } = await params; // Await params for Next.js 15+
+
         const user = await verifyAuth(request);
         if (!user || !['admin', 'manager'].includes(user.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
@@ -43,7 +47,7 @@ export async function PUT(request, { params }) {
         }
 
         const client = await Client.findByIdAndUpdate(
-            params.id,
+            id,
             { $set: body },
             { new: true, runValidators: true }
         ).populate('linkedUser', 'name email');
@@ -68,12 +72,14 @@ export async function DELETE(request, { params }) {
     try {
         await dbConnect();
 
+        const { id } = await params; // Await params for Next.js 15+
+
         const user = await verifyAuth(request);
         if (!user || !['admin', 'manager'].includes(user.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const client = await Client.findByIdAndDelete(params.id);
+        const client = await Client.findByIdAndDelete(id);
 
         if (!client) {
             return NextResponse.json({ error: 'Client not found' }, { status: 404 });
