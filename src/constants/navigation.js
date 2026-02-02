@@ -14,6 +14,7 @@ import {
     FileText,
     CreditCard,
     Ticket,
+    Activity,
 } from "lucide-react";
 
 export const navigation = [
@@ -21,6 +22,16 @@ export const navigation = [
         name: "Dashboard",
         href: "/panel/dashboard",
         icon: LayoutDashboard,
+    },
+    {
+        name: "My Services",
+        href: "/panel/services",
+        icon: Activity,
+    },
+    {
+        name: "Support Tickets",
+        href: "/panel/tickets",
+        icon: Ticket,
     },
     {
         name: "Notifications",
@@ -58,12 +69,6 @@ export const adminNavigation = [
         name: "Payments",
         href: "/panel/payments",
         icon: CreditCard,
-        roles: ["admin", "manager"],
-    },
-    {
-        name: "Support Tickets",
-        href: "/panel/tickets",
-        icon: Ticket,
         roles: ["admin", "manager"],
     },
     {
