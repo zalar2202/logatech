@@ -83,14 +83,17 @@ export default function ClientsPage() {
     const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         try {
             if (selectedClient) {
-                // Update (TODO: Implement PUT)
-                // For now, we only have POST implemented in the provided snippet, 
-                // but usually you'd have a dynamic route [id] or handle PUT in the main route.
-                // I'll assume POST for create. If Edit is needed, I'd need to update the API.
-                // Since I only made GET/POST in API, I'll stick to Create for now or add PUT quickly.
-                toast.info("Edit functionality coming soon (API pending)");
+                // Update Client
+                const { data } = await axios.put(`/api/clients/${selectedClient._id}`, values);
+                if (data.success) {
+                    toast.success("Client updated successfully");
+                    fetchClients();
+                    setIsModalOpen(false);
+                    // Don't reset form on edit success in case they want to re-open, 
+                    // but since we close modal, it's fine.
+                }
             } else {
-                // Create
+                // Create Client
                 const { data } = await axios.post("/api/clients", values);
                 if (data.success) {
                     toast.success("Client created successfully");
@@ -100,6 +103,7 @@ export default function ClientsPage() {
                 }
             }
         } catch (error) {
+            console.error(error);
             toast.error(error.response?.data?.error || "Operation failed");
         } finally {
             setSubmitting(false);
