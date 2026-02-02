@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ShoppingCart } from "lucide-react";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 /**
  * DevPricing - Investment overview section for Develop page
@@ -148,9 +149,10 @@ export default function DevPricing() {
                 </div>
 
                 <div className="pricing-cta">
-                    <a href="#contact" className="loga-btn">
-                        Get a Technical Quote →
-                    </a>
+                    <SmartCTA 
+                        label="Get a Technical Quote" 
+                        className="loga-btn" 
+                    />
                 </div>
             </div>
         </section>

@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ShoppingCart } from "lucide-react";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 const pricingFactors = [
     "Cloud Provider Choice (AWS vs Vercel)",
@@ -141,9 +142,10 @@ export default function DeployPricing() {
                 </div>
 
                 <div className="pricing-cta">
-                    <a href="#contact" className="loga-btn">
-                        Get a Free Architecture Review →
-                    </a>
+                    <SmartCTA 
+                        label="Get a Free Architecture Review" 
+                        className="loga-btn" 
+                    />
                 </div>
             </div>
         </section>

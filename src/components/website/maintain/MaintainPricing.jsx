@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ShoppingCart } from "lucide-react";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 export default function MaintainPricing() {
     const { ref, isVisible } = useScrollAnimation();
@@ -109,9 +110,11 @@ export default function MaintainPricing() {
                                         </button>
                                     )}
                                     {!user && (
-                                        <a href="#contact" className="loga-btn" style={{ marginTop: '24px', textAlign: 'center' }}>
-                                            Subscribe Now
-                                        </a>
+                                        <SmartCTA 
+                                            label="Subscribe Now" 
+                                            className="loga-btn" 
+                                            style={{ marginTop: '24px', textAlign: 'center' }}
+                                        />
                                     )}
                                 </div>
                             ))

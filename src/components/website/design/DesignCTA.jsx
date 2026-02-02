@@ -1,6 +1,7 @@
 "use client";
 
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 /**
  * DesignCTA - Final call-to-action section
@@ -17,17 +18,16 @@ export default function DesignCTA() {
                     just a conversation about what's possible.
                 </p>
                 <div className="cta-buttons">
-                    <a
-                        href="mailto:info@logatech.net?subject=Design%20Project%20Inquiry"
-                        className="loga-btn large"
-                    >
-                        Book a Discovery Call
-                    </a>
+                    <SmartCTA 
+                        label="Book a Discovery Call" 
+                        className="loga-btn large" 
+                    />
                 </div>
                 <div className="cta-secondary">
-                    <a href="mailto:info@logatech.net" className="loga-alt-btn">
-                        Send Project Details
-                    </a>
+                    <SmartCTA 
+                        label="Send Project Details" 
+                        className="loga-alt-btn" 
+                    />
                 </div>
                 <div className="cta-contact-info">
                     <div className="contact-item">

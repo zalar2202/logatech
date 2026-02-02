@@ -1,5 +1,7 @@
 "use client";
 
+import SmartCTA from "@/components/website/shared/SmartCTA";
+
 /**
  * MaintainHero - Hero section for Maintain service page
  */
@@ -24,9 +26,10 @@ export default function MaintainHero() {
                     <a href="#pricing" className="loga-btn">
                         View Maintenance Plans →
                     </a>
-                    <a href="#contact" className="loga-alt-btn">
-                        Schedule an Audit
-                    </a>
+                    <SmartCTA 
+                        label="Schedule an Audit" 
+                        className="loga-alt-btn" 
+                    />
                 </div>
             </div>
         </section>

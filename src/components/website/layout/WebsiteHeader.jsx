@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import WebsiteThemeToggle from "@/components/website/layout/WebsiteThemeToggle";
+import { useAuth } from "@/contexts/AuthContext";
+import { ShoppingCart, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
 
 /**
  * WebsiteHeader - Modern top navigation with dropdown support (website pages only)
@@ -14,6 +16,7 @@ export default function WebsiteHeader() {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const dropdownRef = useRef(null);
     const pathname = usePathname();
+    const { user } = useAuth();
 
     const isHomepage = pathname === "/";
 
@@ -192,12 +195,40 @@ export default function WebsiteHeader() {
 
                     <div className="navbar-cta">
                         <WebsiteThemeToggle />
-                        <Link
-                            href={isHomepage ? "#contact" : "/#contact"}
-                            className="loga-btn nav-cta-btn"
-                        >
-                            Let's Talk
-                        </Link>
+                        
+                        {user ? (
+                            <>
+                                {user.role === 'user' && (
+                                    <Link href="/panel/cart" className="navbar-cart-link" title="My Cart">
+                                        <ShoppingCart className="w-5 h-5" />
+                                    </Link>
+                                )}
+                                <Link href="/panel/dashboard" className="loga-btn nav-dashboard-btn" title="Go to Dashboard">
+                                    <LayoutDashboard className="w-4 h-4 mr-1" /> Dashboard
+                                </Link>
+                                <Link
+                                    href="/panel/tickets/new"
+                                    className="loga-btn nav-cta-btn"
+                                >
+                                    Let's Talk
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/login" className="loga-link-btn" title="Login to your account">
+                                    <LogIn className="w-4 h-4 mr-1" /> Login
+                                </Link>
+                                <Link href="/signup" className="loga-btn nav-signup-btn" title="Create a new account">
+                                    <UserPlus className="w-4 h-4 mr-1" /> Sign Up
+                                </Link>
+                                <Link
+                                    href="/login"
+                                    className="loga-btn nav-cta-btn"
+                                >
+                                    Let's Talk
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     <div className="mobile-actions">
@@ -219,13 +250,41 @@ export default function WebsiteHeader() {
                     <div className="mobile-nav-content">
                         {navItems.map((item) => renderNavItem(item, true))}
 
-                        <Link
-                            href={isHomepage ? "#contact" : "/#contact"}
-                            className="loga-btn mobile-cta-btn"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            Let's Talk
-                        </Link>
+                        {user ? (
+                             <>
+                                <Link
+                                    href="/panel/dashboard"
+                                    className="loga-btn mobile-cta-btn secondary"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Dashboard
+                                </Link>
+                                <Link
+                                    href="/panel/tickets/new"
+                                    className="loga-btn mobile-cta-btn"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Let's Talk
+                                </Link>
+                             </>
+                        ) : (
+                            <>
+                                <Link
+                                    href="/login"
+                                    className="loga-btn mobile-cta-btn secondary"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    href="/signup"
+                                    className="loga-btn mobile-cta-btn"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Sign Up
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </nav>

@@ -2,6 +2,7 @@
 
 import ParticleBackground from "./ParticleBackground";
 import Link from "next/link";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 /**
  * Hero - Landing page hero section with particle background
@@ -46,9 +47,10 @@ export default function Hero() {
                     your online presence with expert care.
                 </p>
                 <div className="hero-cta animate-fade-in-up delay-600">
-                    <a href="#contact" className="loga-btn">
-                        Let's Talk
-                    </a>
+                    <SmartCTA 
+                        label="Let's Talk" 
+                        className="loga-btn" 
+                    />
                     <a href="#services" className="loga-alt-btn">
                         Explore Services
                     </a>

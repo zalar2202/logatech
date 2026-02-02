@@ -1,6 +1,7 @@
 "use client";
 
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 /**
  * CTASection - Closing call-to-action section
@@ -17,9 +18,10 @@ export default function CTASection() {
                     level up your digital presence, we're here to help.
                 </p>
                 <div className="cta-buttons">
-                    <a href="mailto:info@logatech.net" className="loga-btn large">
-                        Start a Conversation
-                    </a>
+                    <SmartCTA 
+                        label="Start a Conversation" 
+                        className="loga-btn large" 
+                    />
                 </div>
                 <div className="cta-contact-info">
                     <div className="contact-item">

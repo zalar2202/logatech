@@ -28,7 +28,7 @@ const TicketSchema = new mongoose.Schema(
         },
         category: { 
             type: String, 
-            enum: ['technical', 'billing', 'general', 'feature_request', 'bug_report', 'account'],
+            enum: ['technical', 'billing', 'general', 'feature_request', 'bug_report', 'account', 'audit', 'consultation'],
             default: 'general'
         },
         priority: { 

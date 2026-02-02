@@ -1,5 +1,7 @@
 "use client";
 
+import SmartCTA from "@/components/website/shared/SmartCTA";
+
 /**
  * DeployHero - Hero section for Deploy service page
  */
@@ -21,9 +23,10 @@ export default function DeployHero() {
                     infrastructure. Say goodbye to downtime and hello to seamless growth.
                 </p>
                 <div className="design-hero-cta animate-fade-in-up delay-500">
-                    <a href="#contact" className="loga-btn">
-                        Launch Your Project →
-                    </a>
+                    <SmartCTA 
+                        label="Launch Your Project" 
+                        className="loga-btn" 
+                    />
                     <a href="#tech-stack" className="loga-alt-btn">
                         View Infrastructure
                     </a>
