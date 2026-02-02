@@ -360,46 +360,48 @@ export default function DashboardPage() {
             </div>
 
             {/* System Status */}
-            <div className="mt-6">
-                <Card>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="text-center sm:text-left">
-                            <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-1">
-                                System Status
-                            </h2>
-                            <p className="text-sm text-[var(--color-text-secondary)]">
-                                All systems operational
-                            </p>
+            {["admin", "manager"].includes(user?.role) && (
+                <div className="mt-6">
+                    <Card>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="text-center sm:text-left">
+                                <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-1">
+                                    System Status
+                                </h2>
+                                <p className="text-sm text-[var(--color-text-secondary)]">
+                                    All systems operational
+                                </p>
+                            </div>
+                            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
+                                <div className="text-center">
+                                    <p className="text-xs text-[var(--color-text-secondary)] mb-1">
+                                        Database
+                                    </p>
+                                    <Badge variant="success" size="sm" dot>
+                                        Connected
+                                    </Badge>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs text-[var(--color-text-secondary)] mb-1">
+                                        Auth
+                                    </p>
+                                    <Badge variant="success" size="sm" dot>
+                                        Active
+                                    </Badge>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs text-[var(--color-text-secondary)] mb-1">
+                                        API
+                                    </p>
+                                    <Badge variant="success" size="sm" dot>
+                                        Healthy
+                                    </Badge>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
-                            <div className="text-center">
-                                <p className="text-xs text-[var(--color-text-secondary)] mb-1">
-                                    Database
-                                </p>
-                                <Badge variant="success" size="sm" dot>
-                                    Connected
-                                </Badge>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-xs text-[var(--color-text-secondary)] mb-1">
-                                    Auth
-                                </p>
-                                <Badge variant="success" size="sm" dot>
-                                    Active
-                                </Badge>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-xs text-[var(--color-text-secondary)] mb-1">
-                                    API
-                                </p>
-                                <Badge variant="success" size="sm" dot>
-                                    Healthy
-                                </Badge>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            </div>
+                    </Card>
+                </div>
+            )}
         </ContentWrapper>
     );
 }

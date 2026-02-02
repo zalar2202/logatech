@@ -9,7 +9,7 @@ const PackageSchema = new mongoose.Schema(
         },
         category: {
             type: String,
-            enum: ['design', 'development', 'deployment', 'maintenance', 'bundle'],
+            enum: ['design', 'development', 'deployment', 'maintenance', 'bundle', 'hosting', 'seo', 'marketing'],
             required: [true, 'Category is required'],
         },
         startingPrice: {
