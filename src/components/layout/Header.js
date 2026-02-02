@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Menu, User, ChevronDown, LogOut, Settings, Home } from "lucide-react";
+import { Menu, User, ChevronDown, LogOut, Settings, Home, ShoppingCart } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { NotificationDropdown } from "@/components/layout/NotificationDropdown";
 import { useAuth } from "@/contexts/AuthContext";
@@ -72,6 +72,16 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                     <ThemeToggle />
 
                     {/* Notifications */}
+                    {user?.role === "user" && (
+                        <Link
+                            href="/panel/cart"
+                            className="flex items-center justify-center p-2 rounded-lg transition-all hover:bg-[var(--color-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] relative"
+                            style={{ color: "var(--color-text-secondary)" }}
+                            title="My Cart"
+                        >
+                            <ShoppingCart className="w-5 h-5" />
+                        </Link>
+                    )}
                     <NotificationDropdown />
 
                     {/* User menu */}

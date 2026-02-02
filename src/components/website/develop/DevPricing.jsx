@@ -3,14 +3,48 @@
 import { useEffect, useState } from "react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import axios from "axios";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ShoppingCart } from "lucide-react";
 
 /**
  * DevPricing - Investment overview section for Develop page
  */
 export default function DevPricing() {
     const { ref, isVisible } = useScrollAnimation();
+    const { user } = useAuth();
+    const router = useRouter();
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [adding, setAdding] = useState(null);
+
+    const handleAddToCart = async (pkg) => {
+        if (!user) {
+            toast.error("Please login to purchase services");
+            router.push("/login"); // Fixed path
+            return;
+        }
+
+        setAdding(pkg._id);
+        try {
+            await axios.post("/api/cart", {
+                packageId: pkg._id,
+                quantity: 1,
+                billingCycle: "one-time" // Default for website purchases
+            });
+            toast.success(`${pkg.name} added to cart!`, {
+                action: {
+                    label: "View Cart",
+                    onClick: () => router.push("/panel/cart")
+                }
+            });
+        } catch (error) {
+            toast.error("Failed to add to cart");
+        } finally {
+            setAdding(null);
+        }
+    };
 
     useEffect(() => {
         const fetchPackages = async () => {
@@ -54,6 +88,7 @@ export default function DevPricing() {
                                     <th>Project Type</th>
                                     <th>Starting From</th>
                                     <th>Typical Range</th>
+                                    {user && <th className="text-right">Action</th>}
                                 </tr>
                             </thead>
                             <tbody>
@@ -63,11 +98,32 @@ export default function DevPricing() {
                                             <td className="pricing-type">{tier.name}</td>
                                             <td className="pricing-starting">{tier.startingPrice}</td>
                                             <td className="pricing-range">{tier.priceRange || "Custom Quote"}</td>
+                                            {user && (
+                                                <td className="text-right">
+                                                    <button 
+                                                        onClick={() => handleAddToCart(tier)}
+                                                        disabled={adding === tier._id}
+                                                        className="loga-btn-small"
+                                                        style={{ 
+                                                            padding: '6px 12px', 
+                                                            fontSize: '12px',
+                                                            backgroundColor: 'var(--color-primary)',
+                                                            color: 'white',
+                                                            borderRadius: '6px',
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            gap: '4px'
+                                                        }}
+                                                    >
+                                                        {adding === tier._id ? '...' : <><ShoppingCart size={14} /> Buy</>}
+                                                    </button>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="3" className="text-center py-4">No packages available. Contact us for a technical quote!</td>
+                                        <td colSpan={user ? 4 : 3} className="text-center py-4">No packages available. Contact us for a technical quote!</td>
                                     </tr>
                                 )}
                             </tbody>
