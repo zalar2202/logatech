@@ -34,10 +34,8 @@ export async function GET(request) {
         // For now, let's assume this API is for ADMIN panel usage mainly.
         // But if normal users access it, we might need filtering.
         if (!['admin', 'manager'].includes(user.role)) {
-             // If regular user, maybe find invoices linked to their account?
-             // query.user = user._id; 
-             // Leaving this restricted to admin/manager for now as per dashboard logic
-             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+             // If regular user, only show invoices linked to their user ID
+             query.user = user._id;
         }
 
         const invoices = await Invoice.find(query)

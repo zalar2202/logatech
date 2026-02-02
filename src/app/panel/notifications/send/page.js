@@ -345,14 +345,13 @@ export default function SendNotificationPage() {
                                                         {values.type}
                                                     </Badge>
                                                 </div>
-                                                <p
+                                                <div
                                                     className="text-sm"
                                                     style={{
                                                         color: "var(--color-text-secondary)",
                                                     }}
-                                                >
-                                                    {values.message}
-                                                </p>
+                                                    dangerouslySetInnerHTML={{ __html: values.message }}
+                                                />
                                                 {values.actionLabel && (
                                                     <button
                                                         className="mt-2 text-sm font-medium"

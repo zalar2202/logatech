@@ -232,12 +232,11 @@ export const NotificationDropdown = () => {
                                                     {notification.type}
                                                 </span>
                                             </div>
-                                            <p
+                                            <div
                                                 className="text-sm line-clamp-2"
                                                 style={{ color: "var(--color-text-secondary)" }}
-                                            >
-                                                {notification.message}
-                                            </p>
+                                                dangerouslySetInnerHTML={{ __html: notification.message }}
+                                            />
                                             <p
                                                 className="text-xs mt-1"
                                                 style={{ color: "var(--color-text-tertiary)" }}

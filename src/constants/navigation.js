@@ -15,6 +15,8 @@ import {
     CreditCard,
     Ticket,
     Activity,
+    ShoppingCart,
+    Store,
 } from "lucide-react";
 
 export const navigation = [
@@ -24,9 +26,20 @@ export const navigation = [
         icon: LayoutDashboard,
     },
     {
+        name: "Shop",
+        href: "/panel/shop",
+        icon: Store,
+    },
+    {
+        name: "My Cart",
+        href: "/panel/cart",
+        icon: ShoppingCart,
+    },
+    {
         name: "My Services",
         href: "/panel/services",
         icon: Activity,
+        roles: ["user"],
     },
     {
         name: "Support Tickets",

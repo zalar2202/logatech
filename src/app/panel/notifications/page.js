@@ -334,12 +334,11 @@ export default function NotificationsPage() {
                                                         {notification.type}
                                                     </Badge>
                                                 </div>
-                                                <p
+                                                <div
                                                     className="text-sm"
                                                     style={{ color: "var(--color-text-secondary)" }}
-                                                >
-                                                    {notification.message}
-                                                </p>
+                                                    dangerouslySetInnerHTML={{ __html: notification.message }}
+                                                />
                                             </div>
 
                                             {/* Actions */}

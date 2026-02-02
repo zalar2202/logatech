@@ -15,12 +15,12 @@ export async function POST(request) {
         await connectDB();
 
         const seedPackages = [
-            // ... (keeping existing packages, adding more)
             // Design Packages
             {
                 name: "Personal / Portfolio",
                 category: "design",
                 startingPrice: "$800",
+                price: 800,
                 priceRange: "$800 – $1,500",
                 features: ["Custom UI Design", "Responsive Layout", "Basic SEO", "Contact Form"],
                 deliveryTime: "1-2 weeks",
@@ -31,6 +31,7 @@ export async function POST(request) {
                 name: "Business Brochure",
                 category: "design",
                 startingPrice: "$1,200",
+                price: 1200,
                 priceRange: "$1,200 – $2,500",
                 features: ["Professional UI/UX", "Brand Integration", "Social Media Setup", "Content Migration"],
                 deliveryTime: "2-3 weeks",
@@ -41,6 +42,7 @@ export async function POST(request) {
                 name: "E-commerce / WooCommerce",
                 category: "design",
                 startingPrice: "$2,000",
+                price: 2000,
                 priceRange: "$2,000 – $4,000",
                 features: ["Product Focus UX", "Payment Integration", "Inventory Management", "User Accounts"],
                 deliveryTime: "3-5 weeks",
@@ -51,6 +53,7 @@ export async function POST(request) {
                 name: "Custom Web Application",
                 category: "design",
                 startingPrice: "$3,000",
+                price: 3000,
                 priceRange: "$3,000 – $8,000+",
                 features: ["Complex Dashboards", "Interactive Data", "Scalable Systems", "Dedicated Support"],
                 deliveryTime: "Custom",
@@ -62,6 +65,7 @@ export async function POST(request) {
                 name: "Marketing / Landing Page",
                 category: "development",
                 startingPrice: "$1,000",
+                price: 1000,
                 priceRange: "$1,000 – $2,500",
                 features: ["React/Next.js Build", "High Performance", "SEO Optimized", "Analytics Setup"],
                 deliveryTime: "1 week",
@@ -72,6 +76,7 @@ export async function POST(request) {
                 name: "Custom Content Site (CMS)",
                 category: "development",
                 startingPrice: "$2,500",
+                price: 2500,
                 priceRange: "$2,500 – $5,000",
                 features: ["Headless CMS", "Dynamic Content", "Multi-language Support", "Fast Load Times"],
                 deliveryTime: "3 weeks",
@@ -82,6 +87,7 @@ export async function POST(request) {
                 name: "Web Application (MVP)",
                 category: "development",
                 startingPrice: "$5,000",
+                price: 5000,
                 priceRange: "$5,000 – $10,000",
                 features: ["Custom Architecture", "User Authentication", "API Integrations", "Database Design"],
                 deliveryTime: "1-2 months",
@@ -93,6 +99,7 @@ export async function POST(request) {
                 name: "Essential Support",
                 category: "maintenance",
                 startingPrice: "$100",
+                price: 100,
                 priceRange: "per month",
                 features: ["Security Monitoring", "Daily Backups", "Health Report", "Plugin Updates"],
                 deliveryTime: "Monthly",
@@ -103,6 +110,7 @@ export async function POST(request) {
                 name: "Professional Support",
                 category: "maintenance",
                 startingPrice: "$250",
+                price: 250,
                 priceRange: "per month",
                 features: ["1h Dev Support", "Priority Response", "Performance Tuning", "Deep Backups"],
                 deliveryTime: "Monthly",

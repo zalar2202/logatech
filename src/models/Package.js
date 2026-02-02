@@ -16,6 +16,10 @@ const PackageSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Starting price is required'],
         },
+        price: {
+            type: Number,
+            default: 0,
+        },
         priceRange: {
             type: String,
             trim: true,

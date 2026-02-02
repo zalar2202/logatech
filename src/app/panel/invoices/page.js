@@ -160,9 +160,11 @@ export default function InvoicesPage() {
                         Manage client billing and track payments.
                     </p>
                 </div>
-                <Button icon={<Plus className="w-4 h-4" />} onClick={openCreateModal}>
-                    Create Invoice
-                </Button>
+                {['admin', 'manager'].includes(user?.role) && (
+                    <Button icon={<Plus className="w-4 h-4" />} onClick={openCreateModal}>
+                        Create Invoice
+                    </Button>
+                )}
             </div>
 
             <Card>
@@ -215,20 +217,35 @@ export default function InvoicesPage() {
                                         </td>
                                         <td className="p-4">
                                             <div className="flex items-center gap-2">
-                                                <button 
-                                                    onClick={(e) => { e.stopPropagation(); handleSendInvoice(inv); }} 
-                                                    disabled={sendingId === inv._id}
-                                                    className="p-1.5 rounded hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 transition-colors disabled:opacity-50"
-                                                    title="Send to client"
-                                                >
-                                                    {sendingId === inv._id ? <span className="animate-spin">⏳</span> : <Mail className="w-4 h-4" />}
-                                                </button>
-                                                <button onClick={() => openEditModal(inv)} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 transition-colors">
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                                <button onClick={() => handleDelete(inv._id)} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 transition-colors">
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
+                                                {['admin', 'manager'].includes(user?.role) ? (
+                                                    <>
+                                                        <button 
+                                                            onClick={(e) => { e.stopPropagation(); handleSendInvoice(inv); }} 
+                                                            disabled={sendingId === inv._id}
+                                                            className="p-1.5 rounded hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 transition-colors disabled:opacity-50"
+                                                            title="Send to client"
+                                                        >
+                                                            {sendingId === inv._id ? <span className="animate-spin">⏳</span> : <Mail className="w-4 h-4" />}
+                                                        </button>
+                                                        <button onClick={() => openEditModal(inv)} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 transition-colors">
+                                                            <Edit className="w-4 h-4" />
+                                                        </button>
+                                                        <button onClick={() => handleDelete(inv._id)} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 transition-colors">
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {['draft', 'sent'].includes(inv.status) && (
+                                                            <Button size="sm" variant="success" onClick={(e) => { e.stopPropagation(); toast.info("Redirecting to payment gateway..."); }}>
+                                                                Pay Now
+                                                            </Button>
+                                                        )}
+                                                        <button className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 transition-colors" title="View Details">
+                                                            <FileText className="w-4 h-4" />
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
