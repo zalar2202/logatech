@@ -11,6 +11,7 @@ import {
     Tag,
     Mail,
     Building2,
+    FileText,
 } from "lucide-react";
 
 export const navigation = [
@@ -43,6 +44,12 @@ export const adminNavigation = [
         name: "Clients",
         href: "/panel/clients",
         icon: Building2,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Invoices",
+        href: "/panel/invoices",
+        icon: FileText,
         roles: ["admin", "manager"],
     },
     {
