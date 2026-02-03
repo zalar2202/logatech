@@ -13,6 +13,7 @@
         "format:check": "prettier --check .",
         "seed:admin": "node src/scripts/seedAdmin.js",
         "seed:manager": "node src/scripts/seedManager.js",
+        "seed:package": "node src/scripts/seedPackages.js",
         "seed:users": "node src/scripts/seedUsers.js"
     },
     "dependencies": {

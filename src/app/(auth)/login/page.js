@@ -73,18 +73,18 @@ export default function LoginPage() {
                 {/* Left Side - Branding */}
                 <div className="hidden md:block">
                     <div className="text-center md:text-left">
-                            <div
-                                className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4"
-                                style={{ backgroundColor: "var(--color-primary)" }}
-                            >
-                                <Shield size={32} style={{ color: "white" }} />
-                            </div>
+                        <div
+                            className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4"
+                            style={{ backgroundColor: "var(--color-primary)" }}
+                        >
+                            <Shield size={32} style={{ color: "white" }} />
+                        </div>
 
                         <h1
                             className="text-4xl font-bold mb-4"
                             style={{ color: "var(--color-text-primary)" }}
                         >
-                            LogaTech Admin Panel
+                            LogaTech Panel
                         </h1>
 
                         <p
@@ -131,8 +131,8 @@ export default function LoginPage() {
                 <Card className="w-full relative">
                     <div className="p-6">
                         {/* Homepage Button */}
-                        <Link 
-                            href="/" 
+                        <Link
+                            href="/"
                             className="absolute top-4 right-6 flex items-center gap-1 text-sm font-medium transition-colors hover:opacity-80"
                             style={{ color: "var(--color-primary)" }}
                         >
@@ -167,7 +167,7 @@ export default function LoginPage() {
                             className="mb-4 hidden md:block"
                             style={{ color: "var(--color-text-secondary)" }}
                         >
-                            Sign in to your admin account
+                            Sign in to your account
                         </p>
 
                         {/* Error Message */}
@@ -213,11 +213,11 @@ export default function LoginPage() {
                                         autoComplete="current-password"
                                     />
 
-                                    <Captcha 
+                                    <Captcha
                                         error={captchaError}
                                         onVerify={(solved) => {
                                             setIsCaptchaSolved(solved);
-                                            if(solved) setCaptchaError("");
+                                            if (solved) setCaptchaError("");
                                         }}
                                     />
 
@@ -291,7 +291,6 @@ export default function LoginPage() {
                                 </Link>
                             </p>
                         </div>
-
 
                         {/* Security Note */}
                         <div className="mt-6 text-center">

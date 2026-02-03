@@ -8,7 +8,7 @@ const faqData = [
         answer: "Our monitoring systems alert us immediately. For hacked sites, we perform a clean restoration from our most recent secure backup and harden the entry point. This is included in all our plans.",
     },
     {
-        question: "Do you support sites that Loga Tech didn't build?",
+        question: "Do you support sites that LogaTech didn't build?",
         answer: "Yes. We can manage and maintain sites built by other teams. We'll start with a security and compatibility audit to ensure your current setup can be supported efficiently.",
     },
     {

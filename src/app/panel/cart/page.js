@@ -5,7 +5,14 @@ import { ContentWrapper } from "@/components/layout/ContentWrapper";
 import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import { Badge } from "@/components/common/Badge";
-import { ShoppingCart, Trash2, CreditCard, ArrowRight, Package as PackageIcon, ShieldCheck } from "lucide-react";
+import {
+    ShoppingCart,
+    Trash2,
+    CreditCard,
+    ArrowRight,
+    Package as PackageIcon,
+    ShieldCheck,
+} from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -80,7 +87,9 @@ export default function CartPage() {
                 <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
                     <ShoppingCart className="w-6 h-6" />
                 </div>
-                <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Shopping Cart</h1>
+                <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+                    Shopping Cart
+                </h1>
             </div>
 
             {items.length === 0 ? (
@@ -90,12 +99,11 @@ export default function CartPage() {
                     </div>
                     <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
                     <p className="text-[var(--color-text-secondary)] mb-8 max-w-md mx-auto">
-                        Looks like you haven't added any services yet. Explore our packages to find the perfect fit for your business.
+                        Looks like you haven&apos;t added any services yet. Explore packages to find
+                        the perfect fit for your business.
                     </p>
                     <Link href="/panel/shop">
-                        <Button icon={<ArrowRight className="w-4 h-4" />}>
-                            Go to Shop
-                        </Button>
+                        <Button icon={<ArrowRight className="w-4 h-4" />}>Go to Shop</Button>
                     </Link>
                 </Card>
             ) : (
@@ -110,8 +118,14 @@ export default function CartPage() {
                                     </div>
                                     <div className="flex-1 text-center sm:text-left">
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                                            <h3 className="text-lg font-bold">{item.package.name}</h3>
-                                            <Badge variant="primary" size="sm" className="w-fit mx-auto sm:mx-0">
+                                            <h3 className="text-lg font-bold">
+                                                {item.package.name}
+                                            </h3>
+                                            <Badge
+                                                variant="primary"
+                                                size="sm"
+                                                className="w-fit mx-auto sm:mx-0"
+                                            >
                                                 {item.billingCycle}
                                             </Badge>
                                         </div>
@@ -122,7 +136,7 @@ export default function CartPage() {
                                             <span className="text-xl font-bold text-indigo-600">
                                                 {item.package.startingPrice}
                                             </span>
-                                            <button 
+                                            <button
                                                 onClick={() => removeLineItem(item._id)}
                                                 className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
                                             >
@@ -149,7 +163,9 @@ export default function CartPage() {
                                 </div>
                                 <div className="flex justify-between text-[var(--color-text-secondary)]">
                                     <span>Tax</span>
-                                    <span className="font-semibold text-[var(--color-text-primary)]">$0.00</span>
+                                    <span className="font-semibold text-[var(--color-text-primary)]">
+                                        $0.00
+                                    </span>
                                 </div>
                                 <div className="h-px bg-[var(--color-border)] my-2" />
                                 <div className="flex justify-between text-xl font-bold">
@@ -161,8 +177,8 @@ export default function CartPage() {
                             </div>
 
                             <div className="space-y-4">
-                                <Button 
-                                    fullWidth 
+                                <Button
+                                    fullWidth
                                     className="py-4"
                                     onClick={handleCheckout}
                                     loading={checkoutLoading}
@@ -170,7 +186,7 @@ export default function CartPage() {
                                 >
                                     Proceed to Checkout
                                 </Button>
-                                
+
                                 <div className="flex items-center justify-center gap-2 text-xs text-[var(--color-text-tertiary)] py-2">
                                     <ShieldCheck className="w-4 h-4" />
                                     <span>Secure Checkout & Support Included</span>
@@ -179,7 +195,9 @@ export default function CartPage() {
 
                             <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
                                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                                    <strong>Note:</strong> After checkout, an official invoice will be generated. You can complete the payment using your preferred method in the Invoices section.
+                                    <strong>Note:</strong> After checkout, an official invoice will
+                                    be generated. You can complete the payment using your preferred
+                                    method in the Invoices section.
                                 </p>
                             </div>
                         </Card>

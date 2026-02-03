@@ -12,7 +12,7 @@ export default function Hero() {
         <section className="hero" id="hero">
             <ParticleBackground />
             <div className="hero-content animate-fade-in">
-                <h1 className="hero-title">Loga Tech</h1>
+                <h1 className="hero-title">LogaTech</h1>
                 <div className="hero-tagline">
                     <Link
                         href="/services/design"
@@ -47,10 +47,7 @@ export default function Hero() {
                     your online presence with expert care.
                 </p>
                 <div className="hero-cta animate-fade-in-up delay-600">
-                    <SmartCTA 
-                        label="Let's Talk" 
-                        className="loga-btn" 
-                    />
+                    <SmartCTA label="Let's Talk" className="loga-btn" />
                     <a href="#services" className="loga-alt-btn">
                         Explore Services
                     </a>

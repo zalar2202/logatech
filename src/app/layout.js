@@ -46,10 +46,10 @@ const themeScript = `
 
 export const metadata = {
     title: {
-        default: "Loga Tech",
-        template: "%s | Loga Tech",
+        default: "LogaTech",
+        template: "%s | LogaTech",
     },
-    description: "Loga Tech - From Code to Cloud",
+    description: "LogaTech - From Code to Cloud",
 };
 
 export default function RootLayout({ children }) {

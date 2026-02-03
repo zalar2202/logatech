@@ -1,6 +1,6 @@
 # LogaTech
 
-A Next.js 16 app containing **two applications**: a **public marketing website** (Loga Tech – Design · Develop · Deploy · Maintain) and a **protected admin panel** (user management, notifications, FCM). Built with React 19, Tailwind v4, Redux Toolkit, and MongoDB.
+A Next.js 16 app containing **two applications**: a **public marketing website** (LogaTech – Design · Develop · Deploy · Maintain) and a **protected admin panel** (user management, notifications, FCM). Built with React 19, Tailwind v4, Redux Toolkit, and MongoDB.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.0.1-black)
 ![React](https://img.shields.io/badge/React-19.2.0-blue)

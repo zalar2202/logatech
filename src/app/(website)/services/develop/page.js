@@ -12,7 +12,7 @@ import DevFAQ from "@/components/website/develop/DevFAQ";
 import DevCTA from "@/components/website/develop/DevCTA";
 
 export const metadata = {
-    title: "Development Services | Loga Tech",
+    title: "Development Services | LogaTech",
     description:
         "Build high-performance web applications with robust, scalable, and secure code. We transform ideas into powerful digital products.",
 };

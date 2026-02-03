@@ -6,7 +6,8 @@ const deliverables = [
     {
         icon: "📊",
         title: "Monthly Health Reports",
-        description: "Clear PDF summaries of your site's uptime, security scans, and work performed.",
+        description:
+            "Clear PDF summaries of your site's uptime, security scans, and work performed.",
     },
     {
         icon: "📜",
@@ -21,7 +22,8 @@ const deliverables = [
     {
         icon: "🛡️",
         title: "Trust Badge",
-        description: "A 'Secured by Loga Tech' seal to display on your site, building trust with your visitors.",
+        description:
+            "A 'Secured by LogaTech' seal to display on your site, building trust with your visitors.",
     },
 ];
 
