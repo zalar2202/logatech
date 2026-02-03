@@ -5,11 +5,11 @@ import AIFloatingButton from "@/components/website/shared/AIFloatingButton";
 
 export default function WebsiteLayout({ children }) {
     return (
-        <>
+        <div className="website-layout">
             <WebsiteHeader />
             <main>{children}</main>
             <WebsiteFooter />
             <AIFloatingButton />
-        </>
+        </div>
     );
 }

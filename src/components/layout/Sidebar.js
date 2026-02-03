@@ -57,7 +57,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                                 className="text-lg font-bold tracking-tight"
                                 style={{ color: "var(--color-text-primary)" }}
                             >
-                                LogaTech Panel
+                                LogaTech
                             </h1>
                         </div>
                     ) : (

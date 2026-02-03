@@ -7,7 +7,7 @@ alwaysApply: true
 ## Project Overview
 This repository contains **two distinct applications** under one Next.js app:
 
-1. **Website** — Public marketing site for Loga Tech (digital studio / web agency). Landing pages, service pages (Design, Develop, Deploy, Maintain), and marketing content. Uses its own layout, styles (`website.css`), and components under `src/components/website/`. No auth, no Redux/Formik — mostly Server Components and static content with scroll animations.
+1. **Website** — Public marketing site for LogaTech (digital studio / web agency). Landing pages, service pages (Design, Develop, Deploy, Maintain), and marketing content. Uses its own layout, styles (`website.css`), and components under `src/components/website/`. No auth, no Redux/Formik — mostly Server Components and static content with scroll animations.
 
 2. **Admin Panel** — Protected dashboard for internal use. Built with Next.js 16 (App Router), React 19, Tailwind CSS v4, Formik, Yup, Axios, and Redux Toolkit. Features include dark mode, hybrid state management, JWT auth, data tables, and comprehensive UI components.
 
@@ -321,7 +321,7 @@ export default function EditPage({ params }) {
 
 ### Website Specific
 
-**Purpose:** Public marketing site for Loga Tech (From Code to Cloud). Tagline: *Design · Develop · Deploy · Maintain*.
+**Purpose:** Public marketing site for LogaTech (From Code to Cloud). Tagline: *Design · Develop · Deploy · Maintain*.
 
 **Routes & layout:**
 - **Route group:** `src/app/(website)/` — all public pages

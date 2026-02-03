@@ -10,9 +10,9 @@ import MaintainFAQ from "@/components/website/maintain/MaintainFAQ";
 import MaintainCTA from "@/components/website/maintain/MaintainCTA";
 
 export const metadata = {
-    title: "Maintenance & Support Services | Loga Tech",
+    title: "Maintenance & Support Services | LogaTech",
     description:
-        "Proactive website maintenance, security patching, and 24/7 uptime monitoring. Keep your digital business running smoothly with Loga Tech support plans.",
+        "Proactive website maintenance, security patching, and 24/7 uptime monitoring. Keep your digital business running smoothly with LogaTech support plans.",
 };
 
 export default function MaintainServicePage() {

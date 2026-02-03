@@ -19,6 +19,7 @@ import {
     Activity,
     Ticket,
     MessageSquare,
+    Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,13 +33,13 @@ export default function DashboardPage() {
     const dispatch = useAppDispatch();
     const { list: users, loading } = useAppSelector((state) => state.users);
 
-    const [counts, setCounts] = useState({ 
-        packages: 0, 
-        promotions: 0, 
-        clients: 0, 
-        payments: 0, 
+    const [counts, setCounts] = useState({
+        packages: 0,
+        promotions: 0,
+        clients: 0,
+        payments: 0,
         tickets: 0,
-        services: 0 
+        services: 0,
     });
 
     useEffect(() => {
@@ -52,20 +53,19 @@ export default function DashboardPage() {
 
         const fetchStats = async () => {
             try {
-                const endpoints = isAdmin ? [
-                    axios.get("/api/packages"),
-                    axios.get("/api/promotions?all=true"),
-                    axios.get("/api/clients"),
-                    axios.get("/api/payments"),
-                    axios.get("/api/tickets"),
-                    axios.get("/api/services")
-                ] : [
-                    axios.get("/api/tickets"),
-                    axios.get("/api/services")
-                ];
+                const endpoints = isAdmin
+                    ? [
+                          axios.get("/api/packages"),
+                          axios.get("/api/promotions?all=true"),
+                          axios.get("/api/clients"),
+                          axios.get("/api/payments"),
+                          axios.get("/api/tickets"),
+                          axios.get("/api/services"),
+                      ]
+                    : [axios.get("/api/tickets"), axios.get("/api/services")];
 
                 const results = await Promise.all(endpoints);
-                
+
                 if (isAdmin) {
                     const [pkgRes, promoRes, clientRes, payRes, ticketRes, svcRes] = results;
                     setCounts({
@@ -73,20 +73,30 @@ export default function DashboardPage() {
                         promotions: promoRes.data.data?.length || 0,
                         clients: clientRes.data.data?.length || 0,
                         payments: payRes.data.data?.length || 0,
-                        tickets: ticketRes.data.data?.filter(t => !['resolved', 'closed'].includes(t.status))?.length || 0,
-                        services: svcRes.data.data?.filter(s => s.status === 'active')?.length || 0
+                        tickets:
+                            ticketRes.data.data?.filter(
+                                (t) => !["resolved", "closed"].includes(t.status)
+                            )?.length || 0,
+                        services:
+                            svcRes.data.data?.filter((s) => s.status === "active")?.length || 0,
                     });
                 } else {
                     const [ticketRes, svcRes] = results;
                     setCounts({
                         ...counts,
-                        tickets: ticketRes.data.data?.filter(t => !['resolved', 'closed'].includes(t.status))?.length || 0,
-                        services: svcRes.data.data?.filter(s => s.status === 'active')?.length || 0
+                        tickets:
+                            ticketRes.data.data?.filter(
+                                (t) => !["resolved", "closed"].includes(t.status)
+                            )?.length || 0,
+                        services:
+                            svcRes.data.data?.filter((s) => s.status === "active")?.length || 0,
                     });
                 }
-            } catch (e) { console.error("Stats fetch error", e); }
+            } catch (e) {
+                console.error("Stats fetch error", e);
+            }
         };
-        
+
         fetchStats();
     }, [dispatch, user]);
 
@@ -202,6 +212,15 @@ export default function DashboardPage() {
             variant: "secondary",
             hide: !["admin", "manager"].includes(user?.role),
         },
+        {
+            title: "Send Notifications",
+            description: "Send push notifications to users",
+            icon: Bell,
+            link: "/panel/notifications/send",
+            badge: "Send",
+            variant: "secondary",
+            hide: !["admin", "manager"].includes(user?.role),
+        },
     ];
 
     // Recent activity (based on user data for now)
@@ -213,54 +232,62 @@ export default function DashboardPage() {
         <ContentWrapper>
             {/* Page Header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold font-heading" style={{ color: "var(--color-text-primary)" }}>
+                <h1
+                    className="text-2xl font-bold font-heading"
+                    style={{ color: "var(--color-text-primary)" }}
+                >
                     {["admin", "manager"].includes(user?.role) ? "Admin Dashboard" : "My Dashboard"}
                 </h1>
                 <p className="text-sm mt-1" style={{ color: "var(--color-text-secondary)" }}>
-                    {["admin", "manager"].includes(user?.role) 
-                        ? "Welcome back! Here is an overview of the system." 
+                    {["admin", "manager"].includes(user?.role)
+                        ? "Welcome back! Here is an overview of the system."
                         : `Welcome back, ${user?.name}! Here is an overview of your services.`}
                 </p>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {stats.filter(s => !s.hide).map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Link key={index} href={stat.link}>
-                            <Card hoverable className="group cursor-pointer h-full">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                        <p className="text-sm text-[var(--color-text-secondary)] mb-2">
-                                            {stat.title}
-                                        </p>
-                                        {loading && index === 0 ? (
-                                            <Skeleton variant="text" className="h-8 w-20 mb-2" />
-                                        ) : (
-                                            <h3 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2">
-                                                {stat.value}
-                                            </h3>
-                                        )}
-                                        <p className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
-                                            {index === 0 ? (
-                                                <TrendingUp className="w-3 h-3 text-green-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {stats
+                    .filter((s) => !s.hide)
+                    .map((stat, index) => {
+                        const Icon = stat.icon;
+                        return (
+                            <Link key={index} href={stat.link}>
+                                <Card hoverable className="group cursor-pointer h-full">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <p className="text-sm text-[var(--color-text-secondary)] mb-2">
+                                                {stat.title}
+                                            </p>
+                                            {loading && index === 0 ? (
+                                                <Skeleton
+                                                    variant="text"
+                                                    className="h-8 w-20 mb-2"
+                                                />
                                             ) : (
-                                                <Activity className="w-3 h-3" />
+                                                <h3 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2">
+                                                    {stat.value}
+                                                </h3>
                                             )}
-                                            {stat.change}
-                                        </p>
+                                            <p className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
+                                                {index === 0 ? (
+                                                    <TrendingUp className="w-3 h-3 text-green-600" />
+                                                ) : (
+                                                    <Activity className="w-3 h-3" />
+                                                )}
+                                                {stat.change}
+                                            </p>
+                                        </div>
+                                        <div
+                                            className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.gradient} flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}
+                                        >
+                                            <Icon className="w-6 h-6 text-white" />
+                                        </div>
                                     </div>
-                                    <div
-                                        className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.gradient} flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}
-                                    >
-                                        <Icon className="w-6 h-6 text-white" />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Link>
-                    );
-                })}
+                                </Card>
+                            </Link>
+                        );
+                    })}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -271,25 +298,27 @@ export default function DashboardPage() {
                             Quick Actions
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {quickActions.filter(a => !a.hide).map((action, index) => {
-                                const Icon = action.icon;
-                                return (
-                                    <Link key={index} href={action.link}>
-                                        <div className="p-4 border border-[var(--color-border)] rounded-lg hover:border-[var(--color-primary)] transition-colors cursor-pointer group">
-                                            <Icon className="w-8 h-8 text-[var(--color-primary)] mb-3 group-hover:scale-110 transition-transform" />
-                                            <h3 className="font-semibold text-[var(--color-text-primary)] mb-1">
-                                                {action.title}
-                                            </h3>
-                                            <p className="text-sm text-[var(--color-text-secondary)] mb-2">
-                                                {action.description}
-                                            </p>
-                                            <Badge variant={action.variant} size="sm">
-                                                {action.badge}
-                                            </Badge>
-                                        </div>
-                                    </Link>
-                                );
-                            })}
+                            {quickActions
+                                .filter((a) => !a.hide)
+                                .map((action, index) => {
+                                    const Icon = action.icon;
+                                    return (
+                                        <Link key={index} href={action.link}>
+                                            <div className="p-4 border border-[var(--color-border)] rounded-lg hover:border-[var(--color-primary)] transition-colors cursor-pointer group">
+                                                <Icon className="w-8 h-8 text-[var(--color-primary)] mb-3 group-hover:scale-110 transition-transform" />
+                                                <h3 className="font-semibold text-[var(--color-text-primary)] mb-1">
+                                                    {action.title}
+                                                </h3>
+                                                <p className="text-sm text-[var(--color-text-secondary)] mb-2">
+                                                    {action.description}
+                                                </p>
+                                                <Badge variant={action.variant} size="sm">
+                                                    {action.badge}
+                                                </Badge>
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
                         </div>
                     </Card>
                 </div>
@@ -301,59 +330,59 @@ export default function DashboardPage() {
                             <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-4">
                                 Recent Users
                             </h2>
-                        {loading ? (
-                            <div className="space-y-3">
-                                {[1, 2, 3, 4, 5].map((i) => (
-                                    <Skeleton key={i} variant="text" className="h-12 w-full" />
-                                ))}
-                            </div>
-                        ) : recentUsers.length === 0 ? (
-                            <p className="text-sm text-[var(--color-text-secondary)] text-center py-8">
-                                No users yet
-                            </p>
-                        ) : (
-                            <div className="space-y-3">
-                                {recentUsers.map((user) => (
-                                    <Link
-                                        key={user._id || user.id}
-                                        href={`/panel/users/${user._id || user.id}`}
-                                    >
-                                        <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--color-hover)] transition-colors cursor-pointer">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
-                                                {user.name.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-[var(--color-text-primary)] text-sm truncate">
-                                                    {user.name}
-                                                </p>
-                                                <p className="text-xs text-[var(--color-text-secondary)] truncate">
-                                                    {user.email}
-                                                </p>
-                                            </div>
-                                            <Badge
-                                                variant={
-                                                    user.status === "active"
-                                                        ? "success"
-                                                        : user.status === "inactive"
-                                                          ? "warning"
-                                                          : "danger"
-                                                }
-                                                size="sm"
-                                            >
-                                                {user.status}
-                                            </Badge>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                        {!loading && recentUsers.length > 0 && (
-                            <Link href="/panel/users">
-                                <div className="mt-4 text-center text-sm text-[var(--color-primary)] hover:underline cursor-pointer">
-                                    View all users →
+                            {loading ? (
+                                <div className="space-y-3">
+                                    {[1, 2, 3, 4, 5].map((i) => (
+                                        <Skeleton key={i} variant="text" className="h-12 w-full" />
+                                    ))}
                                 </div>
-                            </Link>
-                        )}
+                            ) : recentUsers.length === 0 ? (
+                                <p className="text-sm text-[var(--color-text-secondary)] text-center py-8">
+                                    No users yet
+                                </p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {recentUsers.map((user) => (
+                                        <Link
+                                            key={user._id || user.id}
+                                            href={`/panel/users/${user._id || user.id}`}
+                                        >
+                                            <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--color-hover)] transition-colors cursor-pointer">
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-medium text-[var(--color-text-primary)] text-sm truncate">
+                                                        {user.name}
+                                                    </p>
+                                                    <p className="text-xs text-[var(--color-text-secondary)] truncate">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                                <Badge
+                                                    variant={
+                                                        user.status === "active"
+                                                            ? "success"
+                                                            : user.status === "inactive"
+                                                              ? "warning"
+                                                              : "danger"
+                                                    }
+                                                    size="sm"
+                                                >
+                                                    {user.status}
+                                                </Badge>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                            {!loading && recentUsers.length > 0 && (
+                                <Link href="/panel/users">
+                                    <div className="mt-4 text-center text-sm text-[var(--color-primary)] hover:underline cursor-pointer">
+                                        View all users →
+                                    </div>
+                                </Link>
+                            )}
                         </Card>
                     </div>
                 )}

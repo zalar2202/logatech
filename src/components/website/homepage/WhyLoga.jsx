@@ -48,7 +48,7 @@ export default function WhyLoga() {
 
     return (
         <section id="why-us" className="section why-section">
-            <h2 className="section-title">Why Choose Loga Tech?</h2>
+            <h2 className="section-title">Why Choose LogaTech?</h2>
             <p className="section-subtitle">
                 From Code to Cloud — More than a service provider, a true digital partner
             </p>

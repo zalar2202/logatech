@@ -11,20 +11,14 @@ export default function MaintainCTA() {
             <div ref={ref} className={`cta-content ${isVisible ? "visible" : ""}`}>
                 <h2 className="cta-title">Sleep Soundly. We've Got Your Back.</h2>
                 <p className="cta-description">
-                    Join the businesses that trust Loga Tech to protect and grow their online presence.
-                    Choose a plan or schedule a free site audit today.
+                    Join the businesses that trust LogaTech to protect and grow their online
+                    presence. Choose a plan or schedule a free site audit today.
                 </p>
                 <div className="cta-buttons">
-                    <SmartCTA 
-                        label="Choose a Maintenance Plan" 
-                        className="loga-btn large" 
-                    />
+                    <SmartCTA label="Choose a Maintenance Plan" className="loga-btn large" />
                 </div>
                 <div className="cta-secondary">
-                    <SmartCTA 
-                        label="Get a Free Site Audit" 
-                        className="loga-alt-btn" 
-                    />
+                    <SmartCTA label="Get a Free Site Audit" className="loga-alt-btn" />
                 </div>
                 <div className="cta-contact-info">
                     <div className="contact-item">

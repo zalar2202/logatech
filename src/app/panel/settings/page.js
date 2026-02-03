@@ -13,6 +13,7 @@ import {
     Lock,
     Mail,
     Terminal,
+    Wand2,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
@@ -571,6 +572,37 @@ export default function SettingsPage() {
 
 // Password Change Modal Component
 function PasswordChangeModal({ isOpen, onClose }) {
+    const generatePassword = (setFieldValue) => {
+        const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const lowercase = "abcdefghijklmnopqrstuvwxyz";
+        const digits = "0123456789";
+        const special = "@$!%*?&#";
+        const allChars = uppercase + lowercase + digits + special;
+
+        const pickRandom = (chars) => chars.charAt(Math.floor(Math.random() * chars.length));
+
+        const passwordChars = [
+            pickRandom(uppercase),
+            pickRandom(lowercase),
+            pickRandom(digits),
+            pickRandom(special),
+        ];
+
+        for (let i = passwordChars.length; i < 12; i++) {
+            passwordChars.push(pickRandom(allChars));
+        }
+
+        for (let i = passwordChars.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [passwordChars[i], passwordChars[j]] = [passwordChars[j], passwordChars[i]];
+        }
+
+        const password = passwordChars.join("");
+        setFieldValue("newPassword", password);
+        setFieldValue("confirmPassword", password);
+        toast.info("Secure password generated!");
+    };
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Change Password" size="md">
             <Formik
@@ -602,7 +634,7 @@ function PasswordChangeModal({ isOpen, onClose }) {
                     }
                 }}
             >
-                {({ isSubmitting }) => (
+                {({ isSubmitting, setFieldValue }) => (
                     <Form className="space-y-4">
                         <InputField
                             label="Current Password"
@@ -616,6 +648,17 @@ function PasswordChangeModal({ isOpen, onClose }) {
                             name="newPassword"
                             type="password"
                             required
+                            action={
+                                <button
+                                    type="button"
+                                    onClick={() => generatePassword(setFieldValue)}
+                                    className="text-xs font-bold flex items-center gap-1 hover:underline transition-all"
+                                    style={{ color: "var(--color-primary)" }}
+                                >
+                                    <Wand2 size={12} />
+                                    Generate
+                                </button>
+                            }
                             helperText="Min 8 chars, must include uppercase, lowercase, number, and special character"
                         />
 

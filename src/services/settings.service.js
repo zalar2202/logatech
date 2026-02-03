@@ -3,7 +3,7 @@
  * Handles all settings-related API calls for user profile, preferences, and account management
  */
 
-import axiosInstance from '@/lib/axios';
+import axiosInstance from "@/lib/axios";
 
 /**
  * Get current user profile
@@ -12,7 +12,7 @@ import axiosInstance from '@/lib/axios';
  */
 export const getCurrentUser = async () => {
     try {
-        const response = await axiosInstance.get('/auth/check');
+        const response = await axiosInstance.get("/api/auth/check");
         return response.data;
     } catch (error) {
         throw error;
@@ -36,21 +36,21 @@ export const updateProfile = async (profileData) => {
         if (hasFile) {
             // Convert to FormData for file upload
             const formData = new FormData();
-            formData.append('name', profileData.name);
-            formData.append('phone', profileData.phone || '');
-            formData.append('bio', profileData.bio || '');
-            formData.append('avatar', profileData.avatar);
+            formData.append("name", profileData.name);
+            formData.append("phone", profileData.phone || "");
+            formData.append("bio", profileData.bio || "");
+            formData.append("avatar", profileData.avatar);
 
-            const response = await axiosInstance.put('/auth/profile', formData, {
+            const response = await axiosInstance.put("/api/auth/profile", formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    "Content-Type": "multipart/form-data",
                 },
             });
             return response.data;
         } else {
             // Send as JSON if no file
             const { avatar, ...jsonData } = profileData;
-            const response = await axiosInstance.put('/auth/profile', jsonData);
+            const response = await axiosInstance.put("/api/auth/profile", jsonData);
             return response.data;
         }
     } catch (error) {
@@ -67,7 +67,7 @@ export const updateProfile = async (profileData) => {
  */
 export const changePassword = async (passwordData) => {
     try {
-        const response = await axiosInstance.put('/auth/change-password', passwordData);
+        const response = await axiosInstance.put("/api/auth/change-password", passwordData);
         return response.data;
     } catch (error) {
         throw error;
@@ -88,7 +88,7 @@ export const changePassword = async (passwordData) => {
  */
 export const updatePreferences = async (preferences) => {
     try {
-        const response = await axiosInstance.put('/auth/preferences', preferences);
+        const response = await axiosInstance.put("/api/auth/preferences", preferences);
         return response.data;
     } catch (error) {
         throw error;
@@ -100,10 +100,10 @@ export const updatePreferences = async (preferences) => {
  * @param {string} format - Export format ('json' or 'csv')
  * @returns {Promise<Blob>} File blob for download
  */
-export const exportData = async (format = 'json') => {
+export const exportData = async (format = "json") => {
     try {
-        const response = await axiosInstance.get(`/auth/export-data?format=${format}`, {
-            responseType: 'blob', // Important for file download
+        const response = await axiosInstance.get(`/api/auth/export-data?format=${format}`, {
+            responseType: "blob", // Important for file download
         });
         return response.data;
     } catch (error) {
@@ -120,7 +120,7 @@ export const exportData = async (format = 'json') => {
  */
 export const deactivateAccount = async (deactivationData) => {
     try {
-        const response = await axiosInstance.post('/auth/deactivate', deactivationData);
+        const response = await axiosInstance.post("/api/auth/deactivate", deactivationData);
         return response.data;
     } catch (error) {
         throw error;
@@ -136,7 +136,7 @@ export const deactivateAccount = async (deactivationData) => {
  */
 export const deleteAccount = async (deletionData) => {
     try {
-        const response = await axiosInstance.delete('/auth/delete-account', {
+        const response = await axiosInstance.delete("/api/auth/delete-account", {
             data: deletionData,
         });
         return response.data;
@@ -152,7 +152,7 @@ export const deleteAccount = async (deletionData) => {
  */
 export const downloadFile = (blob, filename) => {
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
@@ -172,4 +172,3 @@ export default {
     deleteAccount,
     downloadFile,
 };
-
