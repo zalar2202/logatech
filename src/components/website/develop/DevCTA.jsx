@@ -1,6 +1,7 @@
 "use client";
 
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 /**
  * DevCTA - Final call-to-action section for Develop page
@@ -17,17 +18,16 @@ export default function DevCTA() {
                     roadmap to make it real.
                 </p>
                 <div className="cta-buttons">
-                    <a
-                        href="mailto:info@logatech.net?subject=Development%20Project%20Inquiry"
-                        className="loga-btn large"
-                    >
-                        Book Technical Consult
-                    </a>
+                    <SmartCTA 
+                        label="Book Technical Consult" 
+                        className="loga-btn large" 
+                    />
                 </div>
                 <div className="cta-secondary">
-                    <a href="mailto:info@logatech.net" className="loga-alt-btn">
-                        Email Requirements
-                    </a>
+                    <SmartCTA 
+                        label="Email Requirements" 
+                        className="loga-alt-btn" 
+                    />
                 </div>
                 <div className="cta-contact-info">
                     <div className="contact-item">

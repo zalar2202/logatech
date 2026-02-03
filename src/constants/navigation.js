@@ -14,6 +14,10 @@ import {
     FileText,
     CreditCard,
     Ticket,
+    Activity,
+    ShoppingCart,
+    Store,
+    Bot,
 } from "lucide-react";
 
 export const navigation = [
@@ -21,6 +25,27 @@ export const navigation = [
         name: "Dashboard",
         href: "/panel/dashboard",
         icon: LayoutDashboard,
+    },
+    {
+        name: "Shop",
+        href: "/panel/shop",
+        icon: Store,
+    },
+    {
+        name: "My Cart",
+        href: "/panel/cart",
+        icon: ShoppingCart,
+    },
+    {
+        name: "My Services",
+        href: "/panel/services",
+        icon: Activity,
+        roles: ["user"],
+    },
+    {
+        name: "Support Tickets",
+        href: "/panel/tickets",
+        icon: Ticket,
     },
     {
         name: "Notifications",
@@ -61,12 +86,6 @@ export const adminNavigation = [
         roles: ["admin", "manager"],
     },
     {
-        name: "Support Tickets",
-        href: "/panel/tickets",
-        icon: Ticket,
-        roles: ["admin", "manager"],
-    },
-    {
         name: "Packages",
         href: "/panel/packages",
         icon: Blocks,
@@ -88,6 +107,12 @@ export const adminNavigation = [
         name: "Email Marketing",
         href: "/panel/marketing/email",
         icon: Mail,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "AI Assistant",
+        href: "/panel/admin/ai-assistant",
+        icon: Bot,
         roles: ["admin", "manager"],
     },
 ];

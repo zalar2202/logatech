@@ -1,6 +1,7 @@
 "use client";
 
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 export default function MaintainCTA() {
     const { ref, isVisible } = useScrollAnimation();
@@ -14,17 +15,16 @@ export default function MaintainCTA() {
                     Choose a plan or schedule a free site audit today.
                 </p>
                 <div className="cta-buttons">
-                    <a
-                        href="mailto:info@logatech.net?subject=Maintenance%20Plan%20Inquiry"
-                        className="loga-btn large"
-                    >
-                        Choose a Maintenance Plan
-                    </a>
+                    <SmartCTA 
+                        label="Choose a Maintenance Plan" 
+                        className="loga-btn large" 
+                    />
                 </div>
                 <div className="cta-secondary">
-                    <a href="mailto:info@logatech.net" className="loga-alt-btn">
-                        Get a Free Site Audit
-                    </a>
+                    <SmartCTA 
+                        label="Get a Free Site Audit" 
+                        className="loga-alt-btn" 
+                    />
                 </div>
                 <div className="cta-contact-info">
                     <div className="contact-item">

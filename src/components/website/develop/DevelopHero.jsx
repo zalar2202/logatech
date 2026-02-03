@@ -1,5 +1,7 @@
 "use client";
 
+import SmartCTA from "@/components/website/shared/SmartCTA";
+
 /**
  * DevelopHero - Hero section for Develop service page
  */
@@ -21,9 +23,10 @@ export default function DevelopHero() {
                     custom platforms, we write clean code that drives your business forward.
                 </p>
                 <div className="design-hero-cta animate-fade-in-up delay-500">
-                    <a href="#contact" className="loga-btn">
-                        Discuss Your Project →
-                    </a>
+                    <SmartCTA 
+                        label="Discuss Your Project" 
+                        className="loga-btn" 
+                    />
                     <a href="#tech-stack" className="loga-alt-btn">
                         View Tech Stack
                     </a>

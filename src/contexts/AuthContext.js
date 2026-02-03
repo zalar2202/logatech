@@ -99,8 +99,8 @@ export function AuthProvider({ children }) {
             setIsAuthenticated(false);
             localStorage.removeItem(STORAGE_KEYS.USER);
             
-            // Redirect to login
-            router.push('/login');
+            // Redirect to homepage
+            router.push('/');
         }
     };
 

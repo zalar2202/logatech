@@ -8,7 +8,7 @@ import { Button } from "@/components/common/Button";
 import { Card } from "@/components/common/Card";
 import { useAuth } from "@/contexts/AuthContext";
 import { loginSchema, loginInitialValues } from "@/schemas/auth.schema";
-import { LogIn, Shield, AlertCircle } from "lucide-react";
+import { LogIn, Shield, AlertCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { Captcha } from "@/components/forms/Captcha";
@@ -128,8 +128,18 @@ export default function LoginPage() {
                 </div>
 
                 {/* Right Side - Login Form */}
-                <Card className="w-full">
+                <Card className="w-full relative">
                     <div className="p-6">
+                        {/* Homepage Button */}
+                        <Link 
+                            href="/" 
+                            className="absolute top-4 right-6 flex items-center gap-1 text-sm font-medium transition-colors hover:opacity-80"
+                            style={{ color: "var(--color-primary)" }}
+                        >
+                            <ArrowLeft size={16} />
+                            Homepage
+                        </Link>
+
                         {/* Mobile Logo */}
                         <div className="md:hidden text-center mb-6">
                             <div

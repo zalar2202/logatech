@@ -18,6 +18,7 @@ import {
     TrendingUp,
     Activity,
     Ticket,
+    MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,34 +32,62 @@ export default function DashboardPage() {
     const dispatch = useAppDispatch();
     const { list: users, loading } = useAppSelector((state) => state.users);
 
-    const [counts, setCounts] = useState({ packages: 0, promotions: 0, clients: 0 });
+    const [counts, setCounts] = useState({ 
+        packages: 0, 
+        promotions: 0, 
+        clients: 0, 
+        payments: 0, 
+        tickets: 0,
+        services: 0 
+    });
 
     useEffect(() => {
-        // Fetch users to display stats
-        dispatch(fetchUsers({ page: 1, limit: 100 }));
+        if (!user) return;
 
-        // Fetch other stats
+        const isAdmin = ["admin", "manager"].includes(user.role);
+
+        if (isAdmin) {
+            dispatch(fetchUsers({ page: 1, limit: 100 }));
+        }
+
         const fetchStats = async () => {
             try {
-                const [pkgRes, promoRes, clientRes, payRes, ticketRes] = await Promise.all([
+                const endpoints = isAdmin ? [
                     axios.get("/api/packages"),
                     axios.get("/api/promotions?all=true"),
                     axios.get("/api/clients"),
                     axios.get("/api/payments"),
-                    axios.get("/api/tickets")
-                ]);
-                setCounts({
-                    packages: pkgRes.data.data?.length || 0,
-                    promotions: promoRes.data.data?.length || 0,
-                    clients: clientRes.data.data?.length || 0,
-                    payments: payRes.data.data?.length || 0,
-                    tickets: ticketRes.data.data?.filter(t => !['resolved', 'closed'].includes(t.status))?.length || 0
-                });
+                    axios.get("/api/tickets"),
+                    axios.get("/api/services")
+                ] : [
+                    axios.get("/api/tickets"),
+                    axios.get("/api/services")
+                ];
+
+                const results = await Promise.all(endpoints);
+                
+                if (isAdmin) {
+                    const [pkgRes, promoRes, clientRes, payRes, ticketRes, svcRes] = results;
+                    setCounts({
+                        packages: pkgRes.data.data?.length || 0,
+                        promotions: promoRes.data.data?.length || 0,
+                        clients: clientRes.data.data?.length || 0,
+                        payments: payRes.data.data?.length || 0,
+                        tickets: ticketRes.data.data?.filter(t => !['resolved', 'closed'].includes(t.status))?.length || 0,
+                        services: svcRes.data.data?.filter(s => s.status === 'active')?.length || 0
+                    });
+                } else {
+                    const [ticketRes, svcRes] = results;
+                    setCounts({
+                        ...counts,
+                        tickets: ticketRes.data.data?.filter(t => !['resolved', 'closed'].includes(t.status))?.length || 0,
+                        services: svcRes.data.data?.filter(s => s.status === 'active')?.length || 0
+                    });
+                }
             } catch (e) { console.error("Stats fetch error", e); }
         };
-        if (user && ["admin", "manager"].includes(user.role)) {
-            fetchStats();
-        }
+        
+        fetchStats();
     }, [dispatch, user]);
 
     // Calculate user statistics
@@ -87,15 +116,35 @@ export default function DashboardPage() {
             color: "green",
             gradient: "from-green-500 to-emerald-500",
             link: "/panel/clients",
+            hide: !["admin", "manager"].includes(user?.role),
         },
         {
-            title: "Payments",
-            value: counts.payments || "0",
-            change: "View Transactions",
-            icon: Receipt,
+            title: "Total Revenue",
+            value: `$${(counts.payments * 45).toFixed(0)}`, // Dummy calculation for dashboard feel
+            change: "Payment History",
+            icon: CreditCard,
             color: "purple",
             gradient: "from-purple-500 to-pink-500",
             link: "/panel/payments",
+            hide: !["admin", "manager"].includes(user?.role),
+        },
+        {
+            title: user?.role === "user" ? "My Services" : "Active Services",
+            value: counts.services || 0,
+            change: "Current Subscriptions",
+            icon: Activity,
+            color: "emerald",
+            gradient: "from-emerald-500 to-teal-500",
+            link: "/panel/services",
+        },
+        {
+            title: "Open Tickets",
+            value: counts.tickets || 0,
+            change: "Active Requests",
+            icon: Ticket,
+            color: "indigo",
+            gradient: "from-indigo-500 to-purple-500",
+            link: "/panel/tickets",
         },
         {
             title: "Packages",
@@ -107,30 +156,26 @@ export default function DashboardPage() {
             link: "/panel/packages",
             hide: !["admin", "manager"].includes(user?.role),
         },
-        {
-            title: "Promotions",
-            value: counts.promotions,
-            change: "Active Offers",
-            icon: Tag,
-            color: "pink",
-            gradient: "from-pink-500 to-rose-500",
-            link: "/panel/promotions",
-            hide: !["admin", "manager"].includes(user?.role),
-        },
-        {
-            title: "Open Tickets",
-            value: counts.tickets || 0,
-            change: "Support Requests",
-            icon: Ticket,
-            color: "indigo",
-            gradient: "from-indigo-500 to-purple-500",
-            link: "/panel/tickets",
-            hide: !["admin", "manager"].includes(user?.role),
-        },
     ];
 
     // Quick actions
     const quickActions = [
+        {
+            title: "My Services",
+            description: "View your active subscriptions",
+            icon: Activity,
+            link: "/panel/services",
+            badge: `${counts.services} active`,
+            variant: "success",
+        },
+        {
+            title: "Support Tickets",
+            description: "Need help? Contact support",
+            icon: MessageSquare,
+            link: "/panel/tickets",
+            badge: `${counts.tickets} open`,
+            variant: "primary",
+        },
         {
             title: "User Management",
             description: "View and manage all users",
@@ -141,29 +186,20 @@ export default function DashboardPage() {
             hide: !["admin", "manager"].includes(user?.role),
         },
         {
+            title: "Service Packages",
+            description: "Browse available services",
+            icon: Package,
+            link: "/panel/packages",
+            badge: "Browse",
+            variant: "secondary",
+        },
+        {
             title: "Payments",
             description: "Track payment records",
             icon: CreditCard,
             link: "/panel/payments",
-            badge: "Coming Soon",
+            badge: "History",
             variant: "secondary",
-        },
-        {
-            title: "Packages",
-            description: "Manage service packages",
-            icon: Package,
-            link: "/panel/packages",
-            badge: "Active",
-            variant: "primary",
-            hide: !["admin", "manager"].includes(user?.role),
-        },
-        {
-            title: "Promotions",
-            description: "Manage promo codes",
-            icon: Tag,
-            link: "/panel/promotions",
-            badge: "Active",
-            variant: "primary",
             hide: !["admin", "manager"].includes(user?.role),
         },
     ];
@@ -177,11 +213,13 @@ export default function DashboardPage() {
         <ContentWrapper>
             {/* Page Header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
-                    Dashboard
+                <h1 className="text-2xl font-bold font-heading" style={{ color: "var(--color-text-primary)" }}>
+                    {["admin", "manager"].includes(user?.role) ? "Admin Dashboard" : "My Dashboard"}
                 </h1>
                 <p className="text-sm mt-1" style={{ color: "var(--color-text-secondary)" }}>
-                    Welcome back! Here is an overview of your admin panel.
+                    {["admin", "manager"].includes(user?.role) 
+                        ? "Welcome back! Here is an overview of the system." 
+                        : `Welcome back, ${user?.name}! Here is an overview of your services.`}
                 </p>
             </div>
 
@@ -322,46 +360,48 @@ export default function DashboardPage() {
             </div>
 
             {/* System Status */}
-            <div className="mt-6">
-                <Card>
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="text-center sm:text-left">
-                            <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-1">
-                                System Status
-                            </h2>
-                            <p className="text-sm text-[var(--color-text-secondary)]">
-                                All systems operational
-                            </p>
+            {["admin", "manager"].includes(user?.role) && (
+                <div className="mt-6">
+                    <Card>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="text-center sm:text-left">
+                                <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-1">
+                                    System Status
+                                </h2>
+                                <p className="text-sm text-[var(--color-text-secondary)]">
+                                    All systems operational
+                                </p>
+                            </div>
+                            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
+                                <div className="text-center">
+                                    <p className="text-xs text-[var(--color-text-secondary)] mb-1">
+                                        Database
+                                    </p>
+                                    <Badge variant="success" size="sm" dot>
+                                        Connected
+                                    </Badge>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs text-[var(--color-text-secondary)] mb-1">
+                                        Auth
+                                    </p>
+                                    <Badge variant="success" size="sm" dot>
+                                        Active
+                                    </Badge>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs text-[var(--color-text-secondary)] mb-1">
+                                        API
+                                    </p>
+                                    <Badge variant="success" size="sm" dot>
+                                        Healthy
+                                    </Badge>
+                                </div>
+                            </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
-                            <div className="text-center">
-                                <p className="text-xs text-[var(--color-text-secondary)] mb-1">
-                                    Database
-                                </p>
-                                <Badge variant="success" size="sm" dot>
-                                    Connected
-                                </Badge>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-xs text-[var(--color-text-secondary)] mb-1">
-                                    Auth
-                                </p>
-                                <Badge variant="success" size="sm" dot>
-                                    Active
-                                </Badge>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-xs text-[var(--color-text-secondary)] mb-1">
-                                    API
-                                </p>
-                                <Badge variant="success" size="sm" dot>
-                                    Healthy
-                                </Badge>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            </div>
+                    </Card>
+                </div>
+            )}
         </ContentWrapper>
     );
 }

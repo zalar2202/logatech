@@ -1,6 +1,7 @@
 "use client";
 
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 /**
  * DevBundleBanner - Cross-sell banner for Design services
@@ -20,9 +21,11 @@ export default function DevBundleBanner() {
                             ensure your app looks as good as it works.
                         </p>
                     </div>
-                    <a href="/services/design" className="loga-btn bundle-cta">
-                        See Design Services →
-                    </a>
+                    <SmartCTA 
+                        label="See Design Services" 
+                        className="loga-btn bundle-cta" 
+                        userHref="/services/design"
+                    />
                 </div>
             </div>
         </section>

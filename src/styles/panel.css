@@ -166,6 +166,22 @@ body {
     overflow-y: auto;
 }
 
+/* Header Normalization for Panel (override website leakage) */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-inter), sans-serif !important;
+    letter-spacing: -0.01em;
+}
+
+@media (max-width: 768px) {
+    h1 { font-size: 1.75rem !important; }
+    h2 { font-size: 1.5rem !important; }
+    h3 { font-size: 1.25rem !important; }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.5rem !important; }
+}
+
 /* ===================================
    Custom Scrollbar
    =================================== */

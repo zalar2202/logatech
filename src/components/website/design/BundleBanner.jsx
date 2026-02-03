@@ -1,6 +1,7 @@
 "use client";
 
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import SmartCTA from "@/components/website/shared/SmartCTA";
 
 /**
  * BundleBanner - Cross-sell banner for Design + Develop
@@ -20,9 +21,11 @@ export default function BundleBanner() {
                             your project from concept to launch.
                         </p>
                     </div>
-                    <a href="/services" className="loga-btn bundle-cta">
-                        Explore Full-Stack Packages →
-                    </a>
+                    <SmartCTA 
+                        label="Explore Full-Stack Packages" 
+                        className="loga-btn bundle-cta" 
+                        userHref="/services/develop"
+                    />
                 </div>
             </div>
         </section>

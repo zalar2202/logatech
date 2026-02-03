@@ -1,5 +1,7 @@
 "use client";
 
+import SmartCTA from "@/components/website/shared/SmartCTA";
+
 /**
  * DesignHero - Hero section for Design service page
  */
@@ -22,9 +24,10 @@ export default function DesignHero() {
                     brand, communicate your message, and convert visitors into customers.
                 </p>
                 <div className="design-hero-cta animate-fade-in-up delay-500">
-                    <a href="#contact" className="loga-btn">
-                        Start Your Design Strategy →
-                    </a>
+                    <SmartCTA 
+                        label="Start Your Design Strategy" 
+                        className="loga-btn" 
+                    />
                     <a href="#use-cases" className="loga-alt-btn">
                         See Examples
                     </a>
