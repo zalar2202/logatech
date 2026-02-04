@@ -11,6 +11,7 @@ import { RichTextEditor } from "@/components/forms/RichTextEditor";
 import { SEOPreview } from "@/components/forms/SEOPreview";
 import { Skeleton } from "@/components/common/Skeleton";
 import { Badge } from "@/components/common/Badge";
+import { MediaPicker } from "@/components/common/MediaPicker";
 import {
     Save,
     Send,
@@ -33,6 +34,7 @@ export default function EditBlogPostPage({ params }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [showMediaPicker, setShowMediaPicker] = useState(false);
 
     // Post data
     const [postData, setPostData] = useState({
@@ -180,34 +182,20 @@ export default function EditBlogPostPage({ params }) {
         }
     };
 
-    // Handle featured image upload
-    const handleFeaturedImageUpload = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("folder", "blog");
-
-        try {
-            const { data } = await axios.post("/api/media", formData);
-            if (data.success) {
-                setPostData((prev) => ({
-                    ...prev,
-                    featuredImage: {
-                        ...prev.featuredImage,
-                        url: data.data.url,
-                    },
-                    seo: {
-                        ...prev.seo,
-                        ogImage: data.data.url,
-                    },
-                }));
-                toast.success("Featured image uploaded");
-            }
-        } catch (err) {
-            toast.error("Failed to upload image");
-        }
+    // Handle media selection
+    const handleMediaSelect = (media) => {
+        setPostData((prev) => ({
+            ...prev,
+            featuredImage: {
+                ...prev.featuredImage,
+                url: media.url,
+            },
+            seo: {
+                ...prev.seo,
+                ogImage: media.url,
+            },
+        }));
+        toast.success("Featured image selected");
     };
 
     // Save changes
@@ -465,23 +453,28 @@ export default function EditBlogPostPage({ params }) {
                                 />
                             </div>
                         ) : (
-                            <label className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-[var(--color-border)] rounded-lg cursor-pointer hover:border-[var(--color-primary)] transition-colors">
+                            <div 
+                                onClick={() => setShowMediaPicker(true)}
+                                className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-[var(--color-border)] rounded-lg cursor-pointer hover:border-[var(--color-primary)] transition-colors"
+                            >
                                 <Upload
                                     size={32}
                                     className="text-[var(--color-text-secondary)]"
                                 />
                                 <span className="text-sm text-[var(--color-text-secondary)] mt-2">
-                                    Click to upload
+                                    Choose from Library
                                 </span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFeaturedImageUpload}
-                                    className="hidden"
-                                />
-                            </label>
+                            </div>
                         )}
                     </Card>
+
+                    <MediaPicker 
+                        isOpen={showMediaPicker}
+                        onClose={() => setShowMediaPicker(false)}
+                        onSelect={handleMediaSelect}
+                        allowedType="image"
+                        title="Choose Featured Image"
+                    />
 
                     {/* Category */}
                     <Card title="Category">

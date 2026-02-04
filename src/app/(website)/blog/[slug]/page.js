@@ -113,7 +113,7 @@ export default async function BlogPostPage({ params }) {
     );
 
     return (
-        <article className="min-h-screen">
+        <article className="min-h-screen pt-20 md:pt-24 bg-[var(--color-background)]">
             {/* Hero Section */}
             <section className="relative">
                 {/* Featured Image */}
@@ -131,7 +131,7 @@ export default async function BlogPostPage({ params }) {
                 )}
 
                 {/* Content Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 px-4 pb-12">
+                <div className="absolute bottom-0 left-0 right-0 px-4 pb-12 z-10">
                     <div className="max-w-4xl mx-auto text-white">
                         {/* Back Link */}
                         <Link
@@ -182,7 +182,7 @@ export default async function BlogPostPage({ params }) {
                             </span>
                             <span className="flex items-center gap-1">
                                 <Clock size={14} />
-                                {post.readingTime} min read
+                                {formatDate(post.publishedAt)}
                             </span>
                         </div>
                     </div>
@@ -190,22 +190,22 @@ export default async function BlogPostPage({ params }) {
             </section>
 
             {/* Content Section */}
-            <section className="py-12 px-4">
+            <section className="py-12 px-4 relative z-0">
                 <div className="max-w-4xl mx-auto">
                     <div className="lg:flex lg:gap-12">
                         {/* Main Content */}
                         <div className="flex-1">
                             {/* Article Content */}
                             <div
-                                className="prose prose-lg max-w-none blog-content
-                                    prose-headings:text-[var(--text-primary)]
-                                    prose-p:text-[var(--text-secondary)]
-                                    prose-a:text-[var(--accent-color)]
-                                    prose-strong:text-[var(--text-primary)]
-                                    prose-blockquote:border-[var(--accent-color)]
-                                    prose-blockquote:text-[var(--text-secondary)]
-                                    prose-code:bg-[var(--bg-tertiary)]
-                                    prose-pre:bg-[var(--bg-tertiary)]"
+                                className="prose prose-lg max-w-none blog-content dark:prose-invert
+                                    prose-headings:text-[var(--color-text-primary)]
+                                    prose-p:text-[var(--color-text-secondary)]
+                                    prose-a:text-[var(--color-primary)]
+                                    prose-strong:text-[var(--color-text-primary)]
+                                    prose-blockquote:border-[var(--color-primary)]
+                                    prose-blockquote:text-[var(--color-text-secondary)]
+                                    prose-code:bg-[var(--color-background-tertiary)]
+                                    prose-pre:bg-[var(--color-background-tertiary)]"
                                 dangerouslySetInnerHTML={{ __html: post.content }}
                             />
 

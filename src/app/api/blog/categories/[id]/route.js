@@ -73,6 +73,11 @@ export async function PUT(request, { params }) {
             body.slug = await BlogCategory.generateSlug(body.name, id);
         }
         
+        // Normalize parent field to null if empty string
+        if (body.parent === '') {
+            body.parent = null;
+        }
+
         // Prevent self-parenting
         if (body.parent === id) {
             return NextResponse.json(

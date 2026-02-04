@@ -20,6 +20,7 @@ import {
     Bot,
     Calculator,
     PenSquare,
+    Image as ImageIcon,
 } from "lucide-react";
 
 export const navigation = [
@@ -139,6 +140,12 @@ export const adminNavigation = [
         name: "Blog Management",
         href: "/panel/blog",
         icon: PenSquare,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Media Library",
+        href: "/panel/media",
+        icon: ImageIcon,
         roles: ["admin", "manager"],
     },
 ];
