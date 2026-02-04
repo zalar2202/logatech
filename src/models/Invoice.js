@@ -26,6 +26,10 @@ const InvoiceSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'User' 
         },
+        package: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Package'
+        },
         status: { 
             type: String, 
             enum: ['draft', 'sent', 'paid', 'overdue', 'cancelled'], 
@@ -43,6 +47,24 @@ const InvoiceSchema = new mongoose.Schema(
         total: { type: Number, required: true, default: 0 },
         
         notes: { type: String },
+        
+        // Installment Details
+        paymentPlan: {
+            isInstallment: { type: Boolean, default: false },
+            downPayment: { type: Number, default: 0 },
+            installmentsCount: { type: Number, default: 0 }, // Number of payments after down payment
+            installmentAmount: { type: Number, default: 0 }, // Amount per installment
+            period: { type: String, enum: ['monthly', 'weekly', 'quarterly'], default: 'monthly' },
+            installments: [
+                {
+                    dueDate: { type: Date },
+                    amount: { type: Number },
+                    status: { type: String, enum: ['unpaid', 'paid'], default: 'unpaid' },
+                    paidAt: { type: Date }
+                }
+            ]
+        },
+        
         createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     },
     { timestamps: true }

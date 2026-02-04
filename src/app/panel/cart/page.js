@@ -65,8 +65,12 @@ export default function CartPage() {
     };
 
     const calculateTotal = () => {
-        if (!cart) return 0;
-        return cart.items.reduce((acc, item) => acc + (item.package.price || 0) * item.quantity, 0);
+        if (!cart || !cart.items) return 0;
+        return cart.items.reduce((acc, item) => {
+            const price = Number(item.package?.price) || 0;
+            const quantity = Number(item.quantity) || 1;
+            return acc + (price * quantity);
+        }, 0);
     };
 
     if (loading) {
@@ -119,23 +123,23 @@ export default function CartPage() {
                                     <div className="flex-1 text-center sm:text-left">
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                                             <h3 className="text-lg font-bold">
-                                                {item.package.name}
-                                            </h3>
-                                            <Badge
-                                                variant="primary"
-                                                size="sm"
-                                                className="w-fit mx-auto sm:mx-0"
-                                            >
-                                                {item.billingCycle}
-                                            </Badge>
-                                        </div>
-                                        <p className="text-sm text-[var(--color-text-secondary)] line-clamp-1 mb-4">
-                                            Professional {item.package.category} service
-                                        </p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xl font-bold text-indigo-600">
-                                                {item.package.startingPrice}
-                                            </span>
+                                                 {item.package?.name || "Premium Package"}
+                                             </h3>
+                                             <Badge
+                                                 variant="primary"
+                                                 size="sm"
+                                                 className="w-fit mx-auto sm:mx-0"
+                                             >
+                                                 {item.billingCycle}
+                                             </Badge>
+                                         </div>
+                                         <p className="text-sm text-[var(--color-text-secondary)] line-clamp-1 mb-4">
+                                             Professional {item.package?.category || "Tech"} service
+                                         </p>
+                                         <div className="flex items-center justify-between">
+                                             <span className="text-xl font-bold text-indigo-600">
+                                                 {item.package?.price ? `$${item.package.price.toLocaleString()}` : item.package?.startingPrice || "$0.00"}
+                                             </span>
                                             <button
                                                 onClick={() => removeLineItem(item._id)}
                                                 className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"

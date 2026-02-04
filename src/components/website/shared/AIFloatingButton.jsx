@@ -36,6 +36,15 @@ export default function AIFloatingButton() {
                 }
             } catch (error) {
                 console.error("Failed to load AI settings:", error);
+                // Fallback to defaults if API fails (e.g. no DB connection)
+                setSettings({
+                    isActive: true,
+                    title: "Loga Chat",
+                    welcomeMessage: "Hello! How can I help you?",
+                    primaryColor: "#32127a",
+                    position: "bottom-right",
+                    buttonIcon: "bot",
+                });
             }
         };
         fetchSettings();

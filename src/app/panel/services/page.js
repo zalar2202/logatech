@@ -146,8 +146,8 @@ export default function ServicesPage() {
                         <Zap className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Active Services</p>
-                        <p className="text-2xl font-bold text-emerald-600">{activeServices.length}</p>
+                        <p className="text-sm text-[var(--color-text-secondary)]">Active Services</p>
+                        <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{activeServices.length}</p>
                     </div>
                 </Card>
                 <Card className="p-4 flex items-center gap-4">
@@ -155,8 +155,8 @@ export default function ServicesPage() {
                         <Calendar className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500">Total Services</p>
-                        <p className="text-2xl font-bold text-blue-600">{services.length}</p>
+                        <p className="text-sm text-[var(--color-text-secondary)]">Total Services</p>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{services.length}</p>
                     </div>
                 </Card>
                 {!isAdmin && (
@@ -165,8 +165,8 @@ export default function ServicesPage() {
                             <Shield className="w-6 h-6 text-purple-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Member Since</p>
-                            <p className="text-lg font-bold text-purple-600">
+                            <p className="text-sm text-[var(--color-text-secondary)]">Member Since</p>
+                            <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                             </p>
                         </div>
@@ -177,13 +177,13 @@ export default function ServicesPage() {
             {/* Services List/Grid */}
             <Card>
                 <div className="mb-6 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)] w-5 h-5" />
                     <input
                         type="text"
                         placeholder="Search services..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none transition-all dark:bg-gray-800 dark:border-gray-700"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-emerald-500 outline-none transition-all bg-transparent text-[var(--color-text-primary)]"
                         style={{ borderColor: "var(--color-border)" }}
                     />
                 </div>
@@ -199,16 +199,16 @@ export default function ServicesPage() {
                     ) : (
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             {filteredServices.map((svc) => (
-                                <div key={svc._id} className="p-4 border dark:border-gray-700 rounded-xl hover:shadow-md transition-all group relative">
+                                <div key={svc._id} className="p-4 border border-[var(--color-border)] rounded-xl hover:shadow-md transition-all group relative">
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Badge variant={svc.status === 'active' ? 'success' : svc.status === 'pending' ? 'warning' : 'secondary'} size="sm" className="capitalize">
                                                     {svc.status}
                                                 </Badge>
-                                                <span className="text-xs text-gray-400 font-mono">#{svc._id.slice(-6).toUpperCase()}</span>
+                                                <span className="text-xs text-[var(--color-text-tertiary)] font-mono">#{svc._id.slice(-6).toUpperCase()}</span>
                                             </div>
-                                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 truncate">
+                                            <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-1 truncate">
                                                 {svc.package?.name || "Premium Plan"}
                                             </h3>
                                             {isAdmin && (
@@ -216,19 +216,19 @@ export default function ServicesPage() {
                                             )}
                                             
                                             <div className="grid grid-cols-2 gap-4 mt-4">
-                                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                                                     <Clock className="w-4 h-4" />
                                                     <span>Started: {new Date(svc.startDate).toLocaleDateString()}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                                                     <Calendar className="w-4 h-4" />
                                                     <span>Expires: {svc.endDate ? new Date(svc.endDate).toLocaleDateString() : 'Lifetime'}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                                                     <CreditCard className="w-4 h-4" />
                                                     <span>${svc.price?.toFixed(2)} / {svc.billingCycle}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                                                     <Globe className="w-4 h-4" />
                                                     <span>Auto-renew: {svc.autoRenew ? "Yes" : "No"}</span>
                                                 </div>
@@ -250,6 +250,27 @@ export default function ServicesPage() {
                                     {svc.notes && (
                                         <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm text-gray-600 dark:text-gray-400 italic">
                                             "{svc.notes}"
+                                        </div>
+                                    )}
+
+                                    {isAdmin && svc.invoice?.paymentPlan?.isInstallment && (
+                                        <div className="mt-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl">
+                                            <div className="flex items-center gap-2 mb-3 text-indigo-700 dark:text-indigo-300">
+                                                <CreditCard className="w-4 h-4" />
+                                                <span className="text-xs font-bold uppercase tracking-wider">Active Payment Plan</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                                                <div className="text-gray-500">Installments:</div>
+                                                <div className="text-right font-medium text-indigo-900 dark:text-indigo-100">{svc.invoice.paymentPlan.installmentsCount} Payments</div>
+                                                <div className="text-gray-500">Amount/Period:</div>
+                                                <div className="text-right font-bold text-indigo-600 dark:text-indigo-400">
+                                                    ${svc.invoice.paymentPlan.installmentAmount?.toFixed(2)} / {svc.invoice.paymentPlan.period}
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 pt-3 border-t border-indigo-100 dark:border-indigo-800 flex justify-between items-center">
+                                                <span className="text-[10px] text-indigo-500 font-mono">LINKED INV: {svc.invoice.invoiceNumber}</span>
+                                                <Button size="sm" variant="secondary" className="h-7 text-[10px] px-2" onClick={() => (window.location.href = `/panel/invoices`)}>View Payments</Button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

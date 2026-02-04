@@ -29,6 +29,7 @@ export async function GET(request) {
         const services = await Service.find(query)
             .populate('user', 'name email')
             .populate('package', 'name description price duration')
+            .populate('invoice')
             .sort({ createdAt: -1 });
 
         return NextResponse.json({ success: true, data: services });

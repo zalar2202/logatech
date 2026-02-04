@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
 import { Card } from "@/components/common/Card";
@@ -25,8 +26,11 @@ import {
     XCircle,
     Send,
     Mail,
+    CreditCard,
 } from "lucide-react";
 import * as Yup from "yup";
+
+import { useSearchParams } from "next/navigation";
 
 const invoiceSchema = Yup.object().shape({
     client: Yup.string().required("Client is required"),
@@ -47,33 +51,56 @@ const invoiceSchema = Yup.object().shape({
     taxRate: Yup.number().min(0).max(100),
 });
 
-export default function InvoicesPage() {
+function InvoicesPage() {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
+    const invoiceIdParam = searchParams.get("id");
+    const isAdmin = ["admin", "manager"].includes(user?.role);
+    
     const [invoices, setInvoices] = useState([]);
     const [clients, setClients] = useState([]);
+    const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [sendingId, setSendingId] = useState(null);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
 
     useEffect(() => {
-        fetchInvoices();
-        fetchClients();
+        const init = async () => {
+            await Promise.all([fetchInvoices(), fetchClients(), fetchPackages()]);
+        };
+        init();
     }, []);
+
+    // Effect to open detail view if ID is in URL
+    useEffect(() => {
+        if (invoiceIdParam && invoices.length > 0) {
+            const inv = invoices.find(i => i._id === invoiceIdParam || i.id === invoiceIdParam);
+            if (inv) {
+                setSelectedInvoice(inv);
+                setIsViewModalOpen(true);
+            }
+        }
+    }, [invoiceIdParam, invoices]);
 
     const fetchInvoices = async () => {
         setLoading(true);
         try {
             const { data } = await axios.get("/api/invoices");
-            if (data.success) setInvoices(data.data);
+            if (data.success) {
+                setInvoices(data.data);
+                return data.data;
+            }
         } catch (error) {
             toast.error("Failed to fetch invoices");
         } finally {
             setLoading(false);
         }
+        return [];
     };
 
     const fetchClients = async () => {
@@ -82,6 +109,15 @@ export default function InvoicesPage() {
             if (data.success) setClients(data.data || []);
         } catch (error) {
             console.error("Failed to fetch clients");
+        }
+    };
+
+    const fetchPackages = async () => {
+        try {
+            const { data } = await axios.get("/api/packages");
+            if (data.success) setPackages(data.data || []);
+        } catch (error) {
+            console.error("Failed to fetch packages");
         }
     };
 
@@ -190,13 +226,13 @@ export default function InvoicesPage() {
 
             <Card>
                 <div className="mb-6 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)] w-5 h-5" />
                     <input
                         type="text"
                         placeholder="Search invoices..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:bg-gray-800 dark:border-gray-700"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-transparent text-[var(--color-text-primary)]"
                         style={{ borderColor: "var(--color-border)" }}
                     />
                 </div>
@@ -204,15 +240,16 @@ export default function InvoicesPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b dark:border-gray-700">
-                                <th className="p-4 font-semibold text-sm text-gray-500">
-                                    Invoice #
+                            <tr className="border-b border-[var(--color-border)] bg-[var(--color-background-secondary)]/50">
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
+                                    Invoice Details
                                 </th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Client</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Date</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Amount</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Status</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Actions</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">Client</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">Date</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">Type</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)] text-right">Amount</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)] text-center">Status</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)] text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -232,39 +269,59 @@ export default function InvoicesPage() {
                                 filteredInvoices.map((inv) => (
                                     <tr
                                         key={inv._id}
-                                        className="border-b last:border-0 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                        className="border-b last:border-0 border-[var(--color-border)] hover:bg-[var(--color-hover)] transition-colors"
                                     >
-                                        <td className="p-4 font-mono text-sm">
-                                            {inv.invoiceNumber}
-                                        </td>
-                                        <td className="p-4 font-medium">
-                                            {inv.client?.name || "Unknown"}
-                                        </td>
-                                        <td className="p-4 text-sm text-gray-500">
-                                            {new Date(inv.issueDate).toLocaleDateString()}
-                                        </td>
-                                        <td className="p-4 font-bold text-gray-900 dark:text-gray-100">
-                                            ${inv.total?.toFixed(2)}
+                                        <td className="p-4">
+                                            <div className="flex flex-col">
+                                                <span className="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                                    {inv.invoiceNumber}
+                                                </span>
+                                                <span className="text-[10px] text-[var(--color-text-tertiary)] uppercase font-medium">#{inv._id.slice(-6)}</span>
+                                            </div>
                                         </td>
                                         <td className="p-4">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-[var(--color-text-primary)]">
+                                                    {inv.client?.name || "Unknown"}
+                                                </span>
+                                                <span className="text-xs text-[var(--color-text-secondary)]">{inv.client?.email}</span>
+                                            </div>
+                                        </td>
+                                        <td className="p-4 text-sm text-[var(--color-text-secondary)]">
+                                            {new Date(inv.issueDate).toLocaleDateString()}
+                                        </td>
+                                        <td className="p-4">
+                                            {inv.paymentPlan?.isInstallment ? (
+                                                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider">
+                                                    <Clock className="w-3 h-3" />
+                                                    Installment
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                                                    <CheckCircle className="w-3 h-3" />
+                                                    Full Payment
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="p-4 font-black text-[var(--color-text-primary)] text-right">
+                                            ${inv.total?.toFixed(2)}
+                                        </td>
+                                        <td className="p-4 text-center">
                                             <Badge
                                                 variant={
                                                     inv.status === "paid"
                                                         ? "success"
                                                         : inv.status === "overdue"
-                                                          ? "danger"
-                                                          : inv.status === "sent"
-                                                            ? "primary"
-                                                            : "secondary"
+                                                            ? "danger"
+                                                            : "primary"
                                                 }
                                                 size="sm"
-                                                className="capitalize"
                                             >
-                                                {inv.status}
+                                                {inv.status.toUpperCase()}
                                             </Badge>
                                         </td>
                                         <td className="p-4">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center justify-end gap-2">
                                                 {["admin", "manager"].includes(user?.role) ? (
                                                     <>
                                                         <button
@@ -314,6 +371,10 @@ export default function InvoicesPage() {
                                                             </Button>
                                                         )}
                                                         <button
+                                                            onClick={() => {
+                                                                setSelectedInvoice(inv);
+                                                                setIsViewModalOpen(true);
+                                                            }}
                                                             className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 transition-colors"
                                                             title="View Details"
                                                         >
@@ -344,6 +405,7 @@ export default function InvoicesPage() {
                 <Formik
                     initialValues={{
                         client: selectedInvoice?.client?._id || selectedInvoice?.client || "",
+                        package: selectedInvoice?.package?._id || selectedInvoice?.package || "",
                         invoiceNumber: selectedInvoice?.invoiceNumber || "",
                         issueDate: selectedInvoice?.issueDate
                             ? new Date(selectedInvoice.issueDate).toISOString().split("T")[0]
@@ -357,6 +419,13 @@ export default function InvoicesPage() {
                         ],
                         notes: selectedInvoice?.notes || "",
                         taxRate: selectedInvoice?.taxRate || 0,
+                        paymentPlan: {
+                            isInstallment: selectedInvoice?.paymentPlan?.isInstallment || false,
+                            downPayment: selectedInvoice?.paymentPlan?.downPayment || 0,
+                            installmentsCount: selectedInvoice?.paymentPlan?.installmentsCount || 0,
+                            installmentAmount: selectedInvoice?.paymentPlan?.installmentAmount || 0,
+                            period: selectedInvoice?.paymentPlan?.period || "monthly",
+                        },
                     }}
                     validationSchema={invoiceSchema}
                     onSubmit={handleSubmit}
@@ -366,12 +435,20 @@ export default function InvoicesPage() {
                         const totals = calculateTotals(values);
                         return (
                             <Form className="space-y-6">
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                                     <SelectField name="client" label="Client">
                                         <option value="">-- Select Client --</option>
                                         {clients.map((c) => (
                                             <option key={c._id} value={c._id}>
                                                 {c.name}
+                                            </option>
+                                        ))}
+                                    </SelectField>
+                                    <SelectField name="package" label="Linked Package (Auto-Activation)">
+                                        <option value="">-- None --</option>
+                                        {packages.map((p) => (
+                                            <option key={p._id} value={p._id}>
+                                                {p.name} (${p.price})
                                             </option>
                                         ))}
                                     </SelectField>
@@ -485,11 +562,57 @@ export default function InvoicesPage() {
                                     </div>
                                 </div>
 
-                                <TextareaField
-                                    name="notes"
-                                    label="Notes / Payment Instructions"
-                                    rows={2}
-                                />
+                                 <div className="bg-[var(--color-background-secondary)] p-6 rounded-xl border border-[var(--color-border)] space-y-4">
+                                     <div className="flex items-center justify-between">
+                                         <h4 className="text-sm font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                                             <CreditCard className="w-4 h-4 text-indigo-600" />
+                                             Payment & Installment Options
+                                         </h4>
+                                         <label className="flex items-center gap-2 cursor-pointer">
+                                             <input
+                                                 type="checkbox"
+                                                 className="rounded text-indigo-600"
+                                                 name="paymentPlan.isInstallment"
+                                                 checked={values.paymentPlan.isInstallment}
+                                                 onChange={(e) => setFieldValue("paymentPlan.isInstallment", e.target.checked)}
+                                             />
+                                             <span className="text-xs font-semibold text-[var(--color-text-secondary)]">Enable Installments</span>
+                                         </label>
+                                     </div>
+
+                                     {values.paymentPlan.isInstallment && (
+                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                             <InputField
+                                                 type="number"
+                                                 name="paymentPlan.downPayment"
+                                                 label="Down Payment"
+                                                 prefix="$"
+                                             />
+                                             <InputField
+                                                 type="number"
+                                                 name="paymentPlan.installmentAmount"
+                                                 label="Installment Amt"
+                                                 prefix="$"
+                                             />
+                                             <InputField
+                                                 type="number"
+                                                 name="paymentPlan.installmentsCount"
+                                                 label="Total Payments"
+                                             />
+                                             <SelectField name="paymentPlan.period" label="Period">
+                                                 <option value="monthly">Monthly</option>
+                                                 <option value="weekly">Weekly</option>
+                                                 <option value="quarterly">Quarterly</option>
+                                             </SelectField>
+                                         </div>
+                                     )}
+                                 </div>
+
+                                 <TextareaField
+                                     name="notes"
+                                     label="Notes / Payment Instructions"
+                                     rows={2}
+                                 />
 
                                 <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
                                     <Button
@@ -508,6 +631,149 @@ export default function InvoicesPage() {
                     }}
                 </Formik>
             </Modal>
+
+            {/* View Details Modal */}
+            <Modal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                title={`Invoice Details: ${selectedInvoice?.invoiceNumber}`}
+                size="3xl"
+            >
+                {selectedInvoice && (
+                    <div className="space-y-6 py-2">
+                        <div className="grid grid-cols-2 gap-8 border-b pb-6 dark:border-gray-700">
+                            <div>
+                                <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">Bill To</p>
+                                <p className="font-bold text-lg text-[var(--color-text-primary)]">{selectedInvoice.client?.name || 'Unknown Client'}</p>
+                                <p className="text-sm text-[var(--color-text-secondary)]">{selectedInvoice.client?.email}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">Invoice Status</p>
+                                <Badge
+                                    variant={
+                                        selectedInvoice.status === "paid"
+                                            ? "success"
+                                            : selectedInvoice.status === "overdue"
+                                                ? "danger"
+                                                : "primary"
+                                    }
+                                >
+                                    {selectedInvoice.status.toUpperCase()}
+                                </Badge>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-6 text-sm">
+                            <div>
+                                <p className="text-gray-400 mb-1">Invoice Number</p>
+                                <p className="font-mono font-bold text-[var(--color-text-primary)]">{selectedInvoice.invoiceNumber}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-400 mb-1">Issue Date</p>
+                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.issueDate).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-400 mb-1">Due Date</p>
+                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.dueDate).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+
+                        <div className="border rounded-xl overflow-hidden border-[var(--color-border)]">
+                            <table className="w-full text-left">
+                                <thead className="bg-[var(--color-background-secondary)]">
+                                    <tr>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500">Service Description</th>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 text-center">Qty</th>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">Unit Price</th>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y dark:divide-gray-700">
+                                    {selectedInvoice.items.map((item, idx) => (
+                                        <tr key={idx}>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-medium">{item.description}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-secondary)] text-center">{item.quantity}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-secondary)] text-right">${item.unitPrice?.toFixed(2)}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-bold text-right">${(item.quantity * item.unitPrice).toFixed(2)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="flex justify-end pt-4">
+                            <div className="w-64 space-y-3">
+                                <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
+                                    <span>Subtotal</span>
+                                    <span>${selectedInvoice.subtotal?.toFixed(2) || (selectedInvoice.total / (1 + (selectedInvoice.taxRate || 0)/100)).toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
+                                    <span>Tax ({selectedInvoice.taxRate || 0}%)</span>
+                                    <span>${((selectedInvoice.total || 0) - (selectedInvoice.subtotal || 0)).toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-xl font-bold text-[var(--color-text-primary)] border-t pt-3 dark:border-gray-700">
+                                    <span>Total</span>
+                                    <span className="text-indigo-600">${selectedInvoice.total?.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                         {selectedInvoice.paymentPlan?.isInstallment && (
+                             <div className="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/20">
+                                 <h4 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                     <Clock className="w-3 h-3" />
+                                     Installment Payment Plan
+                                 </h4>
+                                 <div className="grid grid-cols-4 gap-4">
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Down Payment</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">${selectedInvoice.paymentPlan.downPayment?.toFixed(2)}</p>
+                                     </div>
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Installment</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">${selectedInvoice.paymentPlan.installmentAmount?.toFixed(2)}</p>
+                                     </div>
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Payments</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">{selectedInvoice.paymentPlan.installmentsCount}</p>
+                                     </div>
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Interval</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 capitalize">{selectedInvoice.paymentPlan.period}</p>
+                                     </div>
+                                 </div>
+                             </div>
+                         )}
+
+                         {selectedInvoice.notes && (
+                             <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-[var(--color-border)]">
+                                 <p className="text-xs uppercase font-bold text-gray-400 mb-2">Notes</p>
+                                 <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed italic whitespace-pre-wrap">{selectedInvoice.notes}</p>
+                             </div>
+                         )}
+
+                        <div className="flex justify-end gap-3 pt-6 border-t dark:border-gray-700">
+                            <Button variant="secondary" onClick={() => setIsViewModalOpen(false)}>Close</Button>
+                            <Link href={`/panel/invoices/${selectedInvoice._id}/print`}>
+                                <Button variant="primary" icon={<Download className="w-4 h-4" />}>Download PDF</Button>
+                            </Link>
+                            {!isAdmin && ['sent', 'overdue'].includes(selectedInvoice.status) && (
+                                <Button variant="success">Proceed to Payment</Button>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </ContentWrapper>
+    );
+}
+
+import { Suspense } from "react";
+
+export default function InvoicesPageWithSuspense() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <InvoicesPage />
+        </Suspense>
     );
 }

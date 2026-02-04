@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import Invoice from '@/models/Invoice';
+import Service from '@/models/Service';
+import Client from '@/models/Client';
 import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 
@@ -10,14 +12,25 @@ export async function GET(request, { params }) {
         const { id } = await params;
 
         const user = await verifyAuth(request);
-        if (!user || !['admin', 'manager'].includes(user.role)) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const invoice = await Invoice.findById(id).populate('client');
         
         if (!invoice) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+        }
+
+        // Permission check: Admin/Manager can see everything, others only their own
+        if (!['admin', 'manager'].includes(user.role)) {
+            // Check if the invoice belongs to this user
+            // We need to check both invoice.user and potentially the user linked to the client
+            const isOwner = invoice.user?.toString() === user._id.toString();
+            
+            if (!isOwner) {
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
         }
 
         return NextResponse.json({ success: true, data: invoice });
@@ -38,6 +51,11 @@ export async function PUT(request, { params }) {
         }
 
         const body = await request.json();
+
+        // Sanitize ObjectIds to avoid Mongoose casting errors with empty strings
+        if (body.package === "") body.package = null;
+        if (body.client === "") body.client = null;
+        if (body.user === "") body.user = null;
 
         // If items are being updated, recalculate totals
         if (body.items) {
@@ -72,20 +90,51 @@ export async function PUT(request, { params }) {
             body.total = subtotal + taxAmount;
         }
 
+        const oldInvoice = await Invoice.findById(id);
+        if (!oldInvoice) {
+            return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+        }
+
         const invoice = await Invoice.findByIdAndUpdate(
             id,
             { $set: body },
             { new: true, runValidators: true }
-        );
+        ).populate('client');
 
-        if (!invoice) {
-            return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+        // Logic: If status changed to 'paid' and there's a package/user linked, activate service
+        if (body.status === 'paid' && oldInvoice.status !== 'paid' && (invoice.package || invoice.user)) {
+             let targetUserId = invoice.user;
+             
+             if (!targetUserId && invoice.client) {
+                 // invoice.client is populated, so it's an object. 
+                 // If Client.findById gets an object, it might fail. Use ._id.
+                 const clientData = await Client.findById(invoice.client._id);
+                 targetUserId = clientData?.user || clientData?.userId || clientData?._id;
+             }
+
+             if (targetUserId && invoice.package) {
+                  await Service.findOneAndUpdate(
+                      { user: targetUserId, package: invoice.package },
+                      { 
+                          status: 'active',
+                          startDate: new Date(),
+                          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                          price: invoice.total,
+                          invoice: id
+                      },
+                      { upsert: true, new: true }
+                  );
+             }
         }
 
         return NextResponse.json({ success: true, data: invoice });
     } catch (error) {
         console.error("Update error:", error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ 
+            error: error.name === 'ValidationError' 
+                ? Object.values(error.errors).map(val => val.message).join(', ')
+                : error.message || 'Internal Server Error' 
+        }, { status: 500 });
     }
 }
 
