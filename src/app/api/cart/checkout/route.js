@@ -81,7 +81,8 @@ export async function POST(request) {
             invoiceNumber: generateInvoiceNumber(),
             client: client._id,
             user: targetUserId,
-            status: 'draft',
+            package: cart.items[0]?.package?._id, // Link first package for service activation logic
+            status: 'sent', // Set to sent immediately so visibility filter doesn't hide it from user
             issueDate: new Date(),
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
             items: items,

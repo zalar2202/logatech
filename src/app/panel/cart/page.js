@@ -77,7 +77,7 @@ export default function CartPage() {
             });
             if (res.data.success) {
                 toast.success("Invoice generated successfully!");
-                router.push(`/panel/invoices`);
+                router.push(`/panel/invoices?id=${res.data.invoiceId}`);
             }
         } catch (error) {
             toast.error(error.response?.data?.error || "Checkout failed");

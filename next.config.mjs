@@ -2,8 +2,9 @@
 const nextConfig = {
     /* config options here */
     output: "standalone",
+    reactCompiler: true,
     experimental: {
-        reactCompiler: true,
+        // ... experimental options
     },
     sassOptions: {
         silenceDeprecations: ["import"],
