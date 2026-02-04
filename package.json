@@ -39,12 +39,12 @@
         "yup": "^1.7.1"
     },
     "devDependencies": {
-        "@tailwindcss/postcss": "^4",
+        "@tailwindcss/postcss": "^4.1.18",
         "babel-plugin-react-compiler": "1.0.0",
         "eslint": "^9",
         "eslint-config-next": "16.0.1",
         "eslint-config-prettier": "^10.1.8",
         "prettier": "^3.6.2",
-        "tailwindcss": "^4"
+        "tailwindcss": "^4.1.18"
     }
 }
