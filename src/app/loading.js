@@ -1,4 +1,5 @@
 import { Loader } from "@/components/common/Loader";
+import Image from "next/image";
 
 /**
  * Root loading UI - shown during initial navigation
@@ -7,10 +8,22 @@ import { Loader } from "@/components/common/Loader";
 export default function RootLoading() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
-            <div className="text-center">
+            <div className="flex flex-col items-center">
+                <div
+                    className="w-20 h-20 rounded-2xl mb-6 overflow-hidden shadow-xl flex items-center justify-center"
+                    style={{ backgroundColor: "var(--color-primary)" }}
+                >
+                    <Image
+                        src="/assets/logo/LogaTech-512.webp"
+                        alt="LogaTech"
+                        width={64}
+                        height={64}
+                        className="w-16 h-16 object-contain brightness-0 invert"
+                    />
+                </div>
                 <Loader size="lg" />
-                <p className="mt-4 text-[var(--color-text-secondary)]">
-                    Loading LogaTech Admin Panel...
+                <p className="mt-4 text-[var(--color-text-secondary)] font-medium">
+                    Loading LogaTech...
                 </p>
             </div>
         </div>

@@ -50,6 +50,25 @@ export const metadata = {
         template: "%s | LogaTech",
     },
     description: "LogaTech - From Code to Cloud",
+    icons: {
+        icon: [
+            { url: "/assets/favicon/favicon.ico" },
+            { url: "/assets/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+            { url: "/assets/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+        ],
+        apple: [{ url: "/assets/favicon/apple-touch-icon.png" }],
+        other: [
+            {
+                rel: "android-chrome-192x192",
+                url: "/assets/favicon/android-chrome-192x192.png",
+            },
+            {
+                rel: "android-chrome-512x512",
+                url: "/assets/favicon/android-chrome-512x512.png",
+            },
+        ],
+    },
+    manifest: "/assets/favicon/site.webmanifest",
 };
 
 export default function RootLayout({ children }) {
