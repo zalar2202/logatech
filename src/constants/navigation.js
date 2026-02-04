@@ -18,6 +18,7 @@ import {
     ShoppingCart,
     Store,
     Bot,
+    Calculator,
 } from "lucide-react";
 
 export const navigation = [
@@ -43,6 +44,12 @@ export const navigation = [
         roles: ["user"],
     },
     {
+        name: "Billing",
+        href: "/panel/accounting",
+        icon: CreditCard,
+        roles: ["user"],
+    },
+    {
         name: "Support Tickets",
         href: "/panel/tickets",
         icon: Ticket,
@@ -65,6 +72,12 @@ export const adminNavigation = [
         name: "User Management",
         href: "/panel/users",
         icon: Users,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Accounting",
+        href: "/panel/admin/accounting",
+        icon: Calculator,
         roles: ["admin", "manager"],
     },
     {
