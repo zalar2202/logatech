@@ -153,6 +153,9 @@ export async function uploadFile(file, category = 'avatars', oldFilename = null)
         const publicUrl = `/${STORAGE_CONFIG.baseDir.replace('public/', '')}/${subDir}/${filename}`;
         const publicPath = `/${STORAGE_CONFIG.baseDir.replace('public/', '')}/${subDir}`;
 
+        console.log(`[STORAGE DEBUG] Uploaded: ${filename} to ${filePath}`);
+        console.log(`[STORAGE DEBUG] Public URL: ${publicUrl}`);
+
         return {
             success: true,
             filename,

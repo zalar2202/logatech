@@ -113,7 +113,7 @@ export default async function BlogPostPage({ params }) {
     );
 
     return (
-        <article className="min-h-screen pt-20 md:pt-24 bg-[var(--color-background)]">
+        <article className="min-h-screen pt-32 md:pt-40 bg-[var(--color-background)] text-[var(--color-text-primary)] transition-colors duration-300">
             {/* Hero Section */}
             <section className="relative">
                 {/* Featured Image */}

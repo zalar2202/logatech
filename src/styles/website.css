@@ -398,6 +398,7 @@ body {
 body {
     color: var(--color-text-primary);
     background: var(--color-background);
+    background-color: var(--color-background) !important;
     font-family:
         var(--font-inter),
         -apple-system,
@@ -715,7 +716,7 @@ html {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 9999;
+    z-index: 10000;
     transition: all var(--transition-base) ease;
 }
 
