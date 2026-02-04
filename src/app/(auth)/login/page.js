@@ -11,6 +11,7 @@ import { loginSchema, loginInitialValues } from "@/schemas/auth.schema";
 import { LogIn, Shield, AlertCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import Image from "next/image";
 import { Captcha } from "@/components/forms/Captcha";
 
 export default function LoginPage() {
@@ -74,10 +75,16 @@ export default function LoginPage() {
                 <div className="hidden md:block">
                     <div className="text-center md:text-left">
                         <div
-                            className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4"
+                            className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4 overflow-hidden shadow-lg"
                             style={{ backgroundColor: "var(--color-primary)" }}
                         >
-                            <Shield size={32} style={{ color: "white" }} />
+                            <Image
+                                src="/assets/logo/LogaTech-512.webp"
+                                alt="LogaTech"
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 object-contain brightness-0 invert"
+                            />
                         </div>
 
                         <h1
@@ -143,10 +150,16 @@ export default function LoginPage() {
                         {/* Mobile Logo */}
                         <div className="md:hidden text-center mb-6">
                             <div
-                                className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4"
+                                className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4 overflow-hidden shadow-lg mx-auto"
                                 style={{ backgroundColor: "var(--color-primary)" }}
                             >
-                                <Shield size={32} style={{ color: "white" }} />
+                                <Image
+                                    src="/assets/logo/LogaTech-512.webp"
+                                    alt="LogaTech"
+                                    width={48}
+                                    height={48}
+                                    className="w-12 h-12 object-contain brightness-0 invert"
+                                />
                             </div>
                             <h2
                                 className="text-2xl font-bold"
@@ -281,7 +294,7 @@ export default function LoginPage() {
 
                         <div className="mt-6 text-center">
                             <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                                Don't have an account?{" "}
+                                Don&apos;t have an account?{" "}
                                 <Link
                                     href="/signup"
                                     className="font-bold hover:underline"
