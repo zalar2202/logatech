@@ -52,6 +52,11 @@ export async function PUT(request, { params }) {
 
         const body = await request.json();
 
+        // Sanitize ObjectIds to avoid Mongoose casting errors with empty strings
+        if (body.package === "") body.package = null;
+        if (body.client === "") body.client = null;
+        if (body.user === "") body.user = null;
+
         // If items are being updated, recalculate totals
         if (body.items) {
              let subtotal = 0;
