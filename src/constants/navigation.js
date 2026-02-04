@@ -50,6 +50,12 @@ export const navigation = [
         roles: ["user"],
     },
     {
+        name: "Invoices",
+        href: "/panel/invoices",
+        icon: FileText,
+        roles: ["user"],
+    },
+    {
         name: "Support Tickets",
         href: "/panel/tickets",
         icon: Ticket,

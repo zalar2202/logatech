@@ -69,10 +69,18 @@ const TransactionsTable = ({ transactions, type = 'user' }) => {
 
                             return (
                                 <tr key={txId} style={{ borderBottom: '1px solid var(--color-border)', transition: 'background 0.2s' }}>
-                                    <td style={{ padding: '15px 20px', fontFamily: 'monospace', color: 'var(--color-primary)' }}>{invoiceNo}</td>
+                                    <td style={{ padding: '15px 20px', fontFamily: 'monospace' }}>
+                                        <Link href={`/panel/invoices?id=${txId}`} className="hover:underline" style={{ color: 'var(--color-primary)', fontWeight: '600' }}>
+                                            {invoiceNo}
+                                        </Link>
+                                    </td>
                                     {type === 'admin' && <td style={{ padding: '15px 20px', fontWeight: '500' }}>{clientName}</td>}
                                     <td style={{ padding: '15px 20px', color: 'var(--color-text-secondary)' }}>{dateStr}</td>
-                                    <td style={{ padding: '15px 20px' }}>{descriptionStr}</td>
+                                    <td style={{ padding: '15px 20px' }}>
+                                        <Link href={`/panel/invoices?id=${txId}`} style={{ color: 'inherit', textDecoration: 'none' }} className="hover:text-[var(--color-primary)]">
+                                            {descriptionStr}
+                                        </Link>
+                                    </td>
                                     <td style={{ padding: '15px 20px', fontWeight: '700' }}>{amountStr}</td>
                                     <td style={{ padding: '15px 20px' }}>
                                         <span style={{
@@ -88,6 +96,11 @@ const TransactionsTable = ({ transactions, type = 'user' }) => {
                                     </td>
                                     <td style={{ padding: '15px 20px' }}>
                                         <div style={{ display: 'flex', gap: '8px' }}>
+                                            <Link href={`/panel/invoices?id=${txId}`} passHref legacyBehavior>
+                                                <a className="loga-btn" style={{ padding: '5px 10px', fontSize: '0.8rem', borderRadius: '8px', display: 'flex', alignItems: 'center', background: 'var(--color-background-tertiary)', color: 'var(--color-text-secondary)' }} title="View Details">
+                                                    <VisibilityIcon fontSize="small" />
+                                                </a>
+                                            </Link>
                                             <Link href={`/panel/invoices/${txId}/print`} passHref legacyBehavior>
                                                 <a className="loga-btn" style={{ padding: '5px 10px', fontSize: '0.8rem', borderRadius: '8px', display: 'flex', alignItems: 'center' }} title="Download Invoice">
                                                     <DownloadIcon fontSize="small" />
