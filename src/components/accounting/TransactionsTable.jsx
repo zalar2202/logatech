@@ -1,6 +1,6 @@
 "use client";
-
 import React from 'react';
+import Link from 'next/link';
 import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -24,11 +24,13 @@ const TransactionsTable = ({ transactions, type = 'user' }) => {
     };
 
     const getStatusStyle = (status) => {
+        if (!status) return { background: 'var(--color-background-tertiary)', color: 'var(--color-text-secondary)' };
         switch (status.toLowerCase()) {
             case 'completed':
             case 'paid':
                 return { background: 'var(--color-success-surface)', color: 'var(--color-success-foreground)' };
             case 'pending':
+            case 'sent':
                 return { background: 'var(--color-warning-surface)', color: 'var(--color-warning-foreground)' };
             case 'failed':
             case 'overdue':
@@ -57,34 +59,45 @@ const TransactionsTable = ({ transactions, type = 'user' }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {transactions.map((tx) => (
-                            <tr key={tx.id} style={{ borderBottom: '1px solid var(--color-border)', transition: 'background 0.2s' }}>
-                                <td style={{ padding: '15px 20px', fontFamily: 'monospace', color: 'var(--color-primary)' }}>#{tx.id}</td>
-                                {type === 'admin' && <td style={{ padding: '15px 20px', fontWeight: '500' }}>{tx.clientName}</td>}
-                                <td style={{ padding: '15px 20px', color: 'var(--color-text-secondary)' }}>{tx.date}</td>
-                                <td style={{ padding: '15px 20px' }}>{tx.description}</td>
-                                <td style={{ padding: '15px 20px', fontWeight: '700' }}>{tx.amount}</td>
-                                <td style={{ padding: '15px 20px' }}>
-                                    <span style={{
-                                        ...getStatusStyle(tx.status),
-                                        padding: '4px 10px',
-                                        borderRadius: '20px',
-                                        fontSize: '0.8rem',
-                                        fontWeight: '600',
-                                        textTransform: 'capitalize'
-                                    }}>
-                                        {tx.status}
-                                    </span>
-                                </td>
-                                <td style={{ padding: '15px 20px' }}>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button className="loga-btn" style={{ padding: '5px 10px', fontSize: '0.8rem', borderRadius: '8px' }} title="Download Invoice">
-                                            <DownloadIcon fontSize="small" />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                        {transactions?.map((tx) => {
+                            const txId = tx._id || tx.id;
+                            const invoiceNo = tx.invoiceNumber || tx.id;
+                            const clientName = tx.client?.name || tx.clientName || 'Unknown';
+                            const dateStr = tx.issueDate ? new Date(tx.issueDate).toLocaleDateString() : tx.date;
+                            const amountStr = typeof tx.total === 'number' ? `$${tx.total.toLocaleString()}` : tx.amount;
+                            const descriptionStr = tx.items?.[0]?.description || tx.description || 'Service Invoice';
+
+                            return (
+                                <tr key={txId} style={{ borderBottom: '1px solid var(--color-border)', transition: 'background 0.2s' }}>
+                                    <td style={{ padding: '15px 20px', fontFamily: 'monospace', color: 'var(--color-primary)' }}>{invoiceNo}</td>
+                                    {type === 'admin' && <td style={{ padding: '15px 20px', fontWeight: '500' }}>{clientName}</td>}
+                                    <td style={{ padding: '15px 20px', color: 'var(--color-text-secondary)' }}>{dateStr}</td>
+                                    <td style={{ padding: '15px 20px' }}>{descriptionStr}</td>
+                                    <td style={{ padding: '15px 20px', fontWeight: '700' }}>{amountStr}</td>
+                                    <td style={{ padding: '15px 20px' }}>
+                                        <span style={{
+                                            ...getStatusStyle(tx.status),
+                                            padding: '4px 10px',
+                                            borderRadius: '20px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: '600',
+                                            textTransform: 'capitalize'
+                                        }}>
+                                            {tx.status}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '15px 20px' }}>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <Link href={`/panel/invoices/${txId}/print`} passHref legacyBehavior>
+                                                <a className="loga-btn" style={{ padding: '5px 10px', fontSize: '0.8rem', borderRadius: '8px', display: 'flex', alignItems: 'center' }} title="Download Invoice">
+                                                    <DownloadIcon fontSize="small" />
+                                                </a>
+                                            </Link>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

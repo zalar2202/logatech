@@ -51,6 +51,7 @@ export default function InvoicesPage() {
     const { user } = useAuth();
     const [invoices, setInvoices] = useState([]);
     const [clients, setClients] = useState([]);
+    const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
 
@@ -62,6 +63,7 @@ export default function InvoicesPage() {
     useEffect(() => {
         fetchInvoices();
         fetchClients();
+        fetchPackages();
     }, []);
 
     const fetchInvoices = async () => {
@@ -82,6 +84,15 @@ export default function InvoicesPage() {
             if (data.success) setClients(data.data || []);
         } catch (error) {
             console.error("Failed to fetch clients");
+        }
+    };
+
+    const fetchPackages = async () => {
+        try {
+            const { data } = await axios.get("/api/packages");
+            if (data.success) setPackages(data.data || []);
+        } catch (error) {
+            console.error("Failed to fetch packages");
         }
     };
 
@@ -344,6 +355,7 @@ export default function InvoicesPage() {
                 <Formik
                     initialValues={{
                         client: selectedInvoice?.client?._id || selectedInvoice?.client || "",
+                        package: selectedInvoice?.package?._id || selectedInvoice?.package || "",
                         invoiceNumber: selectedInvoice?.invoiceNumber || "",
                         issueDate: selectedInvoice?.issueDate
                             ? new Date(selectedInvoice.issueDate).toISOString().split("T")[0]
@@ -366,25 +378,33 @@ export default function InvoicesPage() {
                         const totals = calculateTotals(values);
                         return (
                             <Form className="space-y-6">
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <SelectField name="client" label="Client">
-                                        <option value="">-- Select Client --</option>
-                                        {clients.map((c) => (
-                                            <option key={c._id} value={c._id}>
-                                                {c.name}
-                                            </option>
-                                        ))}
-                                    </SelectField>
-                                    <SelectField name="status" label="Status">
-                                        <option value="draft">Draft</option>
-                                        <option value="sent">Sent</option>
-                                        <option value="paid">Paid</option>
-                                        <option value="overdue">Overdue</option>
-                                        <option value="cancelled">Cancelled</option>
-                                    </SelectField>
-                                    <InputField type="date" name="issueDate" label="Issue Date" />
-                                    <InputField type="date" name="dueDate" label="Due Date" />
-                                </div>
+                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                                     <SelectField name="client" label="Client">
+                                         <option value="">-- Select Client --</option>
+                                         {clients.map((c) => (
+                                             <option key={c._id} value={c._id}>
+                                                 {c.name}
+                                             </option>
+                                         ))}
+                                     </SelectField>
+                                     <SelectField name="package" label="Linked Package (Auto-Activation)">
+                                         <option value="">-- None --</option>
+                                         {packages.map((p) => (
+                                             <option key={p._id} value={p._id}>
+                                                 {p.name} (${p.price})
+                                             </option>
+                                         ))}
+                                     </SelectField>
+                                     <SelectField name="status" label="Status">
+                                         <option value="draft">Draft</option>
+                                         <option value="sent">Sent</option>
+                                         <option value="paid">Paid</option>
+                                         <option value="overdue">Overdue</option>
+                                         <option value="cancelled">Cancelled</option>
+                                     </SelectField>
+                                     <InputField type="date" name="issueDate" label="Issue Date" />
+                                     <InputField type="date" name="dueDate" label="Due Date" />
+                                 </div>
 
                                 {/* Items Table */}
                                 <div className="border rounded-lg overflow-hidden dark:border-gray-700">

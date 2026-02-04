@@ -1,23 +1,58 @@
-"use client";
-
-import React from 'react';
+import { useState, useEffect } from "react";
+import axios from "axios";
 import AccountingStats from '@/components/accounting/AccountingStats';
 import TransactionsTable from '@/components/accounting/TransactionsTable';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import { Loader2 } from "lucide-react";
 
 export default function UserAccountingPage() {
-    // Mock Data for User
-    const stats = [
-        { title: "Total Spent", value: "$6,200.00", percentage: "+12%", trend: "up", description: "Lifetime spend" },
-        { title: "Next Invoice", value: "$1,200.00", percentage: "", trend: "neutral", description: "Due on Nov 22, 2023" },
-        { title: "Active Services", value: "2", percentage: "", trend: "neutral", description: "Hosting, Maintenance" },
-    ];
+    const [loading, setLoading] = useState(true);
+    const [invoices, setInvoices] = useState([]);
+    const [stats, setStats] = useState([]);
 
-    const transactions = [
-        { id: "INV-2024-001", date: "Oct 24, 2023", description: "Web Development Services - Milestone 1", amount: "$5,000.00", status: "Paid" },
-        { id: "INV-2024-002", date: "Oct 22, 2023", description: "Hosting Subscription (Annual)", amount: "$1,200.00", status: "Paid" },
-        { id: "INV-PRE-001", date: "Sep 01, 2023", description: "Project Deposit", amount: "$2,000.00", status: "Paid" },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const { data } = await axios.get("/api/invoices");
+                if (data.success) {
+                    setInvoices(data.data);
+                    
+                    const totalSpent = data.data
+                        .filter(inv => inv.status === 'paid')
+                        .reduce((sum, inv) => sum + (inv.total || 0), 0);
+                    
+                    const activeServicesCount = data.data.filter(inv => inv.status === 'paid').length;
+                    
+                    const pendingInvoice = data.data.find(inv => ['sent', 'overdue'].includes(inv.status));
+
+                    setStats([
+                        { title: "Total Spent", value: `$${totalSpent.toLocaleString()}`, percentage: "", trend: "up", description: "Lifetime investment" },
+                        { 
+                            title: "Pending Balance", 
+                            value: pendingInvoice ? `$${pendingInvoice.total.toLocaleString()}` : "$0.00", 
+                            percentage: "", 
+                            trend: pendingInvoice ? "down" : "neutral", 
+                            description: pendingInvoice ? `Next due: ${new Date(pendingInvoice.dueDate).toLocaleDateString()}` : "No outstanding bills" 
+                        },
+                        { title: "Active Services", value: activeServicesCount.toString(), percentage: "", trend: "neutral", description: "Current active plans" },
+                    ]);
+                }
+            } catch (error) {
+                console.error("Failed to fetch billing data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-[400px] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            </div>
+        );
+    }
 
     return (
         <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -34,8 +69,9 @@ export default function UserAccountingPage() {
             <AccountingStats stats={stats} />
 
             <div style={{ marginTop: '40px' }}>
-                <TransactionsTable transactions={transactions} type="user" />
+                <TransactionsTable transactions={invoices} type="user" />
             </div>
         </div>
     );
 }
+
