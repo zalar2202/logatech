@@ -463,10 +463,15 @@ export default function ClientsPage() {
                                 ))}
                             </div>
                         )}
-                        <div className="flex justify-center pt-4">
+                        <div className="flex justify-center gap-3 pt-4 border-t dark:border-gray-700 mt-4">
                             <Button size="sm" variant="secondary" onClick={() => (window.location.href = `/panel/services`)}>
-                                Manage All Services
+                                View All Services
                             </Button>
+                            {selectedClient.linkedUser && (
+                                <Button size="sm" onClick={() => (window.location.href = `/panel/services?assignTo=${selectedClient.linkedUser._id || selectedClient.linkedUser}`)}>
+                                    <Plus className="w-4 h-4 mr-1" /> Assign New Package
+                                </Button>
+                            )}
                         </div>
                     </div>
                 )}
