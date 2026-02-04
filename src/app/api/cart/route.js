@@ -10,9 +10,15 @@ export async function GET(request) {
         const user = await verifyAuth(request);
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        let cart = await Cart.findOne({ user: user._id }).populate("items.package");
+        const { searchParams } = new URL(request.url);
+        const targetUserId = searchParams.get("userId");
+        const isAdmin = ["admin", "manager"].includes(user.role);
+
+        const cartUserId = (isAdmin && targetUserId) ? targetUserId : user._id;
+
+        let cart = await Cart.findOne({ user: cartUserId }).populate("items.package");
         if (!cart) {
-            cart = await Cart.create({ user: user._id, items: [] });
+            cart = await Cart.create({ user: cartUserId, items: [] });
         }
 
         return NextResponse.json({ success: true, data: cart });
@@ -27,11 +33,13 @@ export async function POST(request) {
         const user = await verifyAuth(request);
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const { packageId, quantity = 1, billingCycle = "monthly" } = await request.json();
+        const { packageId, quantity = 1, billingCycle = "monthly", userId } = await request.json();
+        const isAdmin = ["admin", "manager"].includes(user.role);
+        const cartUserId = (isAdmin && userId) ? userId : user._id;
 
-        let cart = await Cart.findOne({ user: user._id });
+        let cart = await Cart.findOne({ user: cartUserId });
         if (!cart) {
-            cart = new Cart({ user: user._id, items: [] });
+            cart = new Cart({ user: cartUserId, items: [] });
         }
 
         // Check if item exists
@@ -60,9 +68,11 @@ export async function DELETE(request) {
         const user = await verifyAuth(request);
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const { itemId } = await request.json();
+        const { itemId, userId } = await request.json();
+        const isAdmin = ["admin", "manager"].includes(user.role);
+        const cartUserId = (isAdmin && userId) ? userId : user._id;
 
-        const cart = await Cart.findOne({ user: user._id });
+        const cart = await Cart.findOne({ user: cartUserId });
         if (cart) {
             cart.items = cart.items.filter((item) => item._id.toString() !== itemId);
             await cart.save();

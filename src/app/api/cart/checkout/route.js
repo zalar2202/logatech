@@ -18,19 +18,32 @@ export async function POST(request) {
         await dbConnect();
         const user = await verifyAuth(request);
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        const body = await request.json().catch(() => ({}));
+        const { userId } = body;
+        const isAdmin = ["admin", "manager"].includes(user.role);
+        const cartUserId = (isAdmin && userId) ? userId : user._id;
 
-        const cart = await Cart.findOne({ user: user._id }).populate("items.package");
+        const cart = await Cart.findOne({ user: cartUserId }).populate("items.package");
         if (!cart || cart.items.length === 0) {
             return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
         }
 
-        // 1. Find or Create Client record for this user
-        let client = await Client.findOne({ linkedUser: user._id });
+        // 1. Find or Create Client record for the cart user
+        let client = await Client.findOne({ linkedUser: cartUserId });
         if (!client) {
+            // Fetch the user details for the client record if it's a target user
+            let targetUser = user;
+            if (cartUserId.toString() !== user._id.toString()) {
+                const User = (await import("@/models/User")).default;
+                targetUser = await User.findById(cartUserId);
+            }
+
+            if (!targetUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
             client = await Client.create({
-                name: user.name,
-                email: user.email,
-                linkedUser: user._id,
+                name: targetUser.name,
+                email: targetUser.email,
+                linkedUser: cartUserId,
                 status: 'active'
             });
         }
@@ -51,7 +64,7 @@ export async function POST(request) {
         const invoiceData = {
             invoiceNumber: generateInvoiceNumber(),
             client: client._id,
-            user: user._id,
+            user: cartUserId,
             status: 'draft',
             issueDate: new Date(),
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now

@@ -60,6 +60,11 @@ export async function POST(request) {
 
         const body = await request.json();
 
+        // Sanitize ObjectIds to avoid Mongoose casting errors with empty strings
+        if (body.package === "") body.package = null;
+        if (body.client === "") body.client = null;
+        if (body.user === "") body.user = null;
+
         // 1. Basic Validation
         if (!body.client || !body.items || body.items.length === 0) {
             return NextResponse.json({ error: 'Client and at least one item are required' }, { status: 400 });
