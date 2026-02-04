@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import Image from "next/image";
 import { navigation, adminNavigation } from "@/constants/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -45,13 +46,19 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                     {!isCollapsed ? (
                         <div className="flex items-center gap-3 flex-1">
                             <div
-                                className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-white text-sm flex-shrink-0"
+                                className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0"
                                 style={{
                                     background:
                                         "linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)",
                                 }}
                             >
-                                LT
+                                <Image
+                                    src="/assets/logo/LogaTech-512.webp"
+                                    alt="L"
+                                    width={24}
+                                    height={24}
+                                    className="w-6 h-6 object-contain brightness-0 invert"
+                                />
                             </div>
                             <h1
                                 className="text-lg font-bold tracking-tight"
@@ -67,13 +74,19 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                             aria-label="Expand sidebar"
                         >
                             <div
-                                className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-white text-sm transition-transform hover:scale-110"
+                                className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden transition-transform hover:scale-110"
                                 style={{
                                     background:
                                         "linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%)",
                                 }}
                             >
-                                LT
+                                <Image
+                                    src="/assets/logo/LogaTech-512.webp"
+                                    alt="L"
+                                    width={24}
+                                    height={24}
+                                    className="w-6 h-6 object-contain brightness-0 invert"
+                                />
                             </div>
                         </button>
                     )}
@@ -271,8 +284,14 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                 >
                     {!isCollapsed ? (
                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                                LT
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                <Image
+                                    src="/assets/logo/LogaTech-512.webp"
+                                    alt="L"
+                                    width={20}
+                                    height={20}
+                                    className="w-5 h-5 object-contain brightness-0 invert"
+                                />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p
@@ -294,8 +313,14 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed, onToggleCollapse }) => {
                             </div>
                         </div>
                     ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold mx-auto">
-                            LT
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden mx-auto">
+                            <Image
+                                src="/assets/logo/LogaTech-512.webp"
+                                alt="L"
+                                width={20}
+                                height={20}
+                                className="w-5 h-5 object-contain brightness-0 invert"
+                            />
                         </div>
                     )}
                 </div>

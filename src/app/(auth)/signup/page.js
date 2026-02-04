@@ -10,6 +10,7 @@ import { signupSchema, signupInitialValues } from "@/schemas/auth.schema";
 import { UserPlus, Shield, AlertCircle, Wand2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import Image from "next/image";
 import axios from "axios";
 import { Captcha } from "@/components/forms/Captcha";
 
@@ -20,7 +21,8 @@ export default function SignupPage() {
     const [captchaError, setCaptchaError] = useState("");
 
     const generatePassword = (setFieldValue) => {
-        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+        const charset =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
         let password = "";
         for (let i = 0; i < 12; i++) {
             password += charset.charAt(Math.floor(Math.random() * charset.length));
@@ -55,7 +57,8 @@ export default function SignupPage() {
                 toast.error(response.data.message || "Signup failed");
             }
         } catch (err) {
-            const message = err.response?.data?.message || "An unexpected error occurred. Please try again.";
+            const message =
+                err.response?.data?.message || "An unexpected error occurred. Please try again.";
             setError(message);
             toast.error(message);
         } finally {
@@ -70,10 +73,16 @@ export default function SignupPage() {
                 <div className="hidden md:block">
                     <div className="text-center md:text-left">
                         <div
-                            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6"
+                            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6 overflow-hidden shadow-xl"
                             style={{ backgroundColor: "var(--color-primary)" }}
                         >
-                            <Shield size={40} style={{ color: "white" }} />
+                            <Image
+                                src="/assets/logo/LogaTech-512.webp"
+                                alt="LogaTech"
+                                width={64}
+                                height={64}
+                                className="w-16 h-16 object-contain brightness-0 invert"
+                            />
                         </div>
 
                         <h1
@@ -93,7 +102,11 @@ export default function SignupPage() {
                         <div className="space-y-4">
                             {[
                                 { icon: "🚀", title: "Join Today", desc: "Get started in seconds" },
-                                { icon: "🛡️", title: "Secure", desc: "Your data is always protected" },
+                                {
+                                    icon: "🛡️",
+                                    title: "Secure",
+                                    desc: "Your data is always protected",
+                                },
                                 {
                                     icon: "📱",
                                     title: "Flexible",
@@ -126,8 +139,8 @@ export default function SignupPage() {
                 <Card className="w-full relative">
                     <div className="p-8">
                         {/* Homepage Button */}
-                        <Link 
-                            href="/" 
+                        <Link
+                            href="/"
                             className="absolute top-4 right-6 flex items-center gap-1 text-sm font-medium transition-colors hover:opacity-80"
                             style={{ color: "var(--color-primary)" }}
                         >
@@ -137,10 +150,16 @@ export default function SignupPage() {
                         {/* Mobile Logo */}
                         <div className="md:hidden text-center mb-6">
                             <div
-                                className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4"
+                                className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4 overflow-hidden shadow-lg mx-auto"
                                 style={{ backgroundColor: "var(--color-primary)" }}
                             >
-                                <Shield size={32} style={{ color: "white" }} />
+                                <Image
+                                    src="/assets/logo/LogaTech-512.webp"
+                                    alt="LogaTech"
+                                    width={48}
+                                    height={48}
+                                    className="w-12 h-12 object-contain brightness-0 invert"
+                                />
                             </div>
                             <h2
                                 className="text-2xl font-bold"
@@ -234,11 +253,11 @@ export default function SignupPage() {
                                         />
                                     </div>
 
-                                    <Captcha 
+                                    <Captcha
                                         error={captchaError}
                                         onVerify={(solved) => {
                                             setIsCaptchaSolved(solved);
-                                            if(solved) setCaptchaError("");
+                                            if (solved) setCaptchaError("");
                                         }}
                                     />
 
@@ -272,13 +291,31 @@ export default function SignupPage() {
                             fullWidth
                             size="lg"
                             className="bg-white border border-gray-300 hover:bg-gray-50 flex items-center justify-center gap-3 py-3"
-                            onClick={() => window.location.href = '/api/auth/google'}
+                            onClick={() => (window.location.href = "/api/auth/google")}
                         >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M23.5 12.235c0-.822-.066-1.644-.206-2.441H12v4.628h6.456a5.57 5.57 0 0 1-2.407 3.65v3.016h3.882c2.269-2.087 3.569-5.161 3.569-8.853z" fill="#4285F4"/>
-                                <path d="M12 24c3.24 0 5.957-1.071 7.942-2.912l-3.882-3.016c-1.077.729-2.464 1.156-4.06 1.156-3.114 0-5.751-2.099-6.696-4.918H1.423v3.111C3.401 21.365 7.426 24 12 24z" fill="#34A853"/>
-                                <path d="M5.304 14.31a7.197 7.197 0 0 1 0-4.619V6.58H1.423a12.003 12.003 0 0 0 0 10.84l3.881-3.11z" fill="#FBBC04"/>
-                                <path d="M12 4.75c1.763 0 3.344.604 4.588 1.789l3.447-3.447C17.952 1.189 15.234 0 12 0 7.426 0 3.401 2.635 1.423 6.58L5.304 9.69C6.249 6.871 8.886 4.75 12 4.75z" fill="#EA4335"/>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M23.5 12.235c0-.822-.066-1.644-.206-2.441H12v4.628h6.456a5.57 5.57 0 0 1-2.407 3.65v3.016h3.882c2.269-2.087 3.569-5.161 3.569-8.853z"
+                                    fill="#4285F4"
+                                />
+                                <path
+                                    d="M12 24c3.24 0 5.957-1.071 7.942-2.912l-3.882-3.016c-1.077.729-2.464 1.156-4.06 1.156-3.114 0-5.751-2.099-6.696-4.918H1.423v3.111C3.401 21.365 7.426 24 12 24z"
+                                    fill="#34A853"
+                                />
+                                <path
+                                    d="M5.304 14.31a7.197 7.197 0 0 1 0-4.619V6.58H1.423a12.003 12.003 0 0 0 0 10.84l3.881-3.11z"
+                                    fill="#FBBC04"
+                                />
+                                <path
+                                    d="M12 4.75c1.763 0 3.344.604 4.588 1.789l3.447-3.447C17.952 1.189 15.234 0 12 0 7.426 0 3.401 2.635 1.423 6.58L5.304 9.69C6.249 6.871 8.886 4.75 12 4.75z"
+                                    fill="#EA4335"
+                                />
                             </svg>
                             <span className="text-gray-700 font-medium">Continue with Google</span>
                         </Button>

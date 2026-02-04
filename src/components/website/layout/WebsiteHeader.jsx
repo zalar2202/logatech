@@ -7,6 +7,7 @@ import WebsiteThemeToggle from "@/components/website/layout/WebsiteThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { ShoppingCart, LayoutDashboard, LogIn, UserPlus } from "lucide-react";
+import Image from "next/image";
 
 /**
  * WebsiteHeader - Modern top navigation with dropdown support (website pages only)
@@ -205,8 +206,16 @@ export default function WebsiteHeader() {
         <header className={`header-top ${isScrolled ? "scrolled" : ""}`}>
             <nav className="navbar-top">
                 <div className="navbar-container">
-                    <Link href="/" className="navbar-brand">
-                        LogaTech
+                    <Link href="/" className="navbar-brand flex items-center gap-2">
+                        <Image
+                            src="/assets/logo/LogaTech-512.webp"
+                            alt="LogaTech Logo"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 object-contain"
+                            priority
+                        />
+                        <span className="font-bold text-xl tracking-tight">LogaTech</span>
                     </Link>
 
                     <div className="navbar-nav-desktop">

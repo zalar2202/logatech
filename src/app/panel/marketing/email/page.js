@@ -13,6 +13,7 @@ import { Formik, Form } from "formik";
 import { toast } from "sonner";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
 import { Mail, Send, Users, Sparkles, Tag, Gift, Eye } from "lucide-react";
+import Image from "next/image";
 import * as Yup from "yup";
 
 // Schema for email campaign
@@ -69,7 +70,7 @@ export default function MarketingEmailPage() {
             const payload = {
                 ...values,
                 email: true, // Force email
-                type: 'marketing', // Special type for formatting
+                type: "marketing", // Special type for formatting
                 message: values.content, // Map content to message
                 title: values.subject, // Map subject to title
                 actionLabel: values.ctaText,
@@ -91,16 +92,39 @@ export default function MarketingEmailPage() {
     };
 
     const templates = [
-        { id: 'offer', name: 'Special Offer', icon: <Tag className="w-4 h-4" />, desc: 'Discount or sale announcement' },
-        { id: 'newsletter', name: 'Newsletter', icon: <Mail className="w-4 h-4" />, desc: 'General news and updates' },
-        { id: 'product', name: 'Product Launch', icon: <Sparkles className="w-4 h-4" />, desc: 'New feature or product' },
-        { id: 'gift', name: 'Holiday/Gift', icon: <Gift className="w-4 h-4" />, desc: 'Seasonal greeting' },
+        {
+            id: "offer",
+            name: "Special Offer",
+            icon: <Tag className="w-4 h-4" />,
+            desc: "Discount or sale announcement",
+        },
+        {
+            id: "newsletter",
+            name: "Newsletter",
+            icon: <Mail className="w-4 h-4" />,
+            desc: "General news and updates",
+        },
+        {
+            id: "product",
+            name: "Product Launch",
+            icon: <Sparkles className="w-4 h-4" />,
+            desc: "New feature or product",
+        },
+        {
+            id: "gift",
+            name: "Holiday/Gift",
+            icon: <Gift className="w-4 h-4" />,
+            desc: "Seasonal greeting",
+        },
     ];
 
     return (
         <ContentWrapper>
             <div className="mb-8">
-                <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: "var(--color-text-primary)" }}>
+                <h1
+                    className="text-2xl font-bold flex items-center gap-2"
+                    style={{ color: "var(--color-text-primary)" }}
+                >
                     <Mail className="w-6 h-6 text-purple-600" />
                     Email Marketing
                 </h1>
@@ -140,7 +164,9 @@ export default function MarketingEmailPage() {
                                                 <SelectField name="recipientType" label="Send To">
                                                     <option value="all">All Subscribers</option>
                                                     <option value="role">Specific Role</option>
-                                                    <option value="single">Test User (Single)</option>
+                                                    <option value="single">
+                                                        Test User (Single)
+                                                    </option>
                                                 </SelectField>
 
                                                 {values.recipientType === "role" && (
@@ -154,8 +180,10 @@ export default function MarketingEmailPage() {
                                                 {values.recipientType === "single" && (
                                                     <SelectField name="recipients" label="User">
                                                         <option value="">Select...</option>
-                                                        {users.map(u => (
-                                                            <option key={u._id} value={u._id}>{u.name} ({u.email})</option>
+                                                        {users.map((u) => (
+                                                            <option key={u._id} value={u._id}>
+                                                                {u.name} ({u.email})
+                                                            </option>
                                                         ))}
                                                     </SelectField>
                                                 )}
@@ -170,76 +198,81 @@ export default function MarketingEmailPage() {
 
                                             <div className="space-y-4">
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <InputField 
-                                                        name="subject" 
-                                                        label="Email Subject" 
-                                                        placeholder="e.g., 50% Off Premium Plans!" 
+                                                    <InputField
+                                                        name="subject"
+                                                        label="Email Subject"
+                                                        placeholder="e.g., 50% Off Premium Plans!"
                                                     />
-                                                    <InputField 
-                                                        name="preheader" 
-                                                        label="Preheader Text (Optional)" 
-                                                        placeholder="Short summary shown in inbox..." 
+                                                    <InputField
+                                                        name="preheader"
+                                                        label="Preheader Text (Optional)"
+                                                        placeholder="Short summary shown in inbox..."
                                                     />
                                                 </div>
 
                                                 <div className="grid grid-cols-4 gap-3 mb-4">
-                                                    {templates.map(t => (
+                                                    {templates.map((t) => (
                                                         <button
                                                             key={t.id}
                                                             type="button"
-                                                            onClick={() => setFieldValue("templateType", t.id)}
+                                                            onClick={() =>
+                                                                setFieldValue("templateType", t.id)
+                                                            }
                                                             className={`p-3 rounded-lg border text-left transition-all ${
-                                                                values.templateType === t.id 
-                                                                    ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 ring-1 ring-purple-500" 
+                                                                values.templateType === t.id
+                                                                    ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 ring-1 ring-purple-500"
                                                                     : "border-gray-200 dark:border-gray-700 hover:border-purple-300"
                                                             }`}
                                                         >
-                                                            <div className={`mb-2 ${values.templateType === t.id ? "text-purple-600" : "text-gray-400"}`}>
+                                                            <div
+                                                                className={`mb-2 ${values.templateType === t.id ? "text-purple-600" : "text-gray-400"}`}
+                                                            >
                                                                 {t.icon}
                                                             </div>
-                                                            <div className="font-medium text-xs dark:text-gray-200">{t.name}</div>
+                                                            <div className="font-medium text-xs dark:text-gray-200">
+                                                                {t.name}
+                                                            </div>
                                                         </button>
                                                     ))}
                                                 </div>
 
-                                                <InputField 
-                                                    name="headline" 
-                                                    label="Main Headline" 
-                                                    placeholder="e.g., Summer Sale Starts Now" 
+                                                <InputField
+                                                    name="headline"
+                                                    label="Main Headline"
+                                                    placeholder="e.g., Summer Sale Starts Now"
                                                 />
 
                                                 <RichEditor
                                                     label="Body Content"
                                                     value={values.content}
-                                                    onChange={(content) => setFieldValue("content", content)}
+                                                    onChange={(content) =>
+                                                        setFieldValue("content", content)
+                                                    }
                                                     error={undefined} // Formik error handling if needed
                                                     touched={undefined}
                                                     height="400px"
                                                 />
 
                                                 <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-white/5 p-4 rounded-lg">
-                                                    <InputField 
-                                                        name="ctaText" 
-                                                        label="Button Text" 
+                                                    <InputField
+                                                        name="ctaText"
+                                                        label="Button Text"
                                                     />
-                                                    <InputField 
-                                                        name="ctaUrl" 
-                                                        label="Button URL" 
-                                                    />
+                                                    <InputField name="ctaUrl" label="Button URL" />
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-                                            <Button 
-                                                type="button" 
+                                            <Button
+                                                type="button"
                                                 variant="secondary"
                                                 onClick={() => router.push("/panel")}
                                             >
                                                 Cancel
                                             </Button>
-                                            <Button 
-                                                type="submit" 
+                                            <Button
+                                                type="submit"
                                                 loading={isSubmitting}
                                                 icon={<Send className="w-4 h-4" />}
                                             >
@@ -261,14 +294,15 @@ export default function MarketingEmailPage() {
                                             Auto-updating
                                         </div>
                                     </div>
-                                    
+
                                     {/* Live Preview Component with values passed */}
                                     <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden transform transition-all hover:scale-[1.02] duration-300">
                                         <PreviewCard values={values} />
                                     </div>
-                                    
+
                                     <p className="text-xs text-center mt-3 text-gray-400">
-                                        This is an approximation. Actual email rendering varies by client.
+                                        This is an approximation. Actual email rendering varies by
+                                        client.
                                     </p>
                                 </div>
                             </div>
@@ -290,7 +324,10 @@ function PreviewCard({ values }) {
                 <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                 <div className="w-3 h-3 rounded-full bg-green-400"></div>
                 <div className="flex-1 ml-4 bg-white dark:bg-black/20 rounded-md py-1 px-3 text-xs text-gray-400 truncate">
-                    Subject: <span className="text-gray-700 dark:text-gray-300 font-medium">{values.subject || "No Subject"}</span>
+                    Subject:{" "}
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">
+                        {values.subject || "No Subject"}
+                    </span>
                 </div>
             </div>
 
@@ -306,16 +343,24 @@ function PreviewCard({ values }) {
                 <div className="max-w-sm mx-auto bg-white rounded-lg shadow-sm border overflow-hidden">
                     {/* Header Accent */}
                     <div className="h-2 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
-                    
+
                     <div className="p-6 text-center">
                         {/* Logo */}
                         <div className="font-bold text-xl text-gray-900 mb-2 flex justify-center items-center gap-2">
-                             <div className="w-6 h-6 rounded-md bg-purple-600 text-white flex items-center justify-center text-xs">LT</div>
-                             LogaTech
+                            <div className="w-8 h-8 rounded-md bg-purple-600 flex items-center justify-center overflow-hidden">
+                                <Image
+                                    src="/assets/logo/LogaTech-512.webp"
+                                    alt="LogaTech"
+                                    width={24}
+                                    height={24}
+                                    className="w-6 h-6 object-contain brightness-0 invert"
+                                />
+                            </div>
+                            LogaTech
                         </div>
-                        
+
                         <div className="h-px bg-gray-100 my-4"></div>
-                        
+
                         {/* Template Badge */}
                         <div className="mb-4">
                             <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-purple-100 text-purple-600">
@@ -335,8 +380,8 @@ function PreviewCard({ values }) {
 
                         {/* CTA Button */}
                         {values.ctaText && (
-                            <a 
-                                href="#" 
+                            <a
+                                href="#"
                                 onClick={(e) => e.preventDefault()}
                                 className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md font-medium text-sm transition-colors shadow-sm"
                             >
