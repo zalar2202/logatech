@@ -98,36 +98,37 @@ export async function PUT(request, { params }) {
 
         // Logic: If status changed to 'paid' and there's a package/user linked, activate service
         if (body.status === 'paid' && oldInvoice.status !== 'paid' && (invoice.package || invoice.user)) {
-             // We need a user to link the service to. 
-             // If invoice has a user, use it. Otherwise, use user linked to client if possible.
              let targetUserId = invoice.user;
              
              if (!targetUserId && invoice.client) {
-                 // Try to find if client is linked to a user (some schemas might have this)
-                 const clientData = await Client.findById(invoice.client);
-                 targetUserId = clientData?.user || clientData?.userId;
+                 // invoice.client is populated, so it's an object. 
+                 // If Client.findById gets an object, it might fail. Use ._id.
+                 const clientData = await Client.findById(invoice.client._id);
+                 targetUserId = clientData?.user || clientData?.userId || clientData?._id;
              }
 
              if (targetUserId && invoice.package) {
-                  // Create/Activate service
                   await Service.findOneAndUpdate(
                       { user: targetUserId, package: invoice.package },
                       { 
                           status: 'active',
                           startDate: new Date(),
-                          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default 30 days, can be improved
+                          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
                           price: invoice.total
                       },
                       { upsert: true, new: true }
                   );
-                  console.log(`✅ Service activated for user ${targetUserId} from invoice ${invoice.invoiceNumber}`);
              }
         }
 
         return NextResponse.json({ success: true, data: invoice });
     } catch (error) {
         console.error("Update error:", error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ 
+            error: error.name === 'ValidationError' 
+                ? Object.values(error.errors).map(val => val.message).join(', ')
+                : error.message || 'Internal Server Error' 
+        }, { status: 500 });
     }
 }
 
