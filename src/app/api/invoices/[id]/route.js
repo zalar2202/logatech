@@ -119,7 +119,8 @@ export async function PUT(request, { params }) {
                           status: 'active',
                           startDate: new Date(),
                           endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-                          price: invoice.total
+                          price: invoice.total,
+                          invoice: id
                       },
                       { upsert: true, new: true }
                   );

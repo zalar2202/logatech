@@ -40,6 +40,10 @@ const ServiceSchema = new mongoose.Schema(
         notes: {
             type: String
         },
+        invoice: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Invoice'
+        },
         properties: {
             type: Map,
             of: String
