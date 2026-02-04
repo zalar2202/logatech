@@ -101,30 +101,36 @@ export async function PUT(request, { params }) {
             { new: true, runValidators: true }
         ).populate('client');
 
-        // Logic: If status changed to 'paid' and there's a package/user linked, activate service
-        if (body.status === 'paid' && oldInvoice.status !== 'paid' && (invoice.package || invoice.user)) {
-             let targetUserId = invoice.user;
-             
-             if (!targetUserId && invoice.client) {
-                 // invoice.client is populated, so it's an object. 
-                 // If Client.findById gets an object, it might fail. Use ._id.
-                 const clientData = await Client.findById(invoice.client._id);
-                 targetUserId = clientData?.user || clientData?.userId || clientData?._id;
-             }
+        // Logic: If status changed to 'paid' and there's a package linked, activate/upsert service
+        if (body.status === 'paid' && oldInvoice.status !== 'paid') {
+            const invoiceForProcessing = await Invoice.findById(id).populate('client');
+            
+            if (invoiceForProcessing.package) {
+                let targetUserId = invoiceForProcessing.user;
+                
+                // If no direct user link, try to find the user linked to the client
+                if (!targetUserId && invoiceForProcessing.client) {
+                    targetUserId = invoiceForProcessing.client.linkedUser;
+                }
 
-             if (targetUserId && invoice.package) {
-                  await Service.findOneAndUpdate(
-                      { user: targetUserId, package: invoice.package },
-                      { 
-                          status: 'active',
-                          startDate: new Date(),
-                          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-                          price: invoice.total,
-                          invoice: id
-                      },
-                      { upsert: true, new: true }
-                  );
-             }
+                if (targetUserId) {
+                    console.log(`Activating service for user ${targetUserId} with package ${invoiceForProcessing.package}`);
+                    await Service.findOneAndUpdate(
+                        { user: targetUserId, package: invoiceForProcessing.package },
+                        { 
+                            status: 'active',
+                            startDate: new Date(),
+                            // Default to 1 month validity
+                            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 
+                            price: invoiceForProcessing.total,
+                            invoice: id
+                        },
+                        { upsert: true, new: true }
+                    );
+                } else {
+                    console.warn(`Cannot activate service for invoice ${id}: No target user found.`);
+                }
+            }
         }
 
         return NextResponse.json({ success: true, data: invoice });
