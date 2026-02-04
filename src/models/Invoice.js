@@ -47,6 +47,16 @@ const InvoiceSchema = new mongoose.Schema(
         total: { type: Number, required: true, default: 0 },
         
         notes: { type: String },
+        
+        // Installment Details
+        paymentPlan: {
+            isInstallment: { type: Boolean, default: false },
+            downPayment: { type: Number, default: 0 },
+            installmentsCount: { type: Number, default: 0 }, // Number of payments after down payment
+            installmentAmount: { type: Number, default: 0 }, // Amount per installment
+            period: { type: String, enum: ['monthly', 'weekly', 'quarterly'], default: 'monthly' }
+        },
+        
         createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     },
     { timestamps: true }

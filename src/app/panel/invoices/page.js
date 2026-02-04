@@ -239,15 +239,16 @@ function InvoicesPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-[var(--color-border)]">
-                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">
-                                    Invoice #
+                            <tr className="border-b border-[var(--color-border)] bg-[var(--color-background-secondary)]/50">
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
+                                    Invoice Details
                                 </th>
-                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Client</th>
-                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Date</th>
-                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Amount</th>
-                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Status</th>
-                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Actions</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">Client</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">Date</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">Type</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)] text-right">Amount</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)] text-center">Status</th>
+                                <th className="p-4 font-bold text-xs uppercase tracking-wider text-[var(--color-text-secondary)] text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -269,37 +270,57 @@ function InvoicesPage() {
                                         key={inv._id}
                                         className="border-b last:border-0 border-[var(--color-border)] hover:bg-[var(--color-hover)] transition-colors"
                                     >
-                                        <td className="p-4 font-mono text-sm text-[var(--color-text-primary)]">
-                                            {inv.invoiceNumber}
+                                        <td className="p-4">
+                                            <div className="flex flex-col">
+                                                <span className="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                                    {inv.invoiceNumber}
+                                                </span>
+                                                <span className="text-[10px] text-[var(--color-text-tertiary)] uppercase font-medium">#{inv._id.slice(-6)}</span>
+                                            </div>
                                         </td>
-                                        <td className="p-4 font-medium text-[var(--color-text-primary)]">
-                                            {inv.client?.name || "Unknown"}
+                                        <td className="p-4">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-[var(--color-text-primary)]">
+                                                    {inv.client?.name || "Unknown"}
+                                                </span>
+                                                <span className="text-xs text-[var(--color-text-secondary)]">{inv.client?.email}</span>
+                                            </div>
                                         </td>
                                         <td className="p-4 text-sm text-[var(--color-text-secondary)]">
                                             {new Date(inv.issueDate).toLocaleDateString()}
                                         </td>
-                                        <td className="p-4 font-bold text-[var(--color-text-primary)]">
+                                        <td className="p-4">
+                                            {inv.paymentPlan?.isInstallment ? (
+                                                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider">
+                                                    <Clock className="w-3 h-3" />
+                                                    Installment
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                                                    <CheckCircle className="w-3 h-3" />
+                                                    Full Payment
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="p-4 font-black text-[var(--color-text-primary)] text-right">
                                             ${inv.total?.toFixed(2)}
                                         </td>
-                                        <td className="p-4">
+                                        <td className="p-4 text-center">
                                             <Badge
                                                 variant={
                                                     inv.status === "paid"
                                                         ? "success"
                                                         : inv.status === "overdue"
-                                                          ? "danger"
-                                                          : inv.status === "sent"
-                                                            ? "primary"
-                                                            : "secondary"
+                                                            ? "danger"
+                                                            : "primary"
                                                 }
                                                 size="sm"
-                                                className="capitalize"
                                             >
-                                                {inv.status}
+                                                {inv.status.toUpperCase()}
                                             </Badge>
                                         </td>
                                         <td className="p-4">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center justify-end gap-2">
                                                 {["admin", "manager"].includes(user?.role) ? (
                                                     <>
                                                         <button
@@ -397,6 +418,13 @@ function InvoicesPage() {
                         ],
                         notes: selectedInvoice?.notes || "",
                         taxRate: selectedInvoice?.taxRate || 0,
+                        paymentPlan: {
+                            isInstallment: selectedInvoice?.paymentPlan?.isInstallment || false,
+                            downPayment: selectedInvoice?.paymentPlan?.downPayment || 0,
+                            installmentsCount: selectedInvoice?.paymentPlan?.installmentsCount || 0,
+                            installmentAmount: selectedInvoice?.paymentPlan?.installmentAmount || 0,
+                            period: selectedInvoice?.paymentPlan?.period || "monthly",
+                        },
                     }}
                     validationSchema={invoiceSchema}
                     onSubmit={handleSubmit}
@@ -533,11 +561,57 @@ function InvoicesPage() {
                                     </div>
                                 </div>
 
-                                <TextareaField
-                                    name="notes"
-                                    label="Notes / Payment Instructions"
-                                    rows={2}
-                                />
+                                 <div className="bg-[var(--color-background-secondary)] p-6 rounded-xl border border-[var(--color-border)] space-y-4">
+                                     <div className="flex items-center justify-between">
+                                         <h4 className="text-sm font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                                             <CreditCard className="w-4 h-4 text-indigo-600" />
+                                             Payment & Installment Options
+                                         </h4>
+                                         <label className="flex items-center gap-2 cursor-pointer">
+                                             <input
+                                                 type="checkbox"
+                                                 className="rounded text-indigo-600"
+                                                 name="paymentPlan.isInstallment"
+                                                 checked={values.paymentPlan.isInstallment}
+                                                 onChange={(e) => setFieldValue("paymentPlan.isInstallment", e.target.checked)}
+                                             />
+                                             <span className="text-xs font-semibold text-[var(--color-text-secondary)]">Enable Installments</span>
+                                         </label>
+                                     </div>
+
+                                     {values.paymentPlan.isInstallment && (
+                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                             <InputField
+                                                 type="number"
+                                                 name="paymentPlan.downPayment"
+                                                 label="Down Payment"
+                                                 prefix="$"
+                                             />
+                                             <InputField
+                                                 type="number"
+                                                 name="paymentPlan.installmentAmount"
+                                                 label="Installment Amt"
+                                                 prefix="$"
+                                             />
+                                             <InputField
+                                                 type="number"
+                                                 name="paymentPlan.installmentsCount"
+                                                 label="Total Payments"
+                                             />
+                                             <SelectField name="paymentPlan.period" label="Period">
+                                                 <option value="monthly">Monthly</option>
+                                                 <option value="weekly">Weekly</option>
+                                                 <option value="quarterly">Quarterly</option>
+                                             </SelectField>
+                                         </div>
+                                     )}
+                                 </div>
+
+                                 <TextareaField
+                                     name="notes"
+                                     label="Notes / Payment Instructions"
+                                     rows={2}
+                                 />
 
                                 <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-700">
                                     <Button
@@ -643,12 +717,39 @@ function InvoicesPage() {
                             </div>
                         </div>
 
-                        {selectedInvoice.notes && (
-                            <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl">
-                                <p className="text-xs uppercase font-bold text-gray-400 mb-2">Notes</p>
-                                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed italic">{selectedInvoice.notes}</p>
-                            </div>
-                        )}
+                         {selectedInvoice.paymentPlan?.isInstallment && (
+                             <div className="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/20">
+                                 <h4 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                     <Clock className="w-3 h-3" />
+                                     Installment Payment Plan
+                                 </h4>
+                                 <div className="grid grid-cols-4 gap-4">
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Down Payment</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">${selectedInvoice.paymentPlan.downPayment?.toFixed(2)}</p>
+                                     </div>
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Installment</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">${selectedInvoice.paymentPlan.installmentAmount?.toFixed(2)}</p>
+                                     </div>
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Payments</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">{selectedInvoice.paymentPlan.installmentsCount}</p>
+                                     </div>
+                                     <div>
+                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Interval</p>
+                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 capitalize">{selectedInvoice.paymentPlan.period}</p>
+                                     </div>
+                                 </div>
+                             </div>
+                         )}
+
+                         {selectedInvoice.notes && (
+                             <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-[var(--color-border)]">
+                                 <p className="text-xs uppercase font-bold text-gray-400 mb-2">Notes</p>
+                                 <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed italic whitespace-pre-wrap">{selectedInvoice.notes}</p>
+                             </div>
+                         )}
 
                         <div className="flex justify-end gap-3 pt-6 border-t dark:border-gray-700">
                             <Button variant="secondary" onClick={() => setIsViewModalOpen(false)}>Close</Button>
