@@ -61,7 +61,7 @@ if (typeof window !== "undefined" && isValidFirebaseConfig()) {
  * @returns {Messaging|null} FCM instance or null if not in browser
  */
 export const getMessagingInstance = () => {
-    if (typeof window === "undefined") {
+    if (typeof window === "undefined" || !firebaseApp) {
         return null;
     }
     
@@ -131,7 +131,7 @@ export const requestNotificationPermission = async () => {
 export const onForegroundMessage = (callback) => {
     const messaging = getMessagingInstance();
     if (!messaging) {
-        console.error("Messaging instance not available");
+        console.debug("Messaging instance not available - foreground listener skipped");
         return () => {};
     }
 
