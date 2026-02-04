@@ -26,6 +26,10 @@ const InvoiceSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'User' 
         },
+        package: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Package'
+        },
         status: { 
             type: String, 
             enum: ['draft', 'sent', 'paid', 'overdue', 'cancelled'], 
