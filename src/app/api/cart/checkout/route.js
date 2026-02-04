@@ -19,31 +19,47 @@ export async function POST(request) {
         const user = await verifyAuth(request);
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         const body = await request.json().catch(() => ({}));
-        const { userId } = body;
+        const { userId, clientId: bodyClientId } = body;
         const isAdmin = ["admin", "manager"].includes(user.role);
-        const cartUserId = (isAdmin && userId) ? userId : user._id;
+        
+        // If admin provides a userId, they are checking out THEIR CURRENT CART for THAT user.
+        // Otherwise, it's a normal user checking out THEIR OWN CART.
+        // Actually, let's make it explicit:
+        // cartSourceId: whose cart are we reading from?
+        // targetUserId: who is the invoice for?
+        const cartSourceId = user._id; 
+        let targetUserId = (isAdmin && userId) ? userId : user._id;
+        let targetClientId = (isAdmin && bodyClientId) ? bodyClientId : null;
 
-        const cart = await Cart.findOne({ user: cartUserId }).populate("items.package");
+        const cart = await Cart.findOne({ user: cartSourceId }).populate("items.package");
         if (!cart || cart.items.length === 0) {
             return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
         }
 
-        // 1. Find or Create Client record for the cart user
-        let client = await Client.findOne({ linkedUser: cartUserId });
+        // 1. Find or Create Client record
+        let client;
+        if (targetClientId) {
+            client = await Client.findById(targetClientId);
+            if (!client) return NextResponse.json({ error: "Client not found" }, { status: 404 });
+            targetUserId = client.linkedUser || targetUserId;
+        } else {
+            client = await Client.findOne({ linkedUser: targetUserId });
+        }
+
         if (!client) {
-            // Fetch the user details for the client record if it's a target user
+            // Fetch the user details for the client record
             let targetUser = user;
-            if (cartUserId.toString() !== user._id.toString()) {
+            if (targetUserId.toString() !== user._id.toString()) {
                 const User = (await import("@/models/User")).default;
-                targetUser = await User.findById(cartUserId);
+                targetUser = await User.findById(targetUserId);
             }
 
-            if (!targetUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
+            if (!targetUser) return NextResponse.json({ error: "User/Client mapping failed. Please create client first." }, { status: 404 });
 
             client = await Client.create({
                 name: targetUser.name,
                 email: targetUser.email,
-                linkedUser: cartUserId,
+                linkedUser: targetUserId,
                 status: 'active'
             });
         }
@@ -64,7 +80,7 @@ export async function POST(request) {
         const invoiceData = {
             invoiceNumber: generateInvoiceNumber(),
             client: client._id,
-            user: cartUserId,
+            user: targetUserId,
             status: 'draft',
             issueDate: new Date(),
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now

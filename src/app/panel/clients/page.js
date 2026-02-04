@@ -50,9 +50,11 @@ export default function ClientsPage() {
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState(null); // If null, creating new
-    const [activeTab, setActiveTab] = useState("details"); // details, payments
+    const [activeTab, setActiveTab] = useState("details"); // details, payments, services
     const [clientInvoices, setClientInvoices] = useState([]);
+    const [clientServices, setClientServices] = useState([]);
     const [invoicesLoading, setInvoicesLoading] = useState(false);
+    const [servicesLoading, setServicesLoading] = useState(false);
 
     useEffect(() => {
         fetchClients();
@@ -130,7 +132,24 @@ export default function ClientsPage() {
         if (selectedClient && activeTab === "payments") {
             fetchClientInvoices(selectedClient._id);
         }
+        if (selectedClient && activeTab === "services" && selectedClient.linkedUser) {
+            fetchClientServices(selectedClient.linkedUser._id || selectedClient.linkedUser);
+        }
     }, [selectedClient, activeTab]);
+
+    const fetchClientServices = async (userId) => {
+        setServicesLoading(true);
+        try {
+            const { data } = await axios.get(`/api/services?userId=${userId}`);
+            if (data.success) {
+                setClientServices(data.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch client services");
+        } finally {
+            setServicesLoading(false);
+        }
+    };
 
     const openCreateModal = () => {
         setSelectedClient(null);
@@ -285,7 +304,15 @@ export default function ClientsPage() {
                             }`}
                             onClick={() => setActiveTab("payments")}
                         >
-                            Payments & Invoices
+                            Payments
+                        </button>
+                        <button
+                            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                                activeTab === "services" ? "border-indigo-600 text-indigo-600" : "border-transparent text-gray-500 hover:text-gray-700"
+                            }`}
+                            onClick={() => setActiveTab("services")}
+                        >
+                            Services
                         </button>
                     </div>
                 )}
@@ -351,7 +378,7 @@ export default function ClientsPage() {
                             </Form>
                         )}
                     </Formik>
-                ) : (
+                ) : activeTab === "payments" ? (
                     <div className="space-y-4">
                         {invoicesLoading ? (
                             <div className="py-12 text-center">Loading invoices...</div>
@@ -394,6 +421,51 @@ export default function ClientsPage() {
                         <div className="flex justify-center pt-4">
                             <Button size="sm" variant="secondary" onClick={() => (window.location.href = `/panel/invoices`)}>
                                 Go to Full Invoices View
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {!selectedClient.linkedUser ? (
+                            <div className="py-12 text-center text-gray-500 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed">
+                                <Building2 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                                <h3 className="text-lg font-medium">No Linked Account</h3>
+                                <p className="max-w-xs mx-auto mt-1 text-sm">
+                                    Link this client to a user account to track their active services.
+                                </p>
+                            </div>
+                        ) : servicesLoading ? (
+                            <div className="py-12 text-center">Loading services...</div>
+                        ) : clientServices.length === 0 ? (
+                            <div className="py-12 text-center text-gray-500 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed">
+                                <Building2 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                                <h3 className="text-lg font-medium">No Active Services</h3>
+                                <p className="max-w-xs mx-auto mt-1 text-sm">
+                                    This client currently has no active services or subscriptions.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-3">
+                                {clientServices.map((svc) => (
+                                    <div key={svc._id} className="p-4 border dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-white/5">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h4 className="font-bold text-gray-900 dark:text-gray-100">{svc.package?.name || "Premium Plan"}</h4>
+                                            <Badge variant={svc.status === 'active' ? 'success' : 'secondary'} size="sm">
+                                                {svc.status}
+                                            </Badge>
+                                        </div>
+                                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                                            <span className="flex items-center gap-1"><CreditCard className="w-3 h-3" /> ${svc.price}/{svc.billingCycle}</span>
+                                            <span>Starts: {new Date(svc.startDate).toLocaleDateString()}</span>
+                                            {svc.endDate && <span>Ends: {new Date(svc.endDate).toLocaleDateString()}</span>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex justify-center pt-4">
+                            <Button size="sm" variant="secondary" onClick={() => (window.location.href = `/panel/services`)}>
+                                Manage All Services
                             </Button>
                         </div>
                     </div>

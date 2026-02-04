@@ -23,6 +23,10 @@ export default function CartPage() {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [clients, setClients] = useState([]);
+    const [selectedClientId, setSelectedClientId] = useState("");
+    const { user: currentUser } = useAuth();
+    const isAdmin = currentUser && ['admin', 'manager'].includes(currentUser.role);
 
     const fetchCart = async () => {
         try {
@@ -35,9 +39,20 @@ export default function CartPage() {
         }
     };
 
+    const fetchClientsList = async () => {
+        if (!isAdmin) return;
+        try {
+            const { data } = await axios.get("/api/clients");
+            if (data.success) setClients(data.data || []);
+        } catch (err) {
+            console.error("Failed to fetch clients");
+        }
+    };
+
     useEffect(() => {
         fetchCart();
-    }, []);
+        fetchClientsList();
+    }, [isAdmin]);
 
     const removeLineItem = async (itemId) => {
         try {
@@ -50,9 +65,15 @@ export default function CartPage() {
     };
 
     const handleCheckout = async () => {
+        if (isAdmin && !selectedClientId) {
+            toast.error("Please select a client to assign this cart to");
+            return;
+        }
         setCheckoutLoading(true);
         try {
-            const res = await axios.post("/api/cart/checkout");
+            const res = await axios.post("/api/cart/checkout", {
+                clientId: isAdmin ? selectedClientId : undefined
+            });
             if (res.data.success) {
                 toast.success("Invoice generated successfully!");
                 router.push(`/panel/invoices`);
@@ -179,6 +200,28 @@ export default function CartPage() {
                                     </span>
                                 </div>
                             </div>
+
+                            {isAdmin && (
+                                <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-xl">
+                                    <h4 className="text-sm font-bold text-amber-800 dark:text-amber-400 mb-3 flex items-center gap-2">
+                                        <ShieldCheck className="w-4 h-4" />
+                                        Assign to Client/User
+                                    </h4>
+                                    <select 
+                                        className="w-full p-2.5 rounded-lg border border-amber-200 dark:border-amber-800 bg-white dark:bg-gray-900 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all"
+                                        value={selectedClientId}
+                                        onChange={(e) => setSelectedClientId(e.target.value)}
+                                    >
+                                        <option value="">-- Choose Client --</option>
+                                        {clients.map(c => (
+                                            <option key={c._id} value={c._id}>{c.name} ({c.email || "No Email"})</option>
+                                        ))}
+                                    </select>
+                                    <p className="text-[10px] text-amber-600 dark:text-amber-500 mt-2">
+                                        As an admin, you can assign this cart to any client. Checkout will generate an invoice for them.
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="space-y-4">
                                 <Button

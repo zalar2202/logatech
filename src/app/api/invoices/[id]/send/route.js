@@ -38,89 +38,101 @@ export async function POST(request, { params }) {
 
         // Build Email
         const emailHtml = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-                    <h1 style="color: white; margin: 0;">Invoice ${invoice.invoiceNumber}</h1>
-                </div>
-                
-                <div style="padding: 30px; background: #f9fafb;">
-                    <p>Dear <strong>${invoice.client.name}</strong>,</p>
-                    <p>Please find your invoice details below:</p>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    @media screen and (max-width: 600px) {
+                        .content { padding: 15px !important; }
+                        .item-table th, .item-table td { font-size: 13px !important; padding: 8px 4px !important; }
+                        .header { padding: 20px !important; }
+                        .header h1 { font-size: 20px !important; }
+                    }
+                </style>
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #f4f7ff;">
+                <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #333;">
+                    <div class="header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+                        <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">Invoice ${invoice.invoiceNumber}</h1>
+                    </div>
                     
-                    <div style="background: white; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr style="background: #f3f4f6;">
-                                    <th style="padding: 10px; text-align: left;">Description</th>
-                                    <th style="padding: 10px; text-align: center;">Qty</th>
-                                    <th style="padding: 10px; text-align: right;">Price</th>
-                                    <th style="padding: 10px; text-align: right;">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${itemsHtml}
-                            </tbody>
-                            <tfoot>
+                    <div class="content" style="padding: 30px; background: #f9fafb;">
+                        <p style="font-size: 16px;">Dear <strong>${invoice.client.name}</strong>,</p>
+                        <p style="color: #666;">Please find your invoice details below:</p>
+                        
+                        <div style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 15px; margin: 20px 0; overflow-x: auto;">
+                            <table class="item-table" style="width: 100%; border-collapse: collapse; min-width: 450px;">
+                                <thead>
+                                    <tr style="background: #f3f4f6;">
+                                        <th style="padding: 12px 10px; text-align: left; font-size: 12px; text-transform: uppercase; color: #6b7280;">Description</th>
+                                        <th style="padding: 12px 10px; text-align: center; font-size: 12px; text-transform: uppercase; color: #6b7280;">Qty</th>
+                                        <th style="padding: 12px 10px; text-align: right; font-size: 12px; text-transform: uppercase; color: #6b7280;">Price</th>
+                                        <th style="padding: 12px 10px; text-align: right; font-size: 12px; text-transform: uppercase; color: #6b7280;">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHtml}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" style="padding: 15px 10px 5px; text-align: right; color: #6b7280;">Subtotal:</td>
+                                        <td style="padding: 15px 10px 5px; text-align: right; font-weight: bold;">$${invoice.subtotal.toFixed(2)}</td>
+                                    </tr>
+                                    ${invoice.taxRate > 0 ? `
+                                    <tr>
+                                        <td colspan="3" style="padding: 5px 10px; text-align: right; color: #6b7280;">Tax (${invoice.taxRate}%):</td>
+                                        <td style="padding: 5px 10px; text-align: right; font-weight: bold;">$${invoice.taxAmount.toFixed(2)}</td>
+                                    </tr>
+                                    ` : ''}
+                                    <tr style="font-size: 18px; font-weight: bold;">
+                                        <td colspan="3" style="padding: 15px 10px; text-align: right; color: #667eea;">Total Due:</td>
+                                        <td style="padding: 15px 10px; text-align: right; color: #667eea;">$${invoice.total.toFixed(2)}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        
+                        ${invoice.paymentPlan?.isInstallment ? `
+                        <div style="background: #eef2ff; border: 1px solid #c3dafe; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                            <h4 style="margin: 0 0 15px 0; color: #4338ca; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #c3dafe; padding-bottom: 10px;">Installment Plan</h4>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                                 <tr>
-                                    <td colspan="3" style="padding: 10px; text-align: right;"><strong>Subtotal:</strong></td>
-                                    <td style="padding: 10px; text-align: right;">$${invoice.subtotal.toFixed(2)}</td>
+                                    <td style="padding: 8px 0; color: #6b7280;">Down Payment:</td>
+                                    <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1e1b4b;">$${invoice.paymentPlan.downPayment.toFixed(2)}</td>
                                 </tr>
-                                ${invoice.taxRate > 0 ? `
                                 <tr>
-                                    <td colspan="3" style="padding: 10px; text-align: right;">Tax (${invoice.taxRate}%):</td>
-                                    <td style="padding: 10px; text-align: right;">$${invoice.taxAmount.toFixed(2)}</td>
+                                    <td style="padding: 8px 0; color: #6b7280;">Installments:</td>
+                                    <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1e1b4b;">${invoice.paymentPlan.installmentsCount} x $${invoice.paymentPlan.installmentAmount.toFixed(2)}</td>
                                 </tr>
-                                ` : ''}
-                                <tr style="font-size: 18px; font-weight: bold;">
-                                    <td colspan="3" style="padding: 10px; text-align: right; color: #667eea;">Total Due:</td>
-                                    <td style="padding: 10px; text-align: right; color: #667eea;">$${invoice.total.toFixed(2)}</td>
+                                <tr>
+                                    <td style="padding: 8px 0; color: #6b7280;">Frequency:</td>
+                                    <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1e1b4b; text-transform: capitalize;">${invoice.paymentPlan.period}</td>
                                 </tr>
-                            </tfoot>
-                        </table>
+                            </table>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 20px; margin: 20px 0;">
+                            <p style="margin: 0 0 10px 0; font-size: 14px; color: #6b7280;"><strong>Issue Date:</strong> ${new Date(invoice.issueDate).toLocaleDateString()}</p>
+                            <p style="margin: 0; font-size: 14px; color: #6b7280;"><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
+                        </div>
+                        
+                        ${invoice.notes ? `
+                        <div style="background: #fffbef; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; font-size: 14px; color: #92400e;">
+                            <strong>Note:</strong> ${invoice.notes}
+                        </div>
+                        ` : ''}
+                        
+                        <div style="text-align: center; color: #9ca3af; font-size: 12px; margin-top: 40px; border-top: 1px solid #e5e7eb; pt-20">
+                            <p style="margin-bottom: 5px;">Thank you for your business!</p>
+                            <p style="font-weight: bold; color: #4b5563;">LogaTech</p>
+                        </div>
                     </div>
-                    
-                    ${invoice.paymentPlan?.isInstallment ? `
-                    <div style="background: #eef2ff; border: 1px solid #c3dafe; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                        <h4 style="margin-top: 0; color: #4338ca; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Installment Payment Plan</h4>
-                        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                            <tr>
-                                <td style="padding: 5px 0; color: #6b7280;">Down Payment:</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: bold;">$${invoice.paymentPlan.downPayment.toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 5px 0; color: #6b7280;">Installment Amount:</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: bold;">$${invoice.paymentPlan.installmentAmount.toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 5px 0; color: #6b7280;">Total Payments:</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: bold;">${invoice.paymentPlan.installmentsCount}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 5px 0; color: #6b7280;">Frequency:</td>
-                                <td style="padding: 5px 0; text-align: right; font-weight: bold; text-transform: capitalize;">${invoice.paymentPlan.period}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    ` : ''}
-                    
-                    <div style="background: white; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                        <p style="margin: 5px 0;"><strong>Issue Date:</strong> ${new Date(invoice.issueDate).toLocaleDateString()}</p>
-                        <p style="margin: 5px 0;"><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
-                    </div>
-                    
-                    ${invoice.notes ? `
-                    <div style="background: #fff3cd; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                        <strong>Notes:</strong><br/>
-                        ${invoice.notes}
-                    </div>
-                    ` : ''}
-                    
-                    <p style="text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px;">
-                        Thank you for your business!<br/>
-                        LogaTech
-                    </p>
                 </div>
-            </div>
+            </body>
+            </html>
         `;
 
         // Send Email
