@@ -17,6 +17,10 @@
         "seed:users": "node src/scripts/seedUsers.js"
     },
     "dependencies": {
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
+        "@mui/icons-material": "^7.3.7",
+        "@mui/material": "^7.3.7",
         "@reduxjs/toolkit": "^2.9.2",
         "axios": "^1.13.1",
         "bcrypt": "^5.1.1",
