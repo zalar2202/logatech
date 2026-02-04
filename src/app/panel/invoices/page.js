@@ -28,6 +28,8 @@ import {
 } from "lucide-react";
 import * as Yup from "yup";
 
+import { useSearchParams } from "next/navigation";
+
 const invoiceSchema = Yup.object().shape({
     client: Yup.string().required("Client is required"),
     invoiceNumber: Yup.string(), // Auto-generated if empty
@@ -47,8 +49,11 @@ const invoiceSchema = Yup.object().shape({
     taxRate: Yup.number().min(0).max(100),
 });
 
-export default function InvoicesPage() {
+function InvoicesPage() {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
+    const invoiceIdParam = searchParams.get("id");
+    
     const [invoices, setInvoices] = useState([]);
     const [clients, setClients] = useState([]);
     const [packages, setPackages] = useState([]);
@@ -57,25 +62,42 @@ export default function InvoicesPage() {
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [sendingId, setSendingId] = useState(null);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
 
     useEffect(() => {
-        fetchInvoices();
-        fetchClients();
-        fetchPackages();
+        const init = async () => {
+            await Promise.all([fetchInvoices(), fetchClients(), fetchPackages()]);
+        };
+        init();
     }, []);
+
+    // Effect to open detail view if ID is in URL
+    useEffect(() => {
+        if (invoiceIdParam && invoices.length > 0) {
+            const inv = invoices.find(i => i._id === invoiceIdParam || i.id === invoiceIdParam);
+            if (inv) {
+                setSelectedInvoice(inv);
+                setIsViewModalOpen(true);
+            }
+        }
+    }, [invoiceIdParam, invoices]);
 
     const fetchInvoices = async () => {
         setLoading(true);
         try {
             const { data } = await axios.get("/api/invoices");
-            if (data.success) setInvoices(data.data);
+            if (data.success) {
+                setInvoices(data.data);
+                return data.data;
+            }
         } catch (error) {
             toast.error("Failed to fetch invoices");
         } finally {
             setLoading(false);
         }
+        return [];
     };
 
     const fetchClients = async () => {
@@ -201,13 +223,13 @@ export default function InvoicesPage() {
 
             <Card>
                 <div className="mb-6 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)] w-5 h-5" />
                     <input
                         type="text"
                         placeholder="Search invoices..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:bg-gray-800 dark:border-gray-700"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-transparent text-[var(--color-text-primary)]"
                         style={{ borderColor: "var(--color-border)" }}
                     />
                 </div>
@@ -215,15 +237,15 @@ export default function InvoicesPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b dark:border-gray-700">
-                                <th className="p-4 font-semibold text-sm text-gray-500">
+                            <tr className="border-b border-[var(--color-border)]">
+                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">
                                     Invoice #
                                 </th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Client</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Date</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Amount</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Status</th>
-                                <th className="p-4 font-semibold text-sm text-gray-500">Actions</th>
+                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Client</th>
+                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Date</th>
+                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Amount</th>
+                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Status</th>
+                                <th className="p-4 font-semibold text-sm text-[var(--color-text-secondary)]">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -243,18 +265,18 @@ export default function InvoicesPage() {
                                 filteredInvoices.map((inv) => (
                                     <tr
                                         key={inv._id}
-                                        className="border-b last:border-0 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                                        className="border-b last:border-0 border-[var(--color-border)] hover:bg-[var(--color-hover)] transition-colors"
                                     >
-                                        <td className="p-4 font-mono text-sm">
+                                        <td className="p-4 font-mono text-sm text-[var(--color-text-primary)]">
                                             {inv.invoiceNumber}
                                         </td>
-                                        <td className="p-4 font-medium">
+                                        <td className="p-4 font-medium text-[var(--color-text-primary)]">
                                             {inv.client?.name || "Unknown"}
                                         </td>
-                                        <td className="p-4 text-sm text-gray-500">
+                                        <td className="p-4 text-sm text-[var(--color-text-secondary)]">
                                             {new Date(inv.issueDate).toLocaleDateString()}
                                         </td>
-                                        <td className="p-4 font-bold text-gray-900 dark:text-gray-100">
+                                        <td className="p-4 font-bold text-[var(--color-text-primary)]">
                                             ${inv.total?.toFixed(2)}
                                         </td>
                                         <td className="p-4">
@@ -325,6 +347,10 @@ export default function InvoicesPage() {
                                                             </Button>
                                                         )}
                                                         <button
+                                                            onClick={() => {
+                                                                setSelectedInvoice(inv);
+                                                                setIsViewModalOpen(true);
+                                                            }}
                                                             className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 transition-colors"
                                                             title="View Details"
                                                         >
@@ -379,32 +405,32 @@ export default function InvoicesPage() {
                         return (
                             <Form className="space-y-6">
                                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                                     <SelectField name="client" label="Client">
-                                         <option value="">-- Select Client --</option>
-                                         {clients.map((c) => (
-                                             <option key={c._id} value={c._id}>
-                                                 {c.name}
-                                             </option>
-                                         ))}
-                                     </SelectField>
-                                     <SelectField name="package" label="Linked Package (Auto-Activation)">
-                                         <option value="">-- None --</option>
-                                         {packages.map((p) => (
-                                             <option key={p._id} value={p._id}>
-                                                 {p.name} (${p.price})
-                                             </option>
-                                         ))}
-                                     </SelectField>
-                                     <SelectField name="status" label="Status">
-                                         <option value="draft">Draft</option>
-                                         <option value="sent">Sent</option>
-                                         <option value="paid">Paid</option>
-                                         <option value="overdue">Overdue</option>
-                                         <option value="cancelled">Cancelled</option>
-                                     </SelectField>
-                                     <InputField type="date" name="issueDate" label="Issue Date" />
-                                     <InputField type="date" name="dueDate" label="Due Date" />
-                                 </div>
+                                    <SelectField name="client" label="Client">
+                                        <option value="">-- Select Client --</option>
+                                        {clients.map((c) => (
+                                            <option key={c._id} value={c._id}>
+                                                {c.name}
+                                            </option>
+                                        ))}
+                                    </SelectField>
+                                    <SelectField name="package" label="Linked Package (Auto-Activation)">
+                                        <option value="">-- None --</option>
+                                        {packages.map((p) => (
+                                            <option key={p._id} value={p._id}>
+                                                {p.name} (${p.price})
+                                            </option>
+                                        ))}
+                                    </SelectField>
+                                    <SelectField name="status" label="Status">
+                                        <option value="draft">Draft</option>
+                                        <option value="sent">Sent</option>
+                                        <option value="paid">Paid</option>
+                                        <option value="overdue">Overdue</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </SelectField>
+                                    <InputField type="date" name="issueDate" label="Issue Date" />
+                                    <InputField type="date" name="dueDate" label="Due Date" />
+                                </div>
 
                                 {/* Items Table */}
                                 <div className="border rounded-lg overflow-hidden dark:border-gray-700">
@@ -528,6 +554,122 @@ export default function InvoicesPage() {
                     }}
                 </Formik>
             </Modal>
+
+            {/* View Details Modal */}
+            <Modal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                title={`Invoice Details: ${selectedInvoice?.invoiceNumber}`}
+                size="3xl"
+            >
+                {selectedInvoice && (
+                    <div className="space-y-6 py-2">
+                        <div className="grid grid-cols-2 gap-8 border-b pb-6 dark:border-gray-700">
+                            <div>
+                                <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">Bill To</p>
+                                <p className="font-bold text-lg text-[var(--color-text-primary)]">{selectedInvoice.client?.name || 'Unknown Client'}</p>
+                                <p className="text-sm text-[var(--color-text-secondary)]">{selectedInvoice.client?.email}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">Invoice Status</p>
+                                <Badge
+                                    variant={
+                                        selectedInvoice.status === "paid"
+                                            ? "success"
+                                            : selectedInvoice.status === "overdue"
+                                                ? "danger"
+                                                : "primary"
+                                    }
+                                >
+                                    {selectedInvoice.status.toUpperCase()}
+                                </Badge>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-6 text-sm">
+                            <div>
+                                <p className="text-gray-400 mb-1">Invoice Number</p>
+                                <p className="font-mono font-bold text-[var(--color-text-primary)]">{selectedInvoice.invoiceNumber}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-400 mb-1">Issue Date</p>
+                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.issueDate).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-400 mb-1">Due Date</p>
+                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.dueDate).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+
+                        <div className="border rounded-xl overflow-hidden border-[var(--color-border)]">
+                            <table className="w-full text-left">
+                                <thead className="bg-[var(--color-background-secondary)]">
+                                    <tr>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500">Service Description</th>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 text-center">Qty</th>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">Unit Price</th>
+                                        <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y dark:divide-gray-700">
+                                    {selectedInvoice.items.map((item, idx) => (
+                                        <tr key={idx}>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-medium">{item.description}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-secondary)] text-center">{item.quantity}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-secondary)] text-right">${item.unitPrice?.toFixed(2)}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-bold text-right">${(item.quantity * item.unitPrice).toFixed(2)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="flex justify-end pt-4">
+                            <div className="w-64 space-y-3">
+                                <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
+                                    <span>Subtotal</span>
+                                    <span>${selectedInvoice.subtotal?.toFixed(2) || (selectedInvoice.total / (1 + (selectedInvoice.taxRate || 0)/100)).toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
+                                    <span>Tax ({selectedInvoice.taxRate || 0}%)</span>
+                                    <span>${((selectedInvoice.total || 0) - (selectedInvoice.subtotal || 0)).toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-xl font-bold text-[var(--color-text-primary)] border-t pt-3 dark:border-gray-700">
+                                    <span>Total</span>
+                                    <span className="text-indigo-600">${selectedInvoice.total?.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {selectedInvoice.notes && (
+                            <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl">
+                                <p className="text-xs uppercase font-bold text-gray-400 mb-2">Notes</p>
+                                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed italic">{selectedInvoice.notes}</p>
+                            </div>
+                        )}
+
+                        <div className="flex justify-end gap-3 pt-6 border-t dark:border-gray-700">
+                            <Button variant="secondary" onClick={() => setIsViewModalOpen(false)}>Close</Button>
+                            <Link href={`/panel/invoices/${selectedInvoice._id}/print`}>
+                                <Button variant="primary" icon={<Download className="w-4 h-4" />}>Download PDF</Button>
+                            </Link>
+                            {!isAdmin && ['sent', 'overdue'].includes(selectedInvoice.status) && (
+                                <Button variant="success">Proceed to Payment</Button>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </ContentWrapper>
+    );
+}
+
+import { Suspense } from "react";
+
+export default function InvoicesPageWithSuspense() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <InvoicesPage />
+        </Suspense>
     );
 }
