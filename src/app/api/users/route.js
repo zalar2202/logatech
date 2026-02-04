@@ -93,6 +93,7 @@ export async function GET(request) {
 
         return NextResponse.json(
             {
+                success: true,
                 data: users,
                 links: {
                     next: hasNext ? `${request.url.split('?')[0]}?page=${page + 1}&limit=${limit}` : null,

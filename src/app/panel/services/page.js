@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSearchParams } from "next/navigation";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
 import { Card } from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
@@ -27,7 +28,7 @@ const serviceSchema = Yup.object().shape({
     notes: Yup.string(),
 });
 
-export default function ServicesPage() {
+function ServicesContent() {
     const { user } = useAuth();
     const [services, setServices] = useState([]);
     const [packages, setPackages] = useState([]);
@@ -39,6 +40,8 @@ export default function ServicesPage() {
 
     const isAdmin = user && ['admin', 'manager'].includes(user.role);
 
+    const searchParams = useSearchParams();
+
     useEffect(() => {
         fetchServices();
         if (isAdmin) {
@@ -46,6 +49,14 @@ export default function ServicesPage() {
             fetchUsersList();
         }
     }, [user]);
+
+    useEffect(() => {
+        const assignTo = searchParams.get('assignTo');
+        if (assignTo && isAdmin) {
+            setSelectedService(null);
+            setIsModalOpen(true);
+        }
+    }, [searchParams, isAdmin]);
 
     const fetchServices = async () => {
         setLoading(true);
@@ -70,7 +81,7 @@ export default function ServicesPage() {
 
     const fetchUsersList = async () => {
         try {
-            const { data } = await axios.get("/api/users");
+            const { data } = await axios.get("/api/users?limit=1000");
             if (data.success) setUsers(data.data || []);
         } catch (error) {
             console.error("Failed to fetch users");
@@ -284,7 +295,7 @@ export default function ServicesPage() {
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedService ? "Edit Service" : "Assign New Service"} size="lg">
                 <Formik
                     initialValues={{
-                        user: selectedService?.user?._id || "",
+                        user: searchParams.get('assignTo') || selectedService?.user?._id || selectedService?.user || "",
                         package: selectedService?.package?._id || "",
                         price: selectedService?.price || 0,
                         billingCycle: selectedService?.billingCycle || "monthly",
@@ -369,5 +380,13 @@ export default function ServicesPage() {
                 </Formik>
             </Modal>
         </ContentWrapper>
+    );
+}
+
+export default function ServicesPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ServicesContent />
+        </Suspense>
     );
 }
