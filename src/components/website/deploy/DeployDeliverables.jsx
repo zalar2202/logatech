@@ -6,27 +6,26 @@ const deliverables = [
     {
         icon: "🌐",
         title: "Production Environment",
-        description: "A fully live, secure, and optimized application accessible to your users globally.",
+        description:
+            "A fully live, secure, and optimized application accessible to your users globally.",
     },
     {
         icon: "📜",
-        title: "Infrastructure as Code",
-        description: "Terraform or CloudFormation scripts allowing you to recreate your infrastructure instantly.",
+        title: "Infrastructure & Docs",
+        description:
+            "IaC scripts, deployment runbooks, and documentation to manage and recreate your setup.",
     },
     {
         icon: "🔑",
         title: "Admin Access Keys",
-        description: "Full ownership of all cloud accounts, API keys, and SSL certificates transferred to you.",
-    },
-    {
-        icon: "📘",
-        title: "Deployment Runbooks",
-        description: "Detailed documentation on how to deploy updates, rollback changes, and manage the system.",
+        description:
+            "Full ownership of all cloud accounts, API keys, and SSL certificates transferred to you.",
     },
     {
         icon: "🛡️",
         title: "Security Hardening",
-        description: "Configured firewalls, headers, and access policies to protect against common threats.",
+        description:
+            "Configured firewalls, headers, and access policies to protect against common threats.",
     },
 ];
 

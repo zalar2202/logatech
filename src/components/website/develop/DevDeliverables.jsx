@@ -6,8 +6,7 @@ const deliverables = [
     {
         icon: "💻",
         title: "Full Source Code",
-        description:
-            "Complete Git repository functionality. You own 100% of the code — no lock-in.",
+        description: "Complete Git repository ownership. You own 100% of the code — no lock-in.",
     },
     {
         icon: "🌐",
@@ -16,18 +15,14 @@ const deliverables = [
     },
     {
         icon: "🔒",
-        title: "Secure Configs",
-        description: "Environment variables and security headers configured for production safety.",
+        title: "DevOps & Security",
+        description:
+            "Secure configs, CI/CD pipelines, and automated workflows for safe, seamless updates.",
     },
     {
         icon: "📘",
         title: "Technical Docs",
         description: "README instructions, API documentation, and architecture diagrams.",
-    },
-    {
-        icon: "🔄",
-        title: "CI/CD Pipelines",
-        description: "Automated build and deploy workflows for smooth future updates.",
     },
 ];
 

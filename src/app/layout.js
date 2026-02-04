@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono, Inter, Playfair_Display } from "next/font/google";
-import "@/styles/panel.css";
+import "@/styles/tailwind.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { StoreProvider } from "@/lib/StoreProvider";

@@ -8,7 +8,7 @@ import DeployTechStack from "@/components/website/deploy/DeployTechStack";
 import DeployWhyLoga from "@/components/website/deploy/DeployWhyLoga";
 import DeployBundleBanner from "@/components/website/deploy/DeployBundleBanner";
 import DeployFAQ from "@/components/website/deploy/DeployFAQ";
-import DeployCTA from "@/components/website/deploy/DeployCTA";
+import GlobalCTA from "@/components/website/shared/GlobalCTA";
 
 export const metadata = {
     title: "Deployment Services | LogaTech",
@@ -29,7 +29,12 @@ export default function DeployServicePage() {
             <DeployWhyLoga />
             <DeployBundleBanner />
             <DeployFAQ />
-            <DeployCTA />
+            <GlobalCTA
+                title="Ready for Liftoff?"
+                description="Don't let infrastructure headaches hold you back. Let's build a scalable foundation that grows with your business."
+                primaryButtonLabel="Book Infrastructure Audit"
+                secondaryButtonLabel="Email Requirements"
+            />
         </div>
     );
 }

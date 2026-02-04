@@ -79,24 +79,42 @@ export default function WebsiteHeader() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    useEffect(() => {
+    // Track pathname changes to reset UI state without triggering cascading renders in useEffect
+    const [prevPathname, setPrevPathname] = useState(pathname);
+    if (pathname !== prevPathname) {
+        setPrevPathname(pathname);
         setIsMobileMenuOpen(false);
         setActiveDropdown(null);
-    }, [pathname]);
+    }
 
     const handleDropdownToggle = (itemId) => {
         setActiveDropdown(activeDropdown === itemId ? null : itemId);
     };
 
     const handleNavClick = (e, item) => {
-        if (isHomepage && item.href.startsWith("#")) {
-            e.preventDefault();
-            const element = document.getElementById(item.href.slice(1));
-            if (element) {
-                element.scrollIntoView({ behavior: "smooth" });
+        if (
+            item.href.startsWith("#") ||
+            (item.href.includes("#") && item.href.split("#")[0] === pathname)
+        ) {
+            const hash = item.href.split("#")[1];
+            if (hash) {
+                e.preventDefault();
+                const element = document.getElementById(hash);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth" });
+                }
+                setIsMobileMenuOpen(false);
             }
-            setIsMobileMenuOpen(false);
         }
+    };
+
+    const handleContactClick = (e) => {
+        e.preventDefault();
+        const element = document.getElementById("contact");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+        setIsMobileMenuOpen(false);
     };
 
     const renderNavItem = (item, isMobile = false) => {
@@ -221,8 +239,12 @@ export default function WebsiteHeader() {
                                 >
                                     <LayoutDashboard className="w-4 h-4 mr-1" /> Dashboard
                                 </Link>
-                                <Link href="/panel/tickets/new" className="loga-btn nav-cta-btn">
-                                    Let's Talk
+                                <Link
+                                    href="#contact"
+                                    className="loga-btn nav-cta-btn"
+                                    onClick={handleContactClick}
+                                >
+                                    Let&apos;s Talk
                                 </Link>
                             </>
                         ) : (
@@ -234,8 +256,12 @@ export default function WebsiteHeader() {
                                 >
                                     <UserPlus className="w-4 h-4 mr-1" /> Login / Sign Up
                                 </Link>
-                                <Link href="/login" className="loga-btn nav-cta-btn">
-                                    Let's Talk
+                                <Link
+                                    href="#contact"
+                                    className="loga-btn nav-cta-btn"
+                                    onClick={handleContactClick}
+                                >
+                                    Let&apos;s Talk
                                 </Link>
                             </>
                         )}
@@ -270,11 +296,11 @@ export default function WebsiteHeader() {
                                     Dashboard
                                 </Link>
                                 <Link
-                                    href="/panel/tickets/new"
+                                    href="#contact"
                                     className="loga-btn mobile-cta-btn"
-                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    onClick={handleContactClick}
                                 >
-                                    Let's Talk
+                                    Let&apos;s Talk
                                 </Link>
                             </>
                         ) : (

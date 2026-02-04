@@ -1,13 +1,23 @@
 "use client";
 
-import SmartCTA from "@/components/website/shared/SmartCTA";
+import Link from "next/link";
+import DesignParticleBackground from "./DesignParticleBackground";
 
 /**
  * DesignHero - Hero section for Design service page
  */
 export default function DesignHero() {
+    const handleContactClick = (e) => {
+        e.preventDefault();
+        const element = document.getElementById("contact");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <section className="design-hero" id="design-hero">
+            <DesignParticleBackground />
             <div className="design-hero-content animate-fade-in">
                 <div className="design-hero-badge animate-fade-in-up delay-100">
                     <span>✦ Design Services</span>
@@ -20,14 +30,13 @@ export default function DesignHero() {
                     Beautiful, Strategic, Built for Growth
                 </p>
                 <p className="design-hero-description animate-fade-in-up delay-400">
-                    We don't just make things look good — we design experiences that elevate your
-                    brand, communicate your message, and convert visitors into customers.
+                    We don&apos;t just make things look good — we design experiences that elevate
+                    your brand, communicate your message, and convert visitors into customers.
                 </p>
                 <div className="design-hero-cta animate-fade-in-up delay-500">
-                    <SmartCTA 
-                        label="Start Your Design Strategy" 
-                        className="loga-btn" 
-                    />
+                    <Link href="#contact" className="loga-btn" onClick={handleContactClick}>
+                        Start Your Design Strategy
+                    </Link>
                     <a href="#use-cases" className="loga-alt-btn">
                         See Examples
                     </a>
