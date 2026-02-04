@@ -94,7 +94,31 @@ export async function POST(request) {
         const taxAmount = subtotal * (taxRate / 100);
         const total = subtotal + taxAmount;
 
-        // 4. Create Invoice Object
+        // 4. Generate Installments if applicable
+        const paymentPlan = body.paymentPlan || {};
+        if (paymentPlan.isInstallment && paymentPlan.installmentsCount > 0) {
+            const installments = [];
+            const count = Number(paymentPlan.installmentsCount);
+            const amount = Number(paymentPlan.installmentAmount);
+            const period = paymentPlan.period || 'monthly';
+            const startDate = new Date(body.issueDate || Date.now());
+
+            for (let i = 1; i <= count; i++) {
+                const dueDate = new Date(startDate);
+                if (period === 'monthly') dueDate.setMonth(dueDate.getMonth() + i);
+                else if (period === 'weekly') dueDate.setDate(dueDate.getDate() + (i * 7));
+                else if (period === 'quarterly') dueDate.setMonth(dueDate.getMonth() + (i * 3));
+                
+                installments.push({
+                    dueDate,
+                    amount,
+                    status: 'unpaid'
+                });
+            }
+            paymentPlan.installments = installments;
+        }
+
+        // 5. Create Invoice Object
         const invoiceData = {
             ...body,
             items: processedItems,
@@ -102,6 +126,7 @@ export async function POST(request) {
             taxRate,
             taxAmount,
             total,
+            paymentPlan,
             createdBy: user._id
         };
 

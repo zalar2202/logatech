@@ -51,6 +51,8 @@ export default function ClientsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState(null); // If null, creating new
     const [activeTab, setActiveTab] = useState("details"); // details, payments
+    const [clientInvoices, setClientInvoices] = useState([]);
+    const [invoicesLoading, setInvoicesLoading] = useState(false);
 
     useEffect(() => {
         fetchClients();
@@ -109,6 +111,26 @@ export default function ClientsPage() {
             setSubmitting(false);
         }
     };
+
+    const fetchClientInvoices = async (clientId) => {
+        setInvoicesLoading(true);
+        try {
+            const { data } = await axios.get(`/api/invoices?clientId=${clientId}`);
+            if (data.success) {
+                setClientInvoices(data.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch client invoices");
+        } finally {
+            setInvoicesLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedClient && activeTab === "payments") {
+            fetchClientInvoices(selectedClient._id);
+        }
+    }, [selectedClient, activeTab]);
 
     const openCreateModal = () => {
         setSelectedClient(null);
@@ -330,14 +352,49 @@ export default function ClientsPage() {
                         )}
                     </Formik>
                 ) : (
-                    <div className="py-12 text-center text-gray-500 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed">
-                        <CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No Payment History</h3>
-                        <p className="max-w-xs mx-auto mt-1 text-sm">
-                            This client has not made any payments yet. Invoices will appear here once generated.
-                        </p>
-                        <div className="mt-6">
-                            <Button size="sm" variant="secondary">Create Invoice (Coming Soon)</Button>
+                    <div className="space-y-4">
+                        {invoicesLoading ? (
+                            <div className="py-12 text-center">Loading invoices...</div>
+                        ) : clientInvoices.length === 0 ? (
+                            <div className="py-12 text-center text-gray-500 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed">
+                                <CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No Payment History</h3>
+                                <p className="max-w-xs mx-auto mt-1 text-sm">
+                                    This client has not made any payments yet. Invoices will appear here once generated.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="overflow-hidden border dark:border-gray-700 rounded-lg">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-gray-50 dark:bg-gray-800">
+                                        <tr>
+                                            <th className="p-3 font-semibold">Invoice #</th>
+                                            <th className="p-3 font-semibold">Date</th>
+                                            <th className="p-3 font-semibold">Amount</th>
+                                            <th className="p-3 font-semibold">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {clientInvoices.map((inv) => (
+                                            <tr key={inv._id} className="border-t dark:border-gray-700">
+                                                <td className="p-3 font-medium text-indigo-600">{inv.invoiceNumber}</td>
+                                                <td className="p-3 text-gray-500">{new Date(inv.issueDate).toLocaleDateString()}</td>
+                                                <td className="p-3 font-bold">${inv.total?.toFixed(2)}</td>
+                                                <td className="p-3">
+                                                    <Badge variant={inv.status === 'paid' ? 'success' : inv.status === 'overdue' ? 'danger' : 'warning'}>
+                                                        {inv.status}
+                                                    </Badge>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                        <div className="flex justify-center pt-4">
+                            <Button size="sm" variant="secondary" onClick={() => (window.location.href = `/panel/invoices`)}>
+                                Go to Full Invoices View
+                            </Button>
                         </div>
                     </div>
                 )}

@@ -252,6 +252,27 @@ export default function ServicesPage() {
                                             "{svc.notes}"
                                         </div>
                                     )}
+
+                                    {isAdmin && svc.invoice?.paymentPlan?.isInstallment && (
+                                        <div className="mt-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-xl">
+                                            <div className="flex items-center gap-2 mb-3 text-indigo-700 dark:text-indigo-300">
+                                                <CreditCard className="w-4 h-4" />
+                                                <span className="text-xs font-bold uppercase tracking-wider">Active Payment Plan</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-y-2 text-sm">
+                                                <div className="text-gray-500">Installments:</div>
+                                                <div className="text-right font-medium text-indigo-900 dark:text-indigo-100">{svc.invoice.paymentPlan.installmentsCount} Payments</div>
+                                                <div className="text-gray-500">Amount/Period:</div>
+                                                <div className="text-right font-bold text-indigo-600 dark:text-indigo-400">
+                                                    ${svc.invoice.paymentPlan.installmentAmount?.toFixed(2)} / {svc.invoice.paymentPlan.period}
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 pt-3 border-t border-indigo-100 dark:border-indigo-800 flex justify-between items-center">
+                                                <span className="text-[10px] text-indigo-500 font-mono">LINKED INV: {svc.invoice.invoiceNumber}</span>
+                                                <Button size="sm" variant="secondary" className="h-7 text-[10px] px-2" onClick={() => (window.location.href = `/panel/invoices`)}>View Payments</Button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>

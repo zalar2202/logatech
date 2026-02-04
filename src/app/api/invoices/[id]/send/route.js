@@ -79,6 +79,30 @@ export async function POST(request, { params }) {
                         </table>
                     </div>
                     
+                    ${invoice.paymentPlan?.isInstallment ? `
+                    <div style="background: #eef2ff; border: 1px solid #c3dafe; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                        <h4 style="margin-top: 0; color: #4338ca; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;">Installment Payment Plan</h4>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <tr>
+                                <td style="padding: 5px 0; color: #6b7280;">Down Payment:</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: bold;">$${invoice.paymentPlan.downPayment.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0; color: #6b7280;">Installment Amount:</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: bold;">$${invoice.paymentPlan.installmentAmount.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0; color: #6b7280;">Total Payments:</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: bold;">${invoice.paymentPlan.installmentsCount}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 5px 0; color: #6b7280;">Frequency:</td>
+                                <td style="padding: 5px 0; text-align: right; font-weight: bold; text-transform: capitalize;">${invoice.paymentPlan.period}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    ` : ''}
+                    
                     <div style="background: white; border-radius: 8px; padding: 15px; margin: 20px 0;">
                         <p style="margin: 5px 0;"><strong>Issue Date:</strong> ${new Date(invoice.issueDate).toLocaleDateString()}</p>
                         <p style="margin: 5px 0;"><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
