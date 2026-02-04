@@ -119,6 +119,10 @@ export async function POST(request, { params }) {
                             <p style="margin: 0; font-size: 14px; color: #6b7280;"><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
                         </div>
                         
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${process.env.NEXT_PUBLIC_APP_URL}/panel/invoices?id=${id}" style="background-color: #667eea; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">Pay Invoice</a>
+                        </div>
+                        
                         ${invoice.notes ? `
                         <div style="background: #fffbef; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; font-size: 14px; color: #92400e;">
                             <strong>Note:</strong> ${invoice.notes}

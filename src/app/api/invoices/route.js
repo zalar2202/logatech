@@ -36,6 +36,7 @@ export async function GET(request) {
         if (!['admin', 'manager'].includes(user.role)) {
              // If regular user, only show invoices linked to their user ID
              query.user = user._id;
+             query.status = { $ne: 'draft' };
         }
 
         const invoices = await Invoice.find(query)

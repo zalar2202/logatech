@@ -27,6 +27,8 @@ import {
     Send,
     Mail,
     CreditCard,
+    Building2,
+    Globe,
 } from "lucide-react";
 import * as Yup from "yup";
 
@@ -66,6 +68,7 @@ function InvoicesPage() {
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [sendingId, setSendingId] = useState(null);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
 
@@ -319,6 +322,13 @@ function InvoicesPage() {
                                             >
                                                 {inv.status.toUpperCase()}
                                             </Badge>
+                                            {inv.paymentMethod && inv.status !== 'paid' && (
+                                                <div className="mt-1">
+                                                    <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800">
+                                                        METHOD: {inv.paymentMethod.replace('_', ' ').toUpperCase()}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="p-4">
                                             <div className="flex items-center justify-end gap-2">
@@ -356,15 +366,14 @@ function InvoicesPage() {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        {["draft", "sent"].includes(inv.status) && (
+                                                        {["sent", "overdue"].includes(inv.status) && (
                                                             <Button
                                                                 size="sm"
                                                                 variant="success"
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    toast.info(
-                                                                        "Redirecting to payment gateway..."
-                                                                    );
+                                                                    setSelectedInvoice(inv);
+                                                                    setIsPaymentModalOpen(true);
                                                                 }}
                                                             >
                                                                 Pay Now
@@ -660,6 +669,19 @@ function InvoicesPage() {
                                 >
                                     {selectedInvoice.status.toUpperCase()}
                                 </Badge>
+                                {selectedInvoice.paymentMethod && selectedInvoice.status !== 'paid' && (
+                                    <div className="mt-3">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                            <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                                                CLIENT CHOSE: {selectedInvoice.paymentMethod.replace('_', ' ').toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <p className="text-[10px] text-amber-500 mt-1 italic">
+                                            Please send manual payment instructions to the client.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -758,11 +780,67 @@ function InvoicesPage() {
                                 <Button variant="primary" icon={<Download className="w-4 h-4" />}>Download PDF</Button>
                             </Link>
                             {!isAdmin && ['sent', 'overdue'].includes(selectedInvoice.status) && (
-                                <Button variant="success">Proceed to Payment</Button>
+                                <Button variant="success" onClick={() => { setIsViewModalOpen(false); setIsPaymentModalOpen(true); }}>Proceed to Payment</Button>
                             )}
                         </div>
                     </div>
                 )}
+            </Modal>
+            {/* Payment Method Selection Modal */}
+            <Modal
+                isOpen={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                title="Select Payment Method"
+                size="md"
+            >
+                <div className="space-y-6 p-2">
+                    <p className="text-sm text-[var(--color-text-secondary)]">
+                        Please select your preferred payment method for invoice <strong>{selectedInvoice?.invoiceNumber}</strong>. 
+                        After selection, our team will manually provide you with the specific payment instructions.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 gap-3">
+                        {[
+                            { id: 'bank_transfer', name: 'Bank Transfer', desc: 'Direct deposit to our business account', icon: <Building2 className="w-5 h-5" /> },
+                            { id: 'crypto', name: 'Cryptocurrency', desc: 'USDT (TRC20), BTC, or ETH', icon: <Globe className="w-5 h-5" /> },
+                            { id: 'cash', name: 'Cash Payment', desc: 'Visit our office or local agent', icon: <CreditCard className="w-5 h-5" /> },
+                            { id: 'other', name: 'Other Methods', desc: 'Contact support for more options', icon: <Plus className="w-5 h-5" /> }
+                        ].map((method) => (
+                            <button
+                                key={method.id}
+                                onClick={async () => {
+                                    try {
+                                        const { data } = await axios.patch(`/api/invoices/${selectedInvoice._id}/payment-method`, {
+                                            paymentMethod: method.id
+                                        });
+                                        if (data.success) {
+                                            toast.success(`Chosen ${method.name}. Awaiting instructions.`);
+                                            setIsPaymentModalOpen(false);
+                                            fetchInvoices();
+                                        }
+                                    } catch (err) {
+                                        toast.error("Failed to update payment method");
+                                    }
+                                }}
+                                className="flex items-center gap-4 p-4 rounded-xl border border-[var(--color-border)] hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all text-left group"
+                            >
+                                <div className="p-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 rounded-lg transition-colors">
+                                    {method.icon}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-[var(--color-text-primary)]">{method.name}</h4>
+                                    <p className="text-xs text-[var(--color-text-secondary)]">{method.desc}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                    
+                    <div className="pt-4 border-t border-[var(--color-border)]">
+                        <p className="text-[10px] text-center text-[var(--color-text-tertiary)] italic">
+                            No automated payments are processed here. Selection notifies our billing department.
+                        </p>
+                    </div>
+                </div>
             </Modal>
         </ContentWrapper>
     );
