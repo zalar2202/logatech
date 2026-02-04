@@ -607,14 +607,14 @@ html {
     max-width: 100%;
 }
 
-.section-title {
+.website-layout .section-title {
     color: var(--color-primary);
     font-weight: 700;
     text-align: center;
     margin-bottom: 0.5rem;
 }
 
-.section-subtitle {
+.website-layout .section-subtitle {
     color: var(--color-text-secondary);
     text-align: center;
     max-width: 600px;
@@ -1155,6 +1155,37 @@ html {
     z-index: 0;
 }
 
+.design-particle-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.develop-particle-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.deploy-particle-background,
+.maintain-particle-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .hero-content {
     position: relative;
     z-index: 1;
@@ -1167,7 +1198,7 @@ html {
     max-width: 800px;
 }
 
-.hero-title {
+.website-layout .hero-title {
     font-size: 5rem;
     font-weight: 800;
     color: var(--color-primary);
@@ -1308,7 +1339,7 @@ html {
     height: 100%;
 }
 
-.service-title {
+.website-layout .service-title {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 12px;
@@ -1352,7 +1383,7 @@ html {
     margin-bottom: 16px;
 }
 
-.value-title {
+.website-layout .value-title {
     font-size: 1.35rem;
     font-weight: 600;
     margin-bottom: 12px;
@@ -1454,13 +1485,13 @@ html {
     font-size: 0.9rem;
 }
 
-.timeline-subtitle {
+.website-layout .timeline-subtitle {
     font-size: 0.9rem;
     color: var(--color-text-tertiary);
     margin-bottom: 4px;
 }
 
-.timeline-title {
+.website-layout .timeline-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -1635,7 +1666,7 @@ html {
     transform: translateY(0);
 }
 
-.cta-title {
+.website-layout .cta-title {
     font-size: 2.5rem;
     font-weight: 700;
     color: var(--color-primary);
@@ -1773,7 +1804,7 @@ html {
         padding: 60px 24px;
     }
 
-    .hero-title {
+    .website-layout .hero-title {
         font-size: 3.5rem;
     }
 
@@ -1811,7 +1842,7 @@ html {
         transform: translate(-50%, -50%);
     }
 
-    .cta-title {
+    .website-layout .cta-title {
         font-size: 2rem;
     }
 
@@ -1833,7 +1864,7 @@ html {
         font-size: 1.35rem;
     }
 
-    .hero-title {
+    .website-layout .hero-title {
         font-size: 2.75rem;
     }
 
@@ -1948,7 +1979,7 @@ html {
     font-weight: 500;
 }
 
-.design-hero-title {
+.website-layout .design-hero-title {
     font-size: 3.5rem;
     font-weight: 700;
     color: var(--color-text-primary);
@@ -1961,7 +1992,7 @@ html {
     display: block;
 }
 
-.design-hero-subtitle {
+.website-layout .design-hero-subtitle {
     font-size: 1.5rem;
     color: var(--color-primary);
     font-weight: 600;
@@ -2023,7 +2054,7 @@ html {
     margin-bottom: 16px;
 }
 
-.ideal-for-title {
+.website-layout .ideal-for-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -2076,7 +2107,7 @@ html {
     font-size: 1.75rem;
 }
 
-.service-breakdown-title {
+.website-layout .service-breakdown-title {
     font-size: 1.15rem;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -2134,7 +2165,7 @@ html {
     margin-bottom: 16px;
 }
 
-.deliverable-title {
+.website-layout .deliverable-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -2222,7 +2253,7 @@ html {
     margin-bottom: 24px;
 }
 
-.pricing-factors-title {
+.website-layout .pricing-factors-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -2309,7 +2340,7 @@ html {
     flex: 1;
 }
 
-.use-case-type {
+.website-layout .use-case-type {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -2380,7 +2411,7 @@ html {
     margin-bottom: 16px;
 }
 
-.differentiator-title {
+.website-layout .differentiator-title {
     font-size: 1.15rem;
     font-weight: 600;
     color: var(--color-text-primary);
@@ -2437,7 +2468,7 @@ html {
     min-width: 300px;
 }
 
-.bundle-title {
+.website-layout .bundle-title {
     font-size: 1.5rem;
     font-weight: 700;
     color: #ffffff;
@@ -2530,7 +2561,7 @@ html {
         display: block;
     }
 
-    .design-hero-title {
+    .website-layout .design-hero-title {
         font-size: 2.75rem;
     }
 
@@ -2562,11 +2593,11 @@ html {
         min-height: auto;
     }
 
-    .design-hero-title {
+    .website-layout .design-hero-title {
         font-size: 2.25rem;
     }
 
-    .design-hero-subtitle {
+    .website-layout .design-hero-subtitle {
         font-size: 1.25rem;
     }
 
@@ -2613,7 +2644,7 @@ html {
 }
 
 @media (max-width: 480px) {
-    .design-hero-title {
+    .website-layout .design-hero-title {
         font-size: 1.85rem;
     }
 

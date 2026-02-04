@@ -33,6 +33,12 @@ const useCases = [
         label: "Mobile-First",
         description: "Installable web apps that work offline and look like native apps",
     },
+    {
+        icon: "💬",
+        type: "Real-Time Application",
+        label: "Live & Interactive",
+        description: "Chat systems, notifications, and live updates with WebSocket technology",
+    },
 ];
 
 /**

@@ -30,6 +30,12 @@ const differentiators = [
         description:
             "You're involved at every step, not just the final reveal. Your input matters.",
     },
+    {
+        icon: "💰",
+        title: "Transparent Pricing",
+        description:
+            "Clear quotes upfront with no hidden fees. You know exactly what you're paying for.",
+    },
 ];
 
 /**

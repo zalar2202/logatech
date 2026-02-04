@@ -1,13 +1,23 @@
 "use client";
 
-import SmartCTA from "@/components/website/shared/SmartCTA";
+import Link from "next/link";
+import DeployParticleBackground from "./DeployParticleBackground";
 
 /**
  * DeployHero - Hero section for Deploy service page
  */
 export default function DeployHero() {
+    const handleContactClick = (e) => {
+        e.preventDefault();
+        const element = document.getElementById("contact");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <section className="design-hero deploy-hero" id="deploy-hero">
+            <DeployParticleBackground />
             <div className="design-hero-content animate-fade-in">
                 <div className="design-hero-badge animate-fade-in-up delay-100">
                     <span>✦ Deployment Services</span>
@@ -23,10 +33,9 @@ export default function DeployHero() {
                     infrastructure. Say goodbye to downtime and hello to seamless growth.
                 </p>
                 <div className="design-hero-cta animate-fade-in-up delay-500">
-                    <SmartCTA 
-                        label="Launch Your Project" 
-                        className="loga-btn" 
-                    />
+                    <Link href="#contact" className="loga-btn" onClick={handleContactClick}>
+                        Launch Your Project
+                    </Link>
                     <a href="#tech-stack" className="loga-alt-btn">
                         View Infrastructure
                     </a>

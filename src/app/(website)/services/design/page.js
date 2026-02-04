@@ -8,7 +8,7 @@ import UseCases from "@/components/website/design/UseCases";
 import WhyDifferent from "@/components/website/design/WhyDifferent";
 import BundleBanner from "@/components/website/design/BundleBanner";
 import DesignFAQ from "@/components/website/design/DesignFAQ";
-import DesignCTA from "@/components/website/design/DesignCTA";
+import GlobalCTA from "@/components/website/shared/GlobalCTA";
 
 export const metadata = {
     title: "Design Services | LogaTech",
@@ -29,7 +29,12 @@ export default function DesignServicePage() {
             <WhyDifferent />
             <BundleBanner />
             <DesignFAQ />
-            <DesignCTA />
+            <GlobalCTA
+                title="Ready to Design Your Site?"
+                description="Let's talk about your goals and map out your digital presence. No commitment — just a conversation about what's possible."
+                primaryButtonLabel="Book a Discovery Call"
+                secondaryButtonLabel="Send Project Details"
+            />
         </div>
     );
 }

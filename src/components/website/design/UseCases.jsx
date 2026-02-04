@@ -33,6 +33,12 @@ const useCases = [
         label: "Modern & Persuasive",
         description: "Convert visitors into signups with compelling design",
     },
+    {
+        icon: "📊",
+        type: "Web Application",
+        label: "Functional & Intuitive",
+        description: "Complex dashboards and tools designed for productivity and ease of use",
+    },
 ];
 
 /**
@@ -45,7 +51,7 @@ export default function UseCases() {
         <section id="use-cases" className="section use-cases-section">
             <h2 className="section-title">Types of Projects We Design</h2>
             <p className="section-subtitle">
-                From personal sites to enterprise platforms — we've got you covered
+                From personal sites to enterprise platforms — we&apos;ve got you covered
             </p>
             <div ref={ref} className={`use-cases-grid ${isVisible ? "visible" : ""}`}>
                 {useCases.map((useCase, index) => (

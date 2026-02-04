@@ -1,13 +1,23 @@
 "use client";
 
-import SmartCTA from "@/components/website/shared/SmartCTA";
+import Link from "next/link";
+import DevelopParticleBackground from "./DevelopParticleBackground";
 
 /**
  * DevelopHero - Hero section for Develop service page
  */
 export default function DevelopHero() {
+    const handleContactClick = (e) => {
+        e.preventDefault();
+        const element = document.getElementById("contact");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <section className="design-hero develop-hero" id="develop-hero">
+            <DevelopParticleBackground />
             <div className="design-hero-content animate-fade-in">
                 <div className="design-hero-badge animate-fade-in-up delay-100">
                     <span>✦ Development Services</span>
@@ -23,10 +33,9 @@ export default function DevelopHero() {
                     custom platforms, we write clean code that drives your business forward.
                 </p>
                 <div className="design-hero-cta animate-fade-in-up delay-500">
-                    <SmartCTA 
-                        label="Discuss Your Project" 
-                        className="loga-btn" 
-                    />
+                    <Link href="#contact" className="loga-btn" onClick={handleContactClick}>
+                        Discuss Your Project
+                    </Link>
                     <a href="#tech-stack" className="loga-alt-btn">
                         View Tech Stack
                     </a>

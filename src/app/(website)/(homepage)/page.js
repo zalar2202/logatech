@@ -5,7 +5,7 @@ import WhyLoga from "@/components/website/homepage/WhyLoga";
 import ProcessTimeline from "@/components/website/homepage/ProcessTimeline";
 import TechStack from "@/components/website/shared/TechStack";
 import FAQAccordion from "@/components/website/homepage/FAQAccordion";
-import CTASection from "@/components/website/homepage/CTASection";
+import GlobalCTA from "@/components/website/shared/GlobalCTA";
 
 export const dynamic = "force-dynamic";
 
@@ -85,7 +85,7 @@ export default function HomePage() {
             <ProcessTimeline steps={processSteps} />
             <TechStack />
             <FAQAccordion items={faqItems} />
-            <CTASection />
+            <GlobalCTA />
         </div>
     );
 }

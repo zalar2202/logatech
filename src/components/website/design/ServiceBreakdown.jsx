@@ -28,6 +28,12 @@ const services = [
         title: "Collaborative Feedback",
         description: "Iterative refinement with your input at every stage",
     },
+    {
+        icon: "📋",
+        title: "Design Handoff",
+        description:
+            "Detailed documentation and assets prepared for a seamless development process",
+    },
 ];
 
 /**

@@ -9,7 +9,7 @@ import CodeQuality from "@/components/website/develop/CodeQuality";
 import TechStack from "@/components/website/develop/TechStack";
 import DevBundleBanner from "@/components/website/develop/DevBundleBanner";
 import DevFAQ from "@/components/website/develop/DevFAQ";
-import DevCTA from "@/components/website/develop/DevCTA";
+import GlobalCTA from "@/components/website/shared/GlobalCTA";
 
 export const metadata = {
     title: "Development Services | LogaTech",
@@ -31,7 +31,12 @@ export default function DevelopServicePage() {
             <TechStack />
             <DevBundleBanner />
             <DevFAQ />
-            <DevCTA />
+            <GlobalCTA
+                title="Ready to Build Your Solution?"
+                description="Whether it's a new MVP or a complex platform, let's discuss the technical roadmap to make it real."
+                primaryButtonLabel="Book Technical Consult"
+                secondaryButtonLabel="Email Requirements"
+            />
         </div>
     );
 }

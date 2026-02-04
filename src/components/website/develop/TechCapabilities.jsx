@@ -28,6 +28,12 @@ const services = [
         title: "Performance Optimization",
         description: "Speed auditing, code refactoring, and Core Web Vitals improvement",
     },
+    {
+        icon: "🧪",
+        title: "Testing & QA",
+        description:
+            "Comprehensive automated and manual testing to ensure reliability, security, and performance",
+    },
 ];
 
 /**
