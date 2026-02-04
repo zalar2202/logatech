@@ -54,6 +54,7 @@ function InvoicesPage() {
     const { user } = useAuth();
     const searchParams = useSearchParams();
     const invoiceIdParam = searchParams.get("id");
+    const isAdmin = ["admin", "manager"].includes(user?.role);
     
     const [invoices, setInvoices] = useState([]);
     const [clients, setClients] = useState([]);
