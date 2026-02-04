@@ -12,14 +12,25 @@ export async function GET(request, { params }) {
         const { id } = await params;
 
         const user = await verifyAuth(request);
-        if (!user || !['admin', 'manager'].includes(user.role)) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const invoice = await Invoice.findById(id).populate('client');
         
         if (!invoice) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+        }
+
+        // Permission check: Admin/Manager can see everything, others only their own
+        if (!['admin', 'manager'].includes(user.role)) {
+            // Check if the invoice belongs to this user
+            // We need to check both invoice.user and potentially the user linked to the client
+            const isOwner = invoice.user?.toString() === user._id.toString();
+            
+            if (!isOwner) {
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
         }
 
         return NextResponse.json({ success: true, data: invoice });

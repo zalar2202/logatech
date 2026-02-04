@@ -187,18 +187,56 @@ export default function InvoicePrintPage() {
                         </div>
                     </div>
 
-                    {/* Notes */}
-                    {invoice.notes && (
-                        <div className="p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
-                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Notes</h4>
-                             <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{invoice.notes}</p>
+                    {/* Payment Plan / Installments */}
+                    {invoice.paymentPlan?.isInstallment && (
+                        <div className="mb-12 p-6 border-2 border-indigo-100 dark:border-indigo-900/30 bg-indigo-50/30 dark:bg-indigo-900/5 rounded-2xl">
+                            <div className="flex items-center gap-3 mb-4">
+                                <Clock className="w-5 h-5 text-indigo-600" />
+                                <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-100 uppercase tracking-widest">Installment Payment Plan</h4>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                                <div>
+                                    <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Down Payment</p>
+                                    <p className="text-lg font-bold text-indigo-900 dark:text-white">${invoice.paymentPlan.downPayment?.toFixed(2)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Installment Amt</p>
+                                    <p className="text-lg font-bold text-indigo-900 dark:text-white">${invoice.paymentPlan.installmentAmount?.toFixed(2)}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Total Payments</p>
+                                    <p className="text-lg font-bold text-indigo-900 dark:text-white">{invoice.paymentPlan.installmentsCount}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Frequency</p>
+                                    <p className="text-lg font-bold text-indigo-900 dark:text-white capitalize">{invoice.paymentPlan.period}</p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
-                    {/* Footer */}
-                    <div className="mt-20 pt-8 border-t border-gray-100 dark:border-gray-800 text-center">
-                        <p className="text-sm font-bold text-gray-900 dark:text-white">Thank you for your business!</p>
-                        <p className="text-xs text-gray-400 mt-2">LogaTech - Excellence in Code & Cloud</p>
+                    {/* Notes */}
+                    {invoice.notes && (
+                        <div className="p-8 bg-gray-50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-800">
+                             <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Notes & Payment Instructions</h4>
+                             <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap leading-relaxed">{invoice.notes}</p>
+                        </div>
+                    )}
+
+                    {/* Signature & Footer */}
+                    <div className="mt-24 grid grid-cols-2 gap-12 pt-8 border-t border-gray-100 dark:border-gray-800">
+                        <div>
+                            <div className="w-48 h-px bg-gray-300 dark:bg-gray-700 mb-2" />
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Authorized Signature</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-sm font-bold text-gray-900 dark:text-white">LogaTech LLC</p>
+                            <p className="text-xs text-gray-400 mt-1">www.logatech.com</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-12 text-center">
+                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-[0.3em]">Thank you for choosing excellence</p>
                     </div>
                 </div>
             </div>
