@@ -65,6 +65,13 @@ const InvoiceSchema = new mongoose.Schema(
             ]
         },
         
+        paymentMethod: {
+            type: String,
+            enum: ['bank_transfer', 'crypto', 'cash', 'other', null],
+            default: null
+        },
+        paymentNotes: { type: String },
+        
         createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     },
     { timestamps: true }
