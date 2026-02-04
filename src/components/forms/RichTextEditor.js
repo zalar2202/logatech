@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { Modal } from "@/components/common/Modal";
 import { Button } from "@/components/common/Button";
+import { MediaPicker } from "@/components/common/MediaPicker";
 
 /**
  * Rich Text Editor Component
@@ -75,6 +76,7 @@ export function RichTextEditor({
     const [imageAlt, setImageAlt] = useState("");
     const [isUploading, setIsUploading] = useState(false);
     const [activeFormats, setActiveFormats] = useState({});
+    const [showMediaPicker, setShowMediaPicker] = useState(false);
 
     // Initialize editor with value
     useEffect(() => {
@@ -139,30 +141,12 @@ export function RichTextEditor({
         setImageAlt("");
     }, [imageUrl, imageAlt, execCommand]);
 
-    // Handle image upload
-    const handleImageUpload = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        if (!onImageUpload) {
-            // Fallback to local preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImageUrl(e.target.result);
-            };
-            reader.readAsDataURL(file);
-            return;
-        }
-
-        setIsUploading(true);
-        try {
-            const url = await onImageUpload(file);
-            setImageUrl(url);
-        } catch (error) {
-            console.error("Image upload failed:", error);
-        } finally {
-            setIsUploading(false);
-        }
+    // Handle image selection from library
+    const handleMediaSelect = (media) => {
+        const html = `<img src="${media.url}" alt="${imageAlt || media.alt || media.originalName}" class="blog-content-image" style="max-width: 100%; height: auto; border-radius: 8px; margin: 16px 0;" />`;
+        execCommand("insertHTML", html);
+        setShowImageModal(false);
+        setImageAlt("");
     };
 
     return (
@@ -371,68 +355,24 @@ export function RichTextEditor({
                 onClose={() => setShowImageModal(false)}
                 title="Insert Image"
             >
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Upload Image
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]"
-                        />
-                        {isUploading && (
-                            <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-                                Uploading...
-                            </p>
-                        )}
-                    </div>
-                    <div className="text-center text-sm text-[var(--color-text-secondary)]">
-                        — or —
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Image URL</label>
-                        <input
-                            type="url"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                            placeholder="https://example.com/image.jpg"
-                            className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-1">
-                            Alt Text (for SEO)
-                        </label>
-                        <input
-                            type="text"
-                            value={imageAlt}
-                            onChange={(e) => setImageAlt(e.target.value)}
-                            placeholder="Describe the image"
-                            className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]"
-                        />
-                    </div>
-                    {imageUrl && (
-                        <div className="mt-2">
-                            <p className="text-sm font-medium mb-1">Preview:</p>
-                            <img
-                                src={imageUrl}
-                                alt={imageAlt || "Preview"}
-                                className="max-h-40 rounded-lg object-contain"
-                            />
-                        </div>
-                    )}
-                    <div className="flex justify-end gap-2">
-                        <Button variant="secondary" onClick={() => setShowImageModal(false)}>
-                            Cancel
-                        </Button>
-                        <Button onClick={insertImage} disabled={!imageUrl}>
-                            Insert Image
-                        </Button>
-                    </div>
+                <div className="flex justify-end gap-2">
+                    <Button variant="secondary" onClick={() => setShowImageModal(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={() => setShowMediaPicker(true)}>
+                        Open Media Library
+                    </Button>
                 </div>
             </Modal>
+
+            <MediaPicker 
+                isOpen={showMediaPicker}
+                onClose={() => setShowMediaPicker(false)}
+                onSelect={handleMediaSelect}
+                allowedType="image"
+                title="Select Content Image"
+            />
+
 
             {/* Editor Styles */}
             <style jsx global>{`
