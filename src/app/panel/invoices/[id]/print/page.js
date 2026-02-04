@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
-import { Loader2, Download, Printer, ArrowLeft } from "lucide-react";
+import { Loader2, Download, Printer, ArrowLeft, Clock } from "lucide-react";
 import { Button } from "@/components/common/Button";
 
 export default function InvoicePrintPage() {
