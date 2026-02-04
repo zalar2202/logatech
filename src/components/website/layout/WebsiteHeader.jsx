@@ -60,6 +60,7 @@ export default function WebsiteHeader() {
         { id: "why-us", label: "Why Us", href: isHomepage ? "#why-us" : "/#why-us" },
         { id: "process", label: "Process", href: isHomepage ? "#process" : "/#process" },
         { id: "faq", label: "FAQ", href: isHomepage ? "#faq" : "/#faq" },
+        { id: "blog", label: "Blog", href: "/blog" },
     ];
 
     useEffect(() => {

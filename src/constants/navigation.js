@@ -19,6 +19,7 @@ import {
     Store,
     Bot,
     Calculator,
+    PenSquare,
 } from "lucide-react";
 
 export const navigation = [
@@ -132,6 +133,12 @@ export const adminNavigation = [
         name: "AI Assistant",
         href: "/panel/admin/ai-assistant",
         icon: Bot,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Blog Management",
+        href: "/panel/blog",
+        icon: PenSquare,
         roles: ["admin", "manager"],
     },
 ];

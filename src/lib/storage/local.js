@@ -143,11 +143,14 @@ export async function uploadFile(file, category = 'avatars', oldFilename = null)
         }
 
         // Return file information
+        const publicUrl = `/${STORAGE_CONFIG.baseDir.replace('public/', '')}/${subDir}/${filename}`;
+        const publicPath = `/${STORAGE_CONFIG.baseDir.replace('public/', '')}/${subDir}`;
+
         return {
             success: true,
             filename,
-            url: `/${STORAGE_CONFIG.baseDir}/${subDir}/${filename}`,
-            path: `/${STORAGE_CONFIG.baseDir}/${subDir}`,
+            url: publicUrl,
+            path: publicPath,
         };
     } catch (error) {
         console.error('File upload error:', error);
