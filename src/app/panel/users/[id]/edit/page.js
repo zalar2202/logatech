@@ -15,7 +15,7 @@ import { SelectField } from "@/components/forms/SelectField";
 import { FileUploadField } from "@/components/forms/FileUploadField";
 import { Avatar } from "@/components/common/Avatar";
 import { Loader } from "@/components/common/Loader";
-import { ArrowLeft, Upload, Globe, Server, Key, Cpu } from "lucide-react";
+import { ArrowLeft, Upload, Globe, Server, Key, Cpu, User as UserIcon } from "lucide-react";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
 
 export default function EditUserPage({ params }) {
@@ -257,7 +257,7 @@ export default function EditUserPage({ params }) {
                                         name="technicalDetails.serverUser"
                                         label="Server Username"
                                         placeholder="root"
-                                        icon={<User className="w-4 h-4" />}
+                                        icon={<UserIcon className="w-4 h-4" />}
                                     />
                                     <InputField
                                         name="technicalDetails.serverPassword"
