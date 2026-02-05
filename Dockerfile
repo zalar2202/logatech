@@ -79,10 +79,16 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/src/scripts ./src/scripts
 COPY --from=builder /app/src/models ./src/models
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/scripts/entrypoint.sh ./scripts/entrypoint.sh
 
 # standalone contains its own node_modules, but for scripts we might need the main one
 # or we can just point node to the standalone one. 
 # For simplicity, since the image is already small, let's just make seeds work.
+
+# Set entrypoint to fix permissions
+USER root
+RUN chmod +x ./scripts/entrypoint.sh
+ENTRYPOINT ["./scripts/entrypoint.sh"]
 
 USER nextjs
 
