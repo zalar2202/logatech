@@ -58,6 +58,33 @@ const UserSchema = new mongoose.Schema(
             maxlength: [500, 'Bio cannot exceed 500 characters'],
             default: '',
         },
+        technicalDetails: {
+            domainName: {
+                type: String,
+                trim: true,
+                default: '',
+            },
+            serverIP: {
+                type: String,
+                trim: true,
+                default: '',
+            },
+            serverUser: {
+                type: String,
+                trim: true,
+                default: '',
+            },
+            serverPassword: {
+                type: String,
+                trim: true,
+                default: '',
+            },
+            serverPort: {
+                type: String,
+                trim: true,
+                default: '22',
+            },
+        },
         preferences: {
             emailNotifications: {
                 type: Boolean,

@@ -11,7 +11,7 @@ import { Button } from "@/components/common/Button";
 import { InputField } from "@/components/forms/InputField";
 import { SelectField } from "@/components/forms/SelectField";
 import { FileUploadField } from "@/components/forms/FileUploadField";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Globe, Server, Key, Cpu, User as UserIcon } from "lucide-react";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
 
 export default function CreateUserPage() {
@@ -127,6 +127,46 @@ export default function CreateUserPage() {
                                     helperText="Upload a profile picture (PNG, JPG, WEBP - Max 5MB)"
                                     showPreview={true}
                                 />
+                            </div>
+
+                            {/* Technical Details Section */}
+                            <div className="pt-6 mt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                                    <Cpu className="w-5 h-5 text-[var(--color-primary)]" />
+                                    Technical Details (Pro)
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <InputField
+                                        name="technicalDetails.domainName"
+                                        label="Domain Name"
+                                        placeholder="example.com"
+                                        icon={<Globe className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverIP"
+                                        label="Server IP Address"
+                                        placeholder="1.2.3.4"
+                                        icon={<Server className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverUser"
+                                        label="Server Username"
+                                        placeholder="root"
+                                        icon={<UserIcon className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverPassword"
+                                        label="Server Password"
+                                        type="password"
+                                        placeholder="********"
+                                        icon={<Key className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverPort"
+                                        label="SSH/FTP Port"
+                                        placeholder="22"
+                                    />
+                                </div>
                             </div>
 
                             {/* Actions */}

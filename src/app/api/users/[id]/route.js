@@ -110,11 +110,12 @@ export async function PUT(request, { params }) {
             role = formData.get('role');
             status = formData.get('status');
             phone = formData.get('phone');
+            technicalDetails = formData.get('technicalDetails');
             avatarFile = formData.get('avatar');
             removeAvatar = formData.get('removeAvatar') === 'true';
         } else {
             const body = await request.json();
-            ({ name, email, password, role, status, phone, removeAvatar } = body);
+            ({ name, email, password, role, status, phone, technicalDetails, removeAvatar } = body);
         }
 
         // Managers cannot update admins or promote to admin
@@ -140,6 +141,18 @@ export async function PUT(request, { params }) {
         if (role) user.role = role;
         if (status) user.status = status;
         if (phone !== undefined) user.phone = phone;
+        if (technicalDetails !== undefined) {
+             // Handle if technicalDetails is a string (from FormData)
+             if (typeof technicalDetails === 'string') {
+                 try {
+                     user.technicalDetails = { ...user.technicalDetails, ...JSON.parse(technicalDetails) };
+                 } catch (e) {
+                     console.error('Error parsing technicalDetails:', e);
+                 }
+             } else {
+                 user.technicalDetails = { ...user.technicalDetails, ...technicalDetails };
+             }
+        }
 
         // Handle avatar removal
         if (removeAvatar) {
