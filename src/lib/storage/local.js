@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Storage configuration
 const STORAGE_CONFIG = {
-    baseDir: 'public/assets/storage',
+    baseDir: 'storage', // Moved outside public for better standalone support
     avatars: 'users/avatars',
     receipts: 'payments/receipts',
     documents: 'documents',
@@ -151,8 +151,9 @@ export async function uploadFile(file, category = 'avatars', oldFilename = null)
         }
 
         // Return file information
-        const publicUrl = `/${STORAGE_CONFIG.baseDir.replace('public/', '')}/${subDir}/${filename}`;
-        const publicPath = `/${STORAGE_CONFIG.baseDir.replace('public/', '')}/${subDir}`;
+        // Use the API serving route instead of direct public access
+        const publicUrl = `/api/files?category=${category}&filename=${filename}`;
+        const publicPath = `/api/files?category=${category}`;
 
         console.log(`[STORAGE DEBUG] Uploaded: ${filename} to ${filePath}`);
         console.log(`[STORAGE DEBUG] Public URL: ${publicUrl}`);

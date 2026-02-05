@@ -67,11 +67,11 @@ RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
 # Ensure storage directory exists and has correct permissions
-RUN mkdir -p public/assets/storage/blog \
-    public/assets/storage/users/avatars \
-    public/assets/storage/payments/receipts \
-    public/assets/storage/documents
-RUN chown -R nextjs:nodejs public/assets/storage
+RUN mkdir -p storage/blog \
+    storage/users/avatars \
+    storage/payments/receipts \
+    storage/documents
+RUN chown -R nextjs:nodejs storage
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
