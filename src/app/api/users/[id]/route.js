@@ -99,7 +99,7 @@ export async function PUT(request, { params }) {
 
         // Determine content type and parse accordingly
         const contentType = request.headers.get('content-type') || '';
-        let name, email, password, role, status, phone, avatarFile, removeAvatar;
+        let name, email, password, role, status, phone, technicalDetails, avatarFile, removeAvatar;
 
         if (contentType.includes('multipart/form-data')) {
             // FormData (with possible avatar)
