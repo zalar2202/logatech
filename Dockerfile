@@ -63,6 +63,13 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
+# Ensure storage directory exists and has correct permissions
+RUN mkdir -p public/assets/storage/blog \
+    public/assets/storage/users/avatars \
+    public/assets/storage/payments/receipts \
+    public/assets/storage/documents
+RUN chown -R nextjs:nodejs public/assets/storage
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
