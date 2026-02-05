@@ -14,6 +14,10 @@ import {
     Mail,
     Terminal,
     Wand2,
+    Globe,
+    Server,
+    Key,
+    Cpu,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
@@ -98,6 +102,13 @@ export default function SettingsPage() {
                     phone: user.phone || "",
                     bio: user.bio || "",
                     avatar: null,
+                    technicalDetails: {
+                        domainName: user.technicalDetails?.domainName || "",
+                        serverIP: user.technicalDetails?.serverIP || "",
+                        serverUser: user.technicalDetails?.serverUser || "",
+                        serverPassword: user.technicalDetails?.serverPassword || "",
+                        serverPort: user.technicalDetails?.serverPort || "22",
+                    }
                 }}
                 validationSchema={profileUpdateSchema}
                 onSubmit={async (values, { setSubmitting }) => {
@@ -164,6 +175,46 @@ export default function SettingsPage() {
                             helperText="PNG, JPG, WEBP up to 5MB"
                             onChange={(file) => setFieldValue("avatar", file)}
                         />
+
+                        {/* Technical Details Section */}
+                        <div className="pt-6 mt-6 border-t border-[var(--color-border)]">
+                            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
+                                <Cpu className="w-5 h-5" />
+                                Technical Details (Pro)
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <InputField
+                                    label="Domain Name"
+                                    name="technicalDetails.domainName"
+                                    placeholder="example.com"
+                                    icon={<Globe className="w-4 h-4" />}
+                                />
+                                <InputField
+                                    label="Server IP Address"
+                                    name="technicalDetails.serverIP"
+                                    placeholder="1.2.3.4"
+                                    icon={<Server className="w-4 h-4" />}
+                                />
+                                <InputField
+                                    label="Server Username"
+                                    name="technicalDetails.serverUser"
+                                    placeholder="root"
+                                    icon={<User className="w-4 h-4" />}
+                                />
+                                <InputField
+                                    label="Server Password"
+                                    name="technicalDetails.serverPassword"
+                                    type="password"
+                                    placeholder="********"
+                                    icon={<Key className="w-4 h-4" />}
+                                />
+                                <InputField
+                                    label="SSH/FTP Port"
+                                    name="technicalDetails.serverPort"
+                                    placeholder="22"
+                                />
+                            </div>
+                        </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)]">
                             <Button

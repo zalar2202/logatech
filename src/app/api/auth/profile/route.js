@@ -80,6 +80,16 @@ export async function PUT(request) {
             updateData.phone = formData.get('phone');
             updateData.bio = formData.get('bio');
             avatarFile = formData.get('avatar');
+
+            // Handle technicalDetails if sent as JSON string in FormData
+            const techDetails = formData.get('technicalDetails');
+            if (techDetails) {
+                try {
+                    updateData.technicalDetails = JSON.parse(techDetails);
+                } catch (e) {
+                    console.error('Error parsing technicalDetails from FormData:', e);
+                }
+            }
         } else {
             // JSON (without file upload)
             updateData = await request.json();
@@ -131,6 +141,12 @@ export async function PUT(request) {
         if (updateData.phone !== undefined) user.phone = updateData.phone ? updateData.phone.trim() : '';
         if (updateData.bio !== undefined) user.bio = updateData.bio ? updateData.bio.trim() : '';
         if (updateData.avatar) user.avatar = updateData.avatar;
+        if (updateData.technicalDetails !== undefined) {
+            user.technicalDetails = {
+                ...user.technicalDetails,
+                ...updateData.technicalDetails
+            };
+        }
 
         // Save updated user
         await user.save();
@@ -149,6 +165,7 @@ export async function PUT(request) {
                     phone: user.phone,
                     avatar: user.avatar,
                     bio: user.bio,
+                    technicalDetails: user.technicalDetails,
                     lastLogin: user.lastLogin,
                     createdAt: user.createdAt,
                     preferences: user.preferences,

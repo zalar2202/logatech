@@ -38,6 +38,13 @@ export const userSchema = Yup.object().shape({
     phone: Yup.string()
         .nullable()
         .trim(),
+    technicalDetails: Yup.object({
+        domainName: Yup.string().nullable().trim(),
+        serverIP: Yup.string().nullable().trim(),
+        serverUser: Yup.string().nullable().trim(),
+        serverPassword: Yup.string().nullable(),
+        serverPort: Yup.string().nullable().trim(),
+    }).nullable(),
 });
 
 /**
@@ -50,6 +57,13 @@ export const userInitialValues = {
     role: 'user',
     status: 'active',
     phone: '',
+    technicalDetails: {
+        domainName: '',
+        serverIP: '',
+        serverUser: '',
+        serverPassword: '',
+        serverPort: '22',
+    }
 };
 
 /**
@@ -62,5 +76,12 @@ export const getUserEditInitialValues = (user) => ({
     role: user?.role || 'user',
     status: user?.status || 'active',
     phone: user?.phone || '',
+    technicalDetails: {
+        domainName: user?.technicalDetails?.domainName || '',
+        serverIP: user?.technicalDetails?.serverIP || '',
+        serverUser: user?.technicalDetails?.serverUser || '',
+        serverPassword: user?.technicalDetails?.serverPassword || '',
+        serverPort: user?.technicalDetails?.serverPort || '22',
+    }
 });
 

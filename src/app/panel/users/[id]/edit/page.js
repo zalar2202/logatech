@@ -15,7 +15,7 @@ import { SelectField } from "@/components/forms/SelectField";
 import { FileUploadField } from "@/components/forms/FileUploadField";
 import { Avatar } from "@/components/common/Avatar";
 import { Loader } from "@/components/common/Loader";
-import { ArrowLeft, Upload } from "lucide-react";
+import { ArrowLeft, Upload, Globe, Server, Key, Cpu } from "lucide-react";
 import { ContentWrapper } from "@/components/layout/ContentWrapper";
 
 export default function EditUserPage({ params }) {
@@ -232,6 +232,46 @@ export default function EditUserPage({ params }) {
                                     <option value="inactive">Inactive</option>
                                     <option value="suspended">Suspended</option>
                                 </SelectField>
+                            </div>
+
+                            {/* Technical Details Section */}
+                            <div className="pt-6 mt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                                    <Cpu className="w-5 h-5 text-[var(--color-primary)]" />
+                                    Technical Details (Pro)
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <InputField
+                                        name="technicalDetails.domainName"
+                                        label="Domain Name"
+                                        placeholder="example.com"
+                                        icon={<Globe className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverIP"
+                                        label="Server IP Address"
+                                        placeholder="1.2.3.4"
+                                        icon={<Server className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverUser"
+                                        label="Server Username"
+                                        placeholder="root"
+                                        icon={<User className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverPassword"
+                                        label="Server Password"
+                                        type="password"
+                                        placeholder="********"
+                                        icon={<Key className="w-4 h-4" />}
+                                    />
+                                    <InputField
+                                        name="technicalDetails.serverPort"
+                                        label="SSH/FTP Port"
+                                        placeholder="22"
+                                    />
+                                </div>
                             </div>
 
                             {/* Actions */}

@@ -47,7 +47,11 @@ export const userService = {
             const formData = new FormData();
             Object.keys(data).forEach((key) => {
                 if (data[key] !== null && data[key] !== undefined && data[key] !== '') {
-                    formData.append(key, data[key]);
+                    if (typeof data[key] === 'object' && !(data[key] instanceof File)) {
+                        formData.append(key, JSON.stringify(data[key]));
+                    } else {
+                        formData.append(key, data[key]);
+                    }
                 }
             });
             return await api.post('/api/users', formData, {
@@ -75,7 +79,11 @@ export const userService = {
             const formData = new FormData();
             Object.keys(data).forEach((key) => {
                 if (data[key] !== null && data[key] !== undefined && data[key] !== '') {
-                    formData.append(key, data[key]);
+                    if (typeof data[key] === 'object' && !(data[key] instanceof File)) {
+                        formData.append(key, JSON.stringify(data[key]));
+                    } else {
+                        formData.append(key, data[key]);
+                    }
                 }
             });
             return await api.put(`/api/users/${id}`, formData, {
