@@ -89,6 +89,7 @@ export async function GET() {
                     lastLogin: user.lastLogin,
                     createdAt: user.createdAt,
                     lastPasswordChange: user.lastPasswordChange,
+                    technicalDetails: user.technicalDetails,
                 },
             },
             { status: 200 }

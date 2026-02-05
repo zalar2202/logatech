@@ -96,6 +96,7 @@ export async function POST(request) {
                     phone: user.phone,
                     avatar: user.avatar,
                     lastLogin: user.lastLogin,
+                    technicalDetails: user.technicalDetails,
                 },
             },
             { status: 200 }
