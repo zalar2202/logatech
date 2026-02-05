@@ -90,6 +90,11 @@ export async function PUT(request, { params }) {
         const body = await request.json();
         const oldCategory = existingPost.category;
         
+        // Sanitize ObjectId fields - Convert empty strings to null
+        if (body.category === '') {
+            body.category = null;
+        }
+        
         // If title changed and no custom slug provided, regenerate slug
         if (body.title && body.title !== existingPost.title && !body.slug) {
             body.slug = await BlogPost.generateSlug(body.title, id);
