@@ -61,6 +61,7 @@ export default function EditBlogPostPage({ params }) {
         isFeatured: false,
         isPinned: false,
         allowComments: true,
+        showAuthor: true,
         publishedAt: null,
         viewCount: 0,
         readingTime: 1,
@@ -95,6 +96,7 @@ export default function EditBlogPostPage({ params }) {
                         isFeatured: post.isFeatured || false,
                         isPinned: post.isPinned || false,
                         allowComments: post.allowComments !== false,
+                        showAuthor: post.showAuthor !== false,
                         publishedAt: post.publishedAt,
                         viewCount: post.viewCount || 0,
                         readingTime: post.readingTime || 1,
@@ -565,6 +567,20 @@ export default function EditBlogPostPage({ params }) {
                                 />
                                 <span style={{ color: "var(--color-text-primary)" }}>
                                     Allow Comments
+                                </span>
+                            </label>
+
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={postData.showAuthor}
+                                    onChange={(e) =>
+                                        updateField("showAuthor", e.target.checked)
+                                    }
+                                    className="w-4 h-4 rounded text-[var(--color-primary)]"
+                                />
+                                <span style={{ color: "var(--color-text-primary)" }}>
+                                    Show Author Name
                                 </span>
                             </label>
                         </div>

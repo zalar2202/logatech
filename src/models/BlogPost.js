@@ -105,9 +105,16 @@ const BlogPostSchema = new mongoose.Schema(
                 type: Boolean,
                 default: false,
             },
+            schema: {
+                type: String, // Custom JSON-LD schema or automated generation
+            },
         },
         
-        // Analytics
+        // Settings
+        showAuthor: {
+            type: Boolean,
+            default: true,
+        },
         viewCount: {
             type: Number,
             default: 0,
