@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, User, ChevronLeft, Share2, Tag, ArrowLeft, ArrowRight } from "lucide-react";
-import "@/styles/blog.css";
+import CommentSection from "@/components/website/CommentSection";
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;
@@ -112,8 +112,39 @@ export default async function BlogPostPage({ params }) {
         post._id
     );
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "image": post.featuredImage?.url || "",
+        "author": {
+            "@type": "Person",
+            "name": post.author?.name || "LogaTech Team",
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "LogaTech",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://logatech.net/logo.png"
+            }
+        },
+        "datePublished": post.publishedAt,
+        "dateModified": post.updatedAt,
+        "description": post.excerpt || post.title,
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://logatech.net/blog/${post.slug}`
+        }
+    };
+
     return (
         <article className="min-h-screen pt-32 md:pt-40 bg-[var(--color-background)] text-[var(--color-text-primary)] transition-colors duration-300">
+            {/* JSON-LD Schema */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Hero Section */}
             <section className="relative">
                 {/* Featured Image */}
@@ -160,7 +191,7 @@ export default async function BlogPostPage({ params }) {
 
                         {/* Meta */}
                         <div className="flex flex-wrap items-center gap-4 text-white/80">
-                            {post.author && (
+                            {post.author && post.showAuthor !== false && (
                                 <div className="flex items-center gap-2">
                                     {post.author.avatar ? (
                                         <img
@@ -182,7 +213,7 @@ export default async function BlogPostPage({ params }) {
                             </span>
                             <span className="flex items-center gap-1">
                                 <Clock size={14} />
-                                {formatDate(post.publishedAt)}
+                                <span>{post.readingTime || 1} min read</span>
                             </span>
                         </div>
                     </div>
@@ -228,7 +259,7 @@ export default async function BlogPostPage({ params }) {
                             )}
 
                             {/* Author Bio */}
-                            {post.author && post.author.bio && (
+                            {post.author && post.author.bio && post.showAuthor !== false && (
                                 <div className="mt-12 p-6 rounded-2xl bg-[var(--card-bg)] border border-[var(--border-color)]">
                                     <div className="flex items-start gap-4">
                                         {post.author.avatar ? (
@@ -253,6 +284,12 @@ export default async function BlogPostPage({ params }) {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Comments Section */}
+                            <CommentSection 
+                                postId={post._id} 
+                                allowComments={post.allowComments !== false} 
+                            />
                         </div>
                     </div>
                 </div>

@@ -46,9 +46,14 @@ export async function GET(request) {
         
         // Category filter
         if (category) {
-            const categoryDoc = await BlogCategory.findOne({ slug: category });
-            if (categoryDoc) {
-                query.category = categoryDoc._id;
+            const isId = category.match(/^[0-9a-fA-F]{24}$/);
+            if (isId) {
+                query.category = category;
+            } else {
+                const categoryDoc = await BlogCategory.findOne({ slug: category });
+                if (categoryDoc) {
+                    query.category = categoryDoc._id;
+                }
             }
         }
         
