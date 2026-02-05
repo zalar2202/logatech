@@ -75,9 +75,15 @@ export default function AIFloatingButton() {
                 history: messages.slice(-5), // Send last 5 messages for context if needed
             });
 
-            // Assuming n8n returns { output: "..." } or similar
+            // Extract response from n8n (handles arrays and multiple field names)
+            const responseData = Array.isArray(data) ? data[0] : data;
             const botResponse =
-                data.output || data.message || data.text || "I'm processing your request...";
+                responseData?.output ||
+                responseData?.message ||
+                responseData?.text ||
+                responseData?.response ||
+                (typeof responseData === "string" ? responseData : "I received your message but couldn't parse the response.");
+
             setMessages((prev) => [...prev, { role: "assistant", content: botResponse }]);
         } catch (error) {
             console.error("AI Chat Error:", error);
