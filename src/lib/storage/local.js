@@ -33,6 +33,7 @@ const STORAGE_CONFIG = {
  */
 function ensureDirectoryExists(dirPath) {
     if (!fs.existsSync(dirPath)) {
+        console.log(`[STORAGE DEBUG] Creating directory: ${dirPath}`);
         fs.mkdirSync(dirPath, { recursive: true });
     }
 }
@@ -164,6 +165,7 @@ export async function uploadFile(file, category = 'avatars', oldFilename = null)
         };
     } catch (error) {
         console.error('File upload error:', error);
+        console.error('[STORAGE DEBUG] Stack:', error.stack);
         return {
             success: false,
             error: error.message || 'Failed to upload file',
