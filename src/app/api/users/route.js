@@ -153,7 +153,7 @@ export async function POST(request) {
 
         // Determine content type and parse accordingly
         const contentType = request.headers.get('content-type') || '';
-        let name, email, password, role, status, phone, avatarFile;
+        let name, email, password, role, status, phone, technicalDetails, avatarFile;
 
         if (contentType.includes('multipart/form-data')) {
             // FormData (with avatar)
@@ -164,11 +164,12 @@ export async function POST(request) {
             role = formData.get('role');
             status = formData.get('status');
             phone = formData.get('phone');
+            technicalDetails = formData.get('technicalDetails');
             avatarFile = formData.get('avatar');
         } else {
             // JSON (without avatar)
             const body = await request.json();
-            ({ name, email, password, role, status, phone } = body);
+            ({ name, email, password, role, status, phone, technicalDetails } = body);
         }
 
         // Managers cannot create admins
@@ -219,6 +220,7 @@ export async function POST(request) {
             status: status || 'active',
             phone: phone || null,
             avatar: avatarFilename,
+            technicalDetails: typeof technicalDetails === 'string' ? JSON.parse(technicalDetails) : (technicalDetails || {}),
         });
 
         await user.save();
