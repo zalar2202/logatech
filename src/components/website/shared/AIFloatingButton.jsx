@@ -56,6 +56,8 @@ export default function AIFloatingButton() {
         }
     }, [messages]);
 
+    const [sessionId] = useState(() => `session_${Math.random().toString(36).substring(2, 11)}_${Date.now()}`);
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim() || loading) return;
@@ -69,6 +71,7 @@ export default function AIFloatingButton() {
         try {
             const { data } = await axios.post(settings.webhookUrl, {
                 message: userMessage,
+                sessionId: sessionId, // Added sessionId for n8n memory
                 history: messages.slice(-5), // Send last 5 messages for context if needed
             });
 
