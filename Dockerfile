@@ -50,6 +50,9 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
+# Install su-exec for safe privilege dropping
+RUN apk add --no-cache su-exec
+
 ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
@@ -88,9 +91,7 @@ COPY --from=builder /app/scripts/entrypoint.sh ./scripts/entrypoint.sh
 # Set entrypoint to fix permissions
 USER root
 RUN chmod +x ./scripts/entrypoint.sh
-ENTRYPOINT ["./scripts/entrypoint.sh"]
-
-USER nextjs
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
 
 EXPOSE 3000
 
@@ -98,6 +99,5 @@ ENV PORT 3000
 # set hostname to localhost
 ENV HOSTNAME "0.0.0.0"
 
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+# The command to run (will be passed to entrypoint.sh as $@)
 CMD ["node", "server.js"]

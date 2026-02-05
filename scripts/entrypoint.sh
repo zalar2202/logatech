@@ -11,5 +11,6 @@ mkdir -p /app/public/assets/storage/blog \
 chown -R nextjs:nodejs /app/public/assets/storage
 chmod -R 755 /app/public/assets/storage
 
-# Execute the main command
-exec "$@"
+echo "Starting application as nextjs..."
+# Execute the main command as nextjs user
+exec su-exec nextjs "$@"
