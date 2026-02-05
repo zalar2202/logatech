@@ -75,14 +75,19 @@ export default function AIFloatingButton() {
                 history: messages.slice(-5), // Send last 5 messages for context if needed
             });
 
-            // Extract response from n8n (handles arrays and multiple field names)
+            // Extract response from n8n (handles arrays, nested data, and different field names)
             const responseData = Array.isArray(data) ? data[0] : data;
+            
+            // Look for the response text in common locations (including the one from your screenshot)
             const botResponse =
+                responseData?.data?.reply || // Supports { data: { reply: "..." } }
+                responseData?.reply ||        // Supports { reply: "..." }
                 responseData?.output ||
                 responseData?.message ||
                 responseData?.text ||
                 responseData?.response ||
-                (typeof responseData === "string" ? responseData : "I received your message but couldn't parse the response.");
+                responseData?.data?.output ||
+                (typeof responseData === "string" ? responseData : "I received a response but couldn't find the text field.");
 
             setMessages((prev) => [...prev, { role: "assistant", content: botResponse }]);
         } catch (error) {
