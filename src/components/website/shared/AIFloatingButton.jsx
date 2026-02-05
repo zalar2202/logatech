@@ -69,10 +69,10 @@ export default function AIFloatingButton() {
         setShowGreeting(false);
 
         try {
-            const { data } = await axios.post(settings.webhookUrl, {
+            const { data } = await axios.post("/api/chat", {
                 message: userMessage,
-                sessionId: sessionId, // Added sessionId for n8n memory
-                history: messages.slice(-5), // Send last 5 messages for context if needed
+                sessionId: sessionId,
+                history: messages.slice(-5),
             });
 
             // Extract response from n8n (handles arrays, nested data, and different field names)
