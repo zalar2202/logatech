@@ -142,8 +142,8 @@ export default function AIFloatingButton() {
                             <Bot className="w-4 h-4" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-base leading-tight">{settings.title}</h3>
-                            <div className="flex items-center gap-1.5 mt-0.5">
+                            <h5 className="font-bold text-base leading-tight" style={{ marginBottom: "0.5rem" }}>{settings.title}</h5>
+                            <div className="flex items-center gap-1.5">
                                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                                 <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
                                     AI Online
@@ -215,7 +215,7 @@ export default function AIFloatingButton() {
                             <Send className="w-5 h-5" />
                         </button>
                     </div>
-                    <p className="text-[10px] text-center text-gray-400 mt-2 font-medium">
+                    <p className="text-[10px] text-center text-gray-400 mt-2 mb-0 font-medium" style={{marginBottom: "0", marginTop:"0.5rem"}}>
                         Powered by Loga AI Engine
                     </p>
                 </form>
