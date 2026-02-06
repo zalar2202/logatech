@@ -21,6 +21,7 @@ import {
     Calculator,
     PenSquare,
     Image as ImageIcon,
+    MessageSquare,
 } from "lucide-react";
 
 export const navigation = [
@@ -140,6 +141,12 @@ export const adminNavigation = [
         name: "Blog Management",
         href: "/panel/blog",
         icon: PenSquare,
+        roles: ["admin", "manager"],
+    },
+    {
+        name: "Comments",
+        href: "/panel/blog/comments",
+        icon: MessageSquare,
         roles: ["admin", "manager"],
     },
     {
