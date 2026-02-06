@@ -9,7 +9,7 @@ import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet } from "lucide-re
 import Link from "next/link";
 import { Modal } from "@/components/common/Modal";
 import { Button } from "@/components/common/Button";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function AdminAccountingPage() {
     const [loading, setLoading] = useState(true);
