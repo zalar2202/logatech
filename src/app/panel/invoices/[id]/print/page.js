@@ -101,7 +101,8 @@ export default function InvoicePrintPage() {
                             <div className="space-y-1 text-sm text-gray-500 dark:text-gray-400">
                                 <p>123 Digital Avenue</p>
                                 <p>Tech City, TC 10101</p>
-                                <p>contact@logatech.com</p>
+                                <p>contact@logatech.net</p>
+                                <p>www.logatech.net</p>
                                 <p>+1 (555) 000-1111</p>
                             </div>
                         </div>
@@ -200,10 +201,31 @@ export default function InvoicePrintPage() {
                                 <span>Tax ({invoice.taxRate}%)</span>
                                 <span className="font-semibold text-gray-900 dark:text-white">${invoice.taxAmount.toFixed(2)}</span>
                             </div>
-                            <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between">
-                                <span className="text-lg font-bold text-gray-900 dark:text-white">Total</span>
-                                <span className="text-2xl font-black text-indigo-600">${invoice.total.toFixed(2)}</span>
-                            </div>
+                            
+                            {/* Installment Breakdown */}
+                            {invoice.paymentPlan?.isInstallment && invoice.paymentPlan.downPayment > 0 ? (
+                                <>
+                                    <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between">
+                                        <span className="text-sm font-bold text-gray-900 dark:text-white">Total Package Value</span>
+                                        <span className="text-lg font-bold text-gray-900 dark:text-white">${invoice.total.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg -mx-2">
+                                        <span className="text-sm font-bold text-amber-900 dark:text-amber-100 uppercase tracking-wide">Down Payment (Due Now)</span>
+                                        <span className="text-xl font-black text-amber-600 dark:text-amber-400">${invoice.paymentPlan.downPayment.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500 dark:text-gray-400">Remaining Balance (Deferred)</span>
+                                        <span className="font-bold text-gray-700 dark:text-gray-300">
+                                            ${(invoice.total - invoice.paymentPlan.downPayment).toFixed(2)}
+                                        </span>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between">
+                                    <span className="text-lg font-bold text-gray-900 dark:text-white">Total</span>
+                                    <span className="text-2xl font-black text-indigo-600">${invoice.total.toFixed(2)}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
