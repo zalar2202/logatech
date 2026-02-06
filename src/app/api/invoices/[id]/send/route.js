@@ -150,7 +150,7 @@ export async function POST(request, { params }) {
                         </div>
                         
                         ${invoice.notes ? `
-                        <div style="background: #fffbef; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; font-size: 14px; color: #92400e;">
+                        <div style="background: #fffbef; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; font-size: 14px; color: #92400e; white-space: pre-wrap;">
                             <strong>Note:</strong> ${invoice.notes}
                         </div>
                         ` : ''}
@@ -159,6 +159,7 @@ export async function POST(request, { params }) {
                             <p style="margin-bottom: 5px;">Thank you for your business!</p>
                             <p style="font-weight: bold; color: #4b5563;">LogaTech</p>
                         </div>
+                        <div style="display:none; opacity:0; color:transparent; height:0; width:0; overflow:hidden;">Ref: ${new Date().getTime()}-${Math.random().toString(36).substring(7)}</div>
                     </div>
                 </div>
             </body>

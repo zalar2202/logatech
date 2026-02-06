@@ -40,7 +40,7 @@ const invoiceSchema = Yup.object().shape({
     invoiceNumber: Yup.string(), // Auto-generated if empty
     issueDate: Yup.date().required("Issue date is required"),
     dueDate: Yup.date().required("Due date is required"),
-    status: Yup.string().oneOf(["draft", "sent", "paid", "overdue", "cancelled"]),
+    status: Yup.string().oneOf(["draft", "sent", "partial", "paid", "overdue", "cancelled"]),
     items: Yup.array()
         .of(
             Yup.object().shape({
@@ -530,6 +530,7 @@ function InvoicesPage() {
                                     <SelectField name="status" label="Status">
                                         <option value="draft">Draft</option>
                                         <option value="sent">Sent</option>
+                                        <option value="partial">Partially Paid</option>
                                         <option value="paid">Paid</option>
                                         <option value="overdue">Overdue</option>
                                         <option value="cancelled">Cancelled</option>
