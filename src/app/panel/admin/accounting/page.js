@@ -136,11 +136,17 @@ export default function AdminAccountingPage() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
+            // Sanitize payload
+            const payload = { ...formData };
+            if (!payload.recurring || !payload.frequency) {
+                payload.frequency = null;
+            }
+
             if (editingExpense) {
-                await axios.put(`/api/expenses/${editingExpense._id}`, formData);
+                await axios.put(`/api/expenses/${editingExpense._id}`, payload);
                 toast.success('Expense updated');
             } else {
-                await axios.post('/api/expenses', formData);
+                await axios.post('/api/expenses', payload);
                 toast.success('Expense added');
             }
             await fetchData(); // Refresh all data
