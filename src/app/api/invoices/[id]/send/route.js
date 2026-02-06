@@ -96,11 +96,36 @@ export async function POST(request, { params }) {
                         
                         ${invoice.paymentPlan?.isInstallment ? `
                         <div style="background: #eef2ff; border: 1px solid #c3dafe; border-radius: 12px; padding: 20px; margin: 20px 0;">
-                            <h4 style="margin: 0 0 15px 0; color: #4338ca; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #c3dafe; padding-bottom: 10px;">Installment Plan</h4>
+                            <h4 style="margin: 0 0 15px 0; color: #4338ca; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #c3dafe; padding-bottom: 10px;">Payment Breakdown</h4>
                             <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                                 <tr>
-                                    <td style="padding: 8px 0; color: #6b7280;">Down Payment:</td>
-                                    <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1e1b4b;">$${invoice.paymentPlan.downPayment.toFixed(2)}</td>
+                                    <td style="padding: 8px 0; color: #1f2937; font-weight: bold;">Total Package Value:</td>
+                                    <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #111827;">$${invoice.total.toFixed(2)}</td>
+                                </tr>
+                                
+                                <!-- Down Payment Row -->
+                                <tr style="background-color: ${['partial', 'paid'].includes(invoice.status) ? '#ecfdf5' : '#fffbeb'};">
+                                    <td style="padding: 10px; color: ${['partial', 'paid'].includes(invoice.status) ? '#065f46' : '#92400e'}; border-radius: 6px 0 0 6px;">
+                                        ${['partial', 'paid'].includes(invoice.status) ? 'Down Payment (Paid)' : 'Down Payment (Due Now)'}:
+                                    </td>
+                                    <td style="padding: 10px; text-align: right; font-weight: bold; color: ${['partial', 'paid'].includes(invoice.status) ? '#059669' : '#d97706'}; border-radius: 0 6px 6px 0;">
+                                        $${invoice.paymentPlan.downPayment.toFixed(2)}
+                                    </td>
+                                </tr>
+
+                                <!-- Remaining Balance Row -->
+                                <tr style="background-color: ${invoice.status === 'partial' ? '#fffbeb' : invoice.status === 'paid' ? '#ecfdf5' : 'transparent'};">
+                                    <td style="padding: 10px; color: ${invoice.status === 'partial' ? '#92400e' : invoice.status === 'paid' ? '#065f46' : '#6b7280'}; border-radius: 6px 0 0 6px;">
+                                        ${invoice.status === 'partial' ? 'Remaining Balance (Due Now)' : invoice.status === 'paid' ? 'Remaining Balance (Paid)' : 'Remaining Balance (Deferred)'}:
+                                    </td>
+                                    <td style="padding: 10px; text-align: right; font-weight: bold; color: ${invoice.status === 'partial' ? '#d97706' : invoice.status === 'paid' ? '#059669' : '#6b7280'}; border-radius: 0 6px 6px 0;">
+                                        $${(invoice.total - invoice.paymentPlan.downPayment).toFixed(2)}
+                                    </td>
+                                </tr>
+
+                                ${invoice.paymentPlan.installmentAmount > 0 ? `
+                                <tr>
+                                    <td colspan="2" style="padding-top: 15px;"></td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 8px 0; color: #6b7280;">Installments:</td>
@@ -110,6 +135,7 @@ export async function POST(request, { params }) {
                                     <td style="padding: 8px 0; color: #6b7280;">Frequency:</td>
                                     <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #1e1b4b; text-transform: capitalize;">${invoice.paymentPlan.period}</td>
                                 </tr>
+                                ` : ''}
                             </table>
                         </div>
                         ` : ''}

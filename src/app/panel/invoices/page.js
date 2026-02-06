@@ -806,32 +806,86 @@ function InvoicesPage() {
                             </div>
                         </div>
 
-                         {selectedInvoice.paymentPlan?.isInstallment && (
-                             <div className="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/20">
-                                 <h4 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                     <Clock className="w-3 h-3" />
-                                     Installment Payment Plan
-                                 </h4>
-                                 <div className="grid grid-cols-4 gap-4">
-                                     <div>
-                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Down Payment</p>
-                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">${selectedInvoice.paymentPlan.downPayment?.toFixed(2)}</p>
-                                     </div>
-                                     <div>
-                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Installment</p>
-                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">${selectedInvoice.paymentPlan.installmentAmount?.toFixed(2)}</p>
-                                     </div>
-                                     <div>
-                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Payments</p>
-                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">{selectedInvoice.paymentPlan.installmentsCount}</p>
-                                     </div>
-                                     <div>
-                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Interval</p>
-                                         <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 capitalize">{selectedInvoice.paymentPlan.period}</p>
-                                     </div>
-                                 </div>
-                             </div>
-                         )}
+                        {selectedInvoice.paymentPlan?.isInstallment && (
+                            <div className="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800/20">
+                                <h4 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <Clock className="w-3 h-3" />
+                                    Payment Breakdown
+                                </h4>
+                                
+                                <div className="space-y-3">
+                                    {/* Down Payment */}
+                                    <div className={`flex justify-between items-center p-2 rounded-lg ${
+                                        ['partial', 'paid'].includes(selectedInvoice.status) 
+                                        ? 'bg-emerald-100/50 dark:bg-emerald-900/30' 
+                                        : 'bg-amber-100/50 dark:bg-amber-900/30'
+                                    }`}>
+                                        <span className={`text-xs font-bold uppercase tracking-wide ${
+                                            ['partial', 'paid'].includes(selectedInvoice.status)
+                                            ? 'text-emerald-800 dark:text-emerald-200'
+                                            : 'text-amber-800 dark:text-amber-200'
+                                        }`}>
+                                            {['partial', 'paid'].includes(selectedInvoice.status) ? 'Down Payment (Paid)' : 'Down Payment (Due Now)'}
+                                        </span>
+                                        <span className={`text-lg font-bold ${
+                                            ['partial', 'paid'].includes(selectedInvoice.status)
+                                            ? 'text-emerald-600 dark:text-emerald-400'
+                                            : 'text-amber-600 dark:text-amber-400'
+                                        }`}>
+                                            ${selectedInvoice.paymentPlan.downPayment?.toFixed(2)}
+                                        </span>
+                                    </div>
+
+                                    {/* Remaining Balance */}
+                                    <div className={`flex justify-between items-center p-2 rounded-lg ${
+                                        selectedInvoice.status === 'partial' 
+                                        ? 'bg-amber-100/50 dark:bg-amber-900/30' 
+                                        : selectedInvoice.status === 'paid'
+                                            ? 'bg-emerald-100/50 dark:bg-emerald-900/30'
+                                            : ''
+                                    }`}>
+                                        <span className={`text-xs ${
+                                            selectedInvoice.status === 'partial'
+                                            ? 'font-bold text-amber-800 dark:text-amber-200 uppercase tracking-wide'
+                                            : selectedInvoice.status === 'paid'
+                                                ? 'font-bold text-emerald-800 dark:text-emerald-200 uppercase tracking-wide'
+                                                : 'text-indigo-400 dark:text-indigo-500 uppercase font-bold'
+                                        }`}>
+                                            {selectedInvoice.status === 'partial' 
+                                                ? 'Remaining Balance (Due Now)' 
+                                                : selectedInvoice.status === 'paid'
+                                                    ? 'Remaining Balance (Paid)'
+                                                    : 'Remaining Balance (Deferred)'
+                                            }
+                                        </span>
+                                        <span className={`text-lg font-bold ${
+                                            selectedInvoice.status === 'partial'
+                                            ? 'text-amber-600 dark:text-amber-400'
+                                            : selectedInvoice.status === 'paid'
+                                                ? 'text-emerald-600 dark:text-emerald-400'
+                                                : 'text-indigo-900 dark:text-indigo-100'
+                                        }`}>
+                                            ${(selectedInvoice.total - selectedInvoice.paymentPlan.downPayment).toFixed(2)}
+                                        </span>
+                                    </div>
+                                    
+                                    {selectedInvoice.paymentPlan.installmentAmount > 0 && (
+                                        <div className="grid grid-cols-2 gap-4 pt-2 mt-2 border-t border-indigo-200 dark:border-indigo-800/30">
+                                            <div>
+                                                <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Instalments</p>
+                                                <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">
+                                                    {selectedInvoice.paymentPlan.installmentsCount} x ${selectedInvoice.paymentPlan.installmentAmount?.toFixed(2)}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Frequency</p>
+                                                <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100 capitalize">{selectedInvoice.paymentPlan.period}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                          {selectedInvoice.notes && (
                              <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-[var(--color-border)]">
