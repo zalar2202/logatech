@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import AccountingStats from '@/components/accounting/AccountingStats';
 import TransactionsTable from '@/components/accounting/TransactionsTable';
@@ -34,26 +34,47 @@ export default function AdminAccountingPage() {
         frequency: ""
     });
 
-    const [metrics, setMetrics] = useState({
-        totalRevenue: 0,
-        totalExpenses: 0,
-        netProfit: 0,
-        outstanding: 0,
-        paidCount: 0,
-        pendingCount: 0,
-        profitMargin: 0
-    });
+    const metrics = useMemo(() => {
+        const revenue = invoices
+            .filter(inv => inv.status === 'paid')
+            .reduce((sum, inv) => sum + (inv.total || 0), 0);
+        
+        const outstanding = invoices
+            .filter(inv => ['sent', 'overdue', 'partial'].includes(inv.status))
+            .reduce((sum, inv) => {
+                if (inv.status === 'partial' && inv.paymentPlan?.isInstallment) {
+                    return sum + (inv.total - (inv.paymentPlan?.downPayment || 0));
+                }
+                return sum + (inv.total || 0);
+            }, 0);
+        
+        const totalExpenses = expenses
+            .filter(exp => exp.status === 'paid')
+            .reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+        const netProfit = revenue - totalExpenses;
+        const profitMargin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
+        
+        const paidCount = invoices.filter(inv => inv.status === 'paid').length;
+        const pendingCount = invoices.filter(inv => ['sent', 'partial'].includes(inv.status)).length;
 
-    const fetchData = async () => {
+        return {
+            totalRevenue: revenue,
+            totalExpenses,
+            netProfit,
+            outstanding,
+            paidCount,
+            pendingCount,
+            profitMargin
+        };
+    }, [invoices, expenses]);
+
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             const [invoicesRes, expensesRes] = await Promise.all([
                 axios.get("/api/invoices"),
-                axios.get("/api/expenses")
+                axios.get("/api/expenses") // Assume this route exists
             ]);
 
             if (invoicesRes.data.success) {
@@ -63,57 +84,19 @@ export default function AdminAccountingPage() {
                 setExpenses(expensesRes.data.data);
             }
 
-            calculateMetrics(invoicesRes.data.data || [], expensesRes.data.data || []);
         } catch (error) {
             console.error("Failed to fetch accounting data:", error);
             toast.error("Failed to load financial data");
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const calculateMetrics = (invList, expList) => {
-        // Revenue (Paid Invoices)
-        const revenue = invList
-            .filter(inv => inv.status === 'paid')
-            .reduce((sum, inv) => sum + (inv.total || 0), 0);
-        
-        // Outstanding (Sent/Overdue/Partial)
-        const outstanding = invList
-            .filter(inv => ['sent', 'overdue', 'partial'].includes(inv.status))
-            .reduce((sum, inv) => {
-                // If partial, subtract paid amount? 
-                // Currently system doesn't track explicit paid amount field separate from total-downPayment logic
-                // For simplicity, we assume full total is outstanding unless status is paid.
-                // Wait, if partial, we should define what represents outstanding.
-                // Based on previous logic: if partial, remaining is (total - downPayment).
-                if (inv.status === 'partial' && inv.paymentPlan?.isInstallment) {
-                    return sum + (inv.total - (inv.paymentPlan.downPayment || 0));
-                }
-                return sum + (inv.total || 0);
-            }, 0);
-        
-        // Expenses (Paid only?) - Usually paid expenses affect cash flow
-        const totalExpenses = expList
-            .filter(exp => exp.status === 'paid')
-            .reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
-        const netProfit = revenue - totalExpenses;
-        const profitMargin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
-        
-        const paidCount = invList.filter(inv => inv.status === 'paid').length;
-        const pendingCount = invList.filter(inv => ['sent', 'partial'].includes(inv.status)).length;
 
-        setMetrics({
-            totalRevenue: revenue,
-            totalExpenses,
-            netProfit,
-            outstanding,
-            paidCount,
-            pendingCount,
-            profitMargin
-        });
-    };
 
     // Form Handling
     const handleInputChange = (e) => {
