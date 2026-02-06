@@ -311,6 +311,9 @@ function InvoicesPage() {
                                         </td>
                                         <td className="p-4 text-center">
                                             {(() => {
+                                                // Debug logging
+                                                console.log('Invoice status:', inv.status, 'Payment Plan:', inv.paymentPlan);
+                                                
                                                 // Determine specific invoice status
                                                 if (inv.status === "paid") {
                                                     return <Badge variant="success" size="sm">PAID IN FULL</Badge>;
@@ -322,15 +325,15 @@ function InvoicesPage() {
                                                         // Has down payment
                                                         if (inv.status === "pending") {
                                                             return (
-                                                                <Badge variant="warning" size="sm" className="flex items-center gap-1">
-                                                                    <Clock className="w-3 h-3" />
+                                                                <Badge variant="warning" size="sm">
+                                                                    <Clock className="w-3 h-3 inline mr-1" />
                                                                     DOWN PAYMENT DUE
                                                                 </Badge>
                                                             );
                                                         } else if (inv.status === "partial") {
                                                             return (
-                                                                <Badge variant="primary" size="sm" className="flex items-center gap-1">
-                                                                    <Clock className="w-3 h-3" />
+                                                                <Badge variant="primary" size="sm">
+                                                                    <Clock className="w-3 h-3 inline mr-1" />
                                                                     INSTALLMENTS ACTIVE
                                                                 </Badge>
                                                             );
@@ -339,15 +342,15 @@ function InvoicesPage() {
                                                         // No down payment, just installments
                                                         if (inv.status === "pending") {
                                                             return (
-                                                                <Badge variant="warning" size="sm" className="flex items-center gap-1">
-                                                                    <Clock className="w-3 h-3" />
+                                                                <Badge variant="warning" size="sm">
+                                                                    <Clock className="w-3 h-3 inline mr-1" />
                                                                     1ST INSTALLMENT DUE
                                                                 </Badge>
                                                             );
                                                         } else if (inv.status === "partial") {
                                                             return (
-                                                                <Badge variant="primary" size="sm" className="flex items-center gap-1">
-                                                                    <Clock className="w-3 h-3" />
+                                                                <Badge variant="primary" size="sm">
+                                                                    <Clock className="w-3 h-3 inline mr-1" />
                                                                     INSTALLMENTS ACTIVE
                                                                 </Badge>
                                                             );
