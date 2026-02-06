@@ -121,8 +121,9 @@ export default function AIFloatingButton() {
             {/* Chat Window */}
             <div
                 className={`
-                absolute bottom-20 ${settings.position === "bottom-left" ? "left-0" : "right-0"}
-                w-[350px] max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)]
+                fixed bottom-24 left-4 right-4 md:absolute md:bottom-20 md:w-[350px] md:left-auto md:right-auto
+                ${settings.position === "bottom-left" ? "md:left-0" : "md:right-0"}
+                h-[500px] max-h-[60vh] md:max-h-[calc(100vh-10rem)]
                 bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden
                 flex flex-col border border-gray-100 dark:border-gray-800
                 transition-all duration-500 transform
@@ -204,7 +205,7 @@ export default function AIFloatingButton() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Type your message..."
-                            className="w-full bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl px-5 py-3 pr-12 text-sm focus:outline-none focus:border-indigo-500 transition-all dark:text-white"
+                            className="w-full bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl px-5 py-3 pr-12 text-base md:text-sm focus:outline-none focus:border-indigo-500 transition-all dark:text-white"
                         />
                         <button
                             type="submit"
