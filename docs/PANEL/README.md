@@ -20,6 +20,7 @@ Documentation for the **admin panel** (protected dashboard) in this repo. The pa
 | **Form Components** | [ui/FORMS.md](ui/FORMS.md) |
 | **API Reference** | [API_REFERENCE.md](API_REFERENCE.md) |
 | **Code Structure / Libs** | [LIBRARIES.md](LIBRARIES.md) |
+| **Accounting & Finance** | [accounting/README.md](accounting/README.md) |
 
 ## Panel routes (this app)
 
@@ -29,6 +30,7 @@ Documentation for the **admin panel** (protected dashboard) in this repo. The pa
 - **Notifications:** `/panel/notifications`, `/panel/notifications/send`
 - **Tests / dev:** `/panel/firebase-test`, `/panel/backend-notification-test`, `/panel/test-connection`, `/panel/test-axios`, `/panel/debug-auth`, `/panel/components-demo`, `/panel/register-admin`
 - **Settings:** `/panel/settings`
+- **Accounting:** `/panel/admin/accounting` (invoices, expenses, finance dashboard)
 
 All panel routes use the same layout (sidebar + header) and require authentication (redirect to `/login` if not logged in).
 

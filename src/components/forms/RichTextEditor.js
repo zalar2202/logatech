@@ -77,6 +77,7 @@ export function RichTextEditor({
     const [isUploading, setIsUploading] = useState(false);
     const [activeFormats, setActiveFormats] = useState({});
     const [showMediaPicker, setShowMediaPicker] = useState(false);
+    const [savedRange, setSavedRange] = useState(null);
 
     // Initialize editor with value
     useEffect(() => {
@@ -120,16 +121,66 @@ export function RichTextEditor({
         handleInput();
     }, [handleInput]);
 
+    // Verify selection and prepare for link insertion
+    const handleLinkClick = useCallback(() => {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            setSavedRange(range);
+            
+            // Check if we are inside a link
+            let node = selection.anchorNode;
+            // If anchorNode is text, look at parent
+            if (node.nodeType === 3) node = node.parentNode;
+            
+            // Traverse up to find 'A'
+            let linkNode = null;
+            let curr = node;
+            while (curr && curr !== editorRef.current) {
+                if (curr.nodeName === 'A') {
+                    linkNode = curr;
+                    break;
+                }
+                curr = curr.parentNode;
+            }
+            
+            if (linkNode) {
+                setLinkUrl(linkNode.getAttribute('href'));
+                setLinkText(linkNode.textContent);
+                
+                // Expand selection to whole link so insertHTML replaces it
+                const newRange = document.createRange();
+                newRange.selectNode(linkNode);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+                setSavedRange(newRange);
+            } else {
+                setLinkUrl("");
+                setLinkText(selection.toString());
+            }
+        }
+        setShowLinkModal(true);
+    }, []);
+
     // Insert link
     const insertLink = useCallback(() => {
         if (!linkUrl) return;
+        
+        // Restore selection
+        if (savedRange) {
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(savedRange);
+        }
+
         const text = linkText || linkUrl;
         const html = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`;
         execCommand("insertHTML", html);
         setShowLinkModal(false);
         setLinkUrl("");
         setLinkText("");
-    }, [linkUrl, linkText, execCommand]);
+        setSavedRange(null);
+    }, [linkUrl, linkText, savedRange, execCommand]);
 
     // Insert image
     const insertImage = useCallback(() => {
@@ -272,8 +323,8 @@ export function RichTextEditor({
                 {/* Media */}
                 <ToolbarButton
                     icon={<LinkIcon size={18} />}
-                    title="Insert Link"
-                    onClick={() => setShowLinkModal(true)}
+                    title="Insert/Edit Link"
+                    onClick={handleLinkClick}
                 />
                 <ToolbarButton
                     icon={<ImageIcon size={18} />}

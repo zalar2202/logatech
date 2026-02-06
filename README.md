@@ -39,6 +39,7 @@ A Next.js 16 app containing **two applications**: a **public marketing website**
 - **Layout:** Sidebar (collapsible), header (notifications bell, theme toggle, user menu)
 - **Dark mode:** CSS custom properties; theme persisted in localStorage
 - **File upload:** Abstracted storage (local by default; cloud-ready)
+- **Accounting:** Invoices (partial payments, PDF), Expenses, Financial Dashboard (Net Profit)
 - **State:** Redux (users, notifications) + React Context (auth, theme)
 
 ---
@@ -203,6 +204,7 @@ npm run seed:users   # Seed sample users
 | `/panel/debug-auth`                | Cookie / auth debug                                         |
 | `/panel/components-demo`           | Component demos                                             |
 | `/panel/register-admin`            | Register admin                                              |
+| `/panel/admin/accounting`          | Accounting (Invoices, Expenses, Dashboard)                  |
 
 ---
 
@@ -218,6 +220,7 @@ npm run seed:users   # Seed sample users
 | **Components (Forms, UI)**            | [docs/PANEL/ui/](docs/PANEL/ui/)                                                     |
 | **API Reference**                     | [docs/PANEL/API_REFERENCE.md](docs/PANEL/API_REFERENCE.md)                           |
 | **Pagination, Redux, implementation** | [docs/PANEL/guides/](docs/PANEL/guides/)                                             |
+| **Accounting & Finance**              | [docs/PANEL/accounting/README.md](docs/PANEL/accounting/README.md)                   |
 | **Website (copy, structure)**         | [docs/WEBSITE/](docs/WEBSITE/)                                                       |
 
 ---
