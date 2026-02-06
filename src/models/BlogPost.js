@@ -146,7 +146,6 @@ const BlogPostSchema = new mongoose.Schema(
 );
 
 // Indexes for performance
-BlogPostSchema.index({ slug: 1 });
 BlogPostSchema.index({ status: 1, publishedAt: -1 });
 BlogPostSchema.index({ category: 1 });
 BlogPostSchema.index({ tags: 1 });
