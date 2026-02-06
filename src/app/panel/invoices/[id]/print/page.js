@@ -127,6 +127,22 @@ export default function InvoicePrintPage() {
                                         {invoice.status}
                                     </span>
                                 </div>
+                                <div className="flex justify-between md:justify-end gap-10">
+                                    <span className="text-gray-500 dark:text-gray-400">Payment Type:</span>
+                                    <span className="font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                                        {(() => {
+                                            if (invoice.paymentPlan?.isInstallment) {
+                                                if (invoice.paymentPlan.downPayment && invoice.paymentPlan.downPayment > 0) {
+                                                    if (Math.abs(invoice.total - invoice.paymentPlan.downPayment) < 0.01) {
+                                                        return "DOWN PAYMENT";
+                                                    }
+                                                }
+                                                return "INSTALLMENT";
+                                            }
+                                            return "FULL PAYMENT";
+                                        })()}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

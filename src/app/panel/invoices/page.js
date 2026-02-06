@@ -29,6 +29,7 @@ import {
     CreditCard,
     Building2,
     Globe,
+    DollarSign,
 } from "lucide-react";
 import * as Yup from "yup";
 
@@ -294,26 +295,42 @@ function InvoicesPage() {
                                             {new Date(inv.issueDate).toLocaleString()}
                                         </td>
                                         <td className="p-4">
-                                            {inv.paymentPlan?.isInstallment ? (
-                                                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider">
-                                                    <Clock className="w-3 h-3" />
-                                                    Installment
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider">
-                                                    <CheckCircle className="w-3 h-3" />
-                                                    Full Payment
-                                                </span>
-                                            )}
+                                            {(() => {
+                                                if (inv.paymentPlan?.isInstallment) {
+                                                    // Check if this is a down payment invoice
+                                                    if (inv.paymentPlan.downPayment && inv.paymentPlan.downPayment > 0) {
+                                                        // If invoice total equals down payment amount, it's a down payment invoice
+                                                        if (Math.abs(inv.total - inv.paymentPlan.downPayment) < 0.01) {
+                                                            return (
+                                                                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider">
+                                                                    <DollarSign className="w-3 h-3" />
+                                                                    Down Payment
+                                                                </span>
+                                                            );
+                                                        }
+                                                    }
+                                                    // Regular installment invoice
+                                                    return (
+                                                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider">
+                                                            <Clock className="w-3 h-3" />
+                                                            Installment
+                                                        </span>
+                                                    );
+                                                }
+                                                // Full payment invoice
+                                                return (
+                                                    <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider">
+                                                        <CheckCircle className="w-3 h-3" />
+                                                        Full Payment
+                                                    </span>
+                                                );
+                                            })()}
                                         </td>
                                         <td className="p-4 font-black text-[var(--color-text-primary)] text-right">
                                             ${inv.total?.toFixed(2)}
                                         </td>
                                         <td className="p-4 text-center">
                                             {(() => {
-                                                // Debug logging
-                                                console.log('Invoice status:', inv.status, 'Payment Plan:', inv.paymentPlan);
-                                                
                                                 // Determine specific invoice status
                                                 if (inv.status === "paid") {
                                                     return <Badge variant="success" size="sm">PAID IN FULL</Badge>;
