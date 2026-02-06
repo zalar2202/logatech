@@ -120,6 +120,12 @@ export const adminNavigation = [
         roles: ["admin", "manager"],
     },
     {
+        name: "All Services",
+        href: "/panel/admin/services",
+        icon: Activity,
+        roles: ["admin", "manager"],
+    },
+    {
         name: "Send Notification",
         href: "/panel/notifications/send",
         icon: Send,
