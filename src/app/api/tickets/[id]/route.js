@@ -55,14 +55,32 @@ export async function PUT(request, { params }) {
 
         const body = await request.json();
 
-        const ticket = await Ticket.findById(id);
+        const ticket = await Ticket.findById(id).populate('createdBy');
         if (!ticket) {
             return NextResponse.json({ error: 'Ticket not found' }, { status: 404 });
         }
 
-        // Only staff can update status/assignment; users can only add messages
-        if (!['admin', 'manager'].includes(user.role)) {
-            return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+        const isStaff = ['admin', 'manager'].includes(user.role);
+        const isOwner = ticket.createdBy._id.toString() === user._id.toString();
+
+        // Users can only update status to 'resolved' or 'closed' for their own tickets
+        if (!isStaff) {
+            if (!isOwner) {
+                return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+            }
+            
+            // Non-staff can only update status to resolved or closed
+            const allowedUpdates = ['status'];
+            const requestedUpdates = Object.keys(body);
+            const hasDisallowedUpdates = requestedUpdates.some(key => !allowedUpdates.includes(key));
+            
+            if (hasDisallowedUpdates) {
+                return NextResponse.json({ error: 'You can only update ticket status' }, { status: 403 });
+            }
+            
+            if (body.status && !['resolved', 'closed'].includes(body.status)) {
+                return NextResponse.json({ error: 'You can only mark tickets as resolved or closed' }, { status: 403 });
+            }
         }
 
         // Handle special status changes
