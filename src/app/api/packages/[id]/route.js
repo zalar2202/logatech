@@ -7,10 +7,14 @@ import { getAuthToken } from '@/lib/cookies';
 /**
  * GET /api/packages/[id]
  */
+/**
+ * GET /api/packages/[id]
+ */
 export async function GET(request, { params }) {
     try {
         await connectDB();
-        const pkg = await Package.findById(params.id);
+        const { id } = await params;
+        const pkg = await Package.findById(id);
         if (!pkg) {
             return NextResponse.json({ success: false, message: 'Package not found' }, { status: 404 });
         }
@@ -36,8 +40,9 @@ export async function PUT(request, { params }) {
 
         await connectDB();
         const body = await request.json();
+        const { id } = await params;
         
-        const pkg = await Package.findByIdAndUpdate(params.id, body, { new: true, runValidators: true });
+        const pkg = await Package.findByIdAndUpdate(id, body, { new: true, runValidators: true });
         
         if (!pkg) {
             return NextResponse.json({ success: false, message: 'Package not found' }, { status: 404 });
@@ -64,7 +69,8 @@ export async function DELETE(request, { params }) {
         }
 
         await connectDB();
-        const pkg = await Package.findByIdAndDelete(params.id);
+        const { id } = await params;
+        const pkg = await Package.findByIdAndDelete(id);
         
         if (!pkg) {
             return NextResponse.json({ success: false, message: 'Package not found' }, { status: 404 });
