@@ -470,6 +470,32 @@ export default function TicketsPage() {
                                         Send
                                     </Button>
                                 </div>
+                                
+                                {/* User Controls - Allow users to close/resolve their own tickets */}
+                                {!isStaff && !['closed', 'resolved'].includes(selectedTicket.status) && (
+                                    <div className="flex gap-2 mt-3">
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            icon={<CheckCircle className="w-4 h-4" />}
+                                            onClick={() => handleUpdateTicket({ status: 'resolved' })}
+                                        >
+                                            Mark as Resolved
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            variant="danger"
+                                            icon={<XCircle className="w-4 h-4" />}
+                                            onClick={() => {
+                                                if (confirm('Are you sure you want to close this ticket?')) {
+                                                    handleUpdateTicket({ status: 'closed' });
+                                                }
+                                            }}
+                                        >
+                                            Close Ticket
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

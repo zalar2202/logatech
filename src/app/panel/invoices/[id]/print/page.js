@@ -87,8 +87,12 @@ export default function InvoicePrintPage() {
                     <div className="flex flex-col md:flex-row justify-between gap-10 mb-12">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl">
-                                    L
+                                <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center overflow-hidden">
+                                    <img 
+                                        src="/assets/logo/LogaTech-512.webp" 
+                                        alt="LogaTech" 
+                                        className="w-8 h-8 object-contain brightness-0 invert"
+                                    />
                                 </div>
                                 <span className="text-2xl font-black tracking-tighter dark:text-white uppercase">
                                     Loga<span className="text-indigo-600">Tech</span>

@@ -199,7 +199,7 @@ export default function DashboardPage() {
             title: "Service Packages",
             description: "Browse available services",
             icon: Package,
-            link: "/panel/packages",
+            link: "/panel/shop",
             badge: "Browse",
             variant: "secondary",
         },

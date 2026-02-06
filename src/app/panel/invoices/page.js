@@ -310,18 +310,64 @@ function InvoicesPage() {
                                             ${inv.total?.toFixed(2)}
                                         </td>
                                         <td className="p-4 text-center">
-                                            <Badge
-                                                variant={
-                                                    inv.status === "paid"
-                                                        ? "success"
-                                                        : inv.status === "overdue"
-                                                            ? "danger"
-                                                            : "primary"
+                                            {(() => {
+                                                // Determine specific invoice status
+                                                if (inv.status === "paid") {
+                                                    return <Badge variant="success" size="sm">PAID IN FULL</Badge>;
                                                 }
-                                                size="sm"
-                                            >
-                                                {inv.status.toUpperCase()}
-                                            </Badge>
+                                                
+                                                if (inv.paymentPlan?.isInstallment) {
+                                                    // Installment invoice
+                                                    if (inv.paymentPlan.downPayment && inv.paymentPlan.downPayment > 0) {
+                                                        // Has down payment
+                                                        if (inv.status === "pending") {
+                                                            return (
+                                                                <Badge variant="warning" size="sm" className="flex items-center gap-1">
+                                                                    <Clock className="w-3 h-3" />
+                                                                    DOWN PAYMENT DUE
+                                                                </Badge>
+                                                            );
+                                                        } else if (inv.status === "partial") {
+                                                            return (
+                                                                <Badge variant="primary" size="sm" className="flex items-center gap-1">
+                                                                    <Clock className="w-3 h-3" />
+                                                                    INSTALLMENTS ACTIVE
+                                                                </Badge>
+                                                            );
+                                                        }
+                                                    } else {
+                                                        // No down payment, just installments
+                                                        if (inv.status === "pending") {
+                                                            return (
+                                                                <Badge variant="warning" size="sm" className="flex items-center gap-1">
+                                                                    <Clock className="w-3 h-3" />
+                                                                    1ST INSTALLMENT DUE
+                                                                </Badge>
+                                                            );
+                                                        } else if (inv.status === "partial") {
+                                                            return (
+                                                                <Badge variant="primary" size="sm" className="flex items-center gap-1">
+                                                                    <Clock className="w-3 h-3" />
+                                                                    INSTALLMENTS ACTIVE
+                                                                </Badge>
+                                                            );
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                // Standard statuses
+                                                if (inv.status === "overdue") {
+                                                    return <Badge variant="danger" size="sm">OVERDUE</Badge>;
+                                                }
+                                                if (inv.status === "pending") {
+                                                    return <Badge variant="primary" size="sm">PENDING PAYMENT</Badge>;
+                                                }
+                                                if (inv.status === "partial") {
+                                                    return <Badge variant="warning" size="sm">PARTIALLY PAID</Badge>;
+                                                }
+                                                
+                                                return <Badge variant="secondary" size="sm">{inv.status.toUpperCase()}</Badge>;
+                                            })()}
                                             {inv.paymentMethod && inv.status !== 'paid' && (
                                                 <div className="mt-1">
                                                     <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800">
