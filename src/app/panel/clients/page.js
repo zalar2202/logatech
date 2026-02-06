@@ -24,7 +24,9 @@ import {
     Trash2,
     User,
     Mail,
-    Phone
+    Phone,
+    Clock,
+    AlertTriangle
 } from "lucide-react";
 import * as Yup from "yup";
 
@@ -52,7 +54,8 @@ export default function ClientsPage() {
     const [selectedClient, setSelectedClient] = useState(null); // If null, creating new
     const [activeTab, setActiveTab] = useState("details"); // details, payments, services
     const [clientInvoices, setClientInvoices] = useState([]);
-    const [clientServices, setClientServices] = useState([]);
+    const [clientServicesData, setClientServicesData] = useState([]);
+    const [allClientServices, setAllClientServices] = useState({});
     const [invoicesLoading, setInvoicesLoading] = useState(false);
     const [servicesLoading, setServicesLoading] = useState(false);
 
@@ -67,12 +70,64 @@ export default function ClientsPage() {
             const { data } = await axios.get("/api/clients");
             if (data.success) {
                 setClients(data.data);
+                // Fetch services for each client to check expirations
+                fetchAllClientServices(data.data);
             }
         } catch (error) {
             toast.error("Failed to fetch clients");
         } finally {
             setLoading(false);
         }
+    };
+
+
+
+    const fetchAllClientServices = async (clientsList) => {
+        try {
+            const { data } = await axios.get("/api/services");
+            if (data.success) {
+                // Group services by user ID
+                const servicesByUser = {};
+                data.data.forEach(service => {
+                    const userId = service.user?._id || service.user;
+                    if (!servicesByUser[userId]) {
+                        servicesByUser[userId] = [];
+                    }
+                    servicesByUser[userId].push(service);
+                });
+                setAllClientServices(servicesByUser);
+            }
+        } catch (error) {
+            console.error("Failed to fetch services for expiration check");
+        }
+    };
+
+    const getClientExpirationStatus = (client) => {
+        if (!client.linkedUser) return null;
+        const userId = client.linkedUser._id || client.linkedUser;
+        const services = allClientServices[userId] || [];
+        
+        const activeServices = services.filter(s => s.status === 'active' && s.endDate);
+        if (activeServices.length === 0) return null;
+
+        let nearestExpiration = null;
+        let daysUntilExpiry = Infinity;
+
+        activeServices.forEach(service => {
+            const now = new Date();
+            const endDate = new Date(service.endDate);
+            const days = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+            
+            if (days < daysUntilExpiry) {
+                daysUntilExpiry = days;
+                nearestExpiration = service;
+            }
+        });
+
+        if (daysUntilExpiry < 0) return { status: 'expired', days: Math.abs(daysUntilExpiry), service: nearestExpiration };
+        if (daysUntilExpiry <= 7) return { status: 'critical', days: daysUntilExpiry, service: nearestExpiration };
+        if (daysUntilExpiry <= 30) return { status: 'warning', days: daysUntilExpiry, service: nearestExpiration };
+        return null;
     };
 
     const fetchUsers = async () => {
@@ -142,7 +197,7 @@ export default function ClientsPage() {
         try {
             const { data } = await axios.get(`/api/services?userId=${userId}`);
             if (data.success) {
-                setClientServices(data.data);
+                setClientServicesData(data.data);
             }
         } catch (error) {
             console.error("Failed to fetch client services");
@@ -210,14 +265,15 @@ export default function ClientsPage() {
                                 <th className="p-4 font-semibold text-sm text-gray-500">Contact Info</th>
                                 <th className="p-4 font-semibold text-sm text-gray-500">Linked Account</th>
                                 <th className="p-4 font-semibold text-sm text-gray-500">Status</th>
+                                <th className="p-4 font-semibold text-sm text-gray-500">Service Expiration</th>
                                 <th className="p-4 font-semibold text-sm text-gray-500">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="5" className="p-8 text-center">Loading...</td></tr>
+                                <tr><td colSpan="6" className="p-8 text-center">Loading...</td></tr>
                             ) : filteredClients.length === 0 ? (
-                                <tr><td colSpan="5" className="p-8 text-center text-gray-500">No clients found. Add one to get started.</td></tr>
+                                <tr><td colSpan="6" className="p-8 text-center text-gray-500">No clients found. Add one to get started.</td></tr>
                             ) : (
                                 filteredClients.map((client) => (
                                     <tr key={client._id} className="border-b last:border-0 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
@@ -260,6 +316,32 @@ export default function ClientsPage() {
                                             >
                                                 {client.status}
                                             </Badge>
+                                        </td>
+                                        <td className="p-4">
+                                            {(() => {
+                                                const expStatus = getClientExpirationStatus(client);
+                                                if (!expStatus) return <span className="text-xs text-gray-400 italic">No active services</span>;
+                                                
+                                                return (
+                                                    <Badge 
+                                                        variant={expStatus.status === 'expired' ? 'danger' : expStatus.status === 'critical' ? 'danger' : 'warning'}
+                                                        size="sm"
+                                                        className="flex items-center gap-1 w-fit"
+                                                    >
+                                                        {expStatus.status === 'expired' ? (
+                                                            <>
+                                                                <AlertTriangle className="w-3 h-3" />
+                                                                Expired {expStatus.days}d ago
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Clock className="w-3 h-3" />
+                                                                {expStatus.days}d left
+                                                            </>
+                                                        )}
+                                                    </Badge>
+                                                );
+                                            })()}
                                         </td>
                                         <td className="p-4">
                                             <div className="flex items-center gap-2">
@@ -436,7 +518,7 @@ export default function ClientsPage() {
                             </div>
                         ) : servicesLoading ? (
                             <div className="py-12 text-center">Loading services...</div>
-                        ) : clientServices.length === 0 ? (
+                        ) : clientServicesData.length === 0 ? (
                             <div className="py-12 text-center text-gray-500 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed">
                                 <Building2 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                                 <h3 className="text-lg font-medium">No Active Services</h3>
@@ -446,7 +528,7 @@ export default function ClientsPage() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 gap-3">
-                                {clientServices.map((svc) => (
+                                {clientServicesData.map((svc) => (
                                     <div key={svc._id} className="p-4 border dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-white/5">
                                         <div className="flex justify-between items-start mb-2">
                                             <h4 className="font-bold text-gray-900 dark:text-gray-100">{svc.package?.name || "Premium Plan"}</h4>
