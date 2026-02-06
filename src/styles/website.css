@@ -19,6 +19,9 @@
     --color-info: #0891b2;
     --color-info-surface: #e0f2fe;
     --color-info-foreground: #075985;
+    
+    /* Branding */
+    --accent-color: var(--color-primary);
 
     /* Backgrounds */
     --color-background: #f8fafc;
