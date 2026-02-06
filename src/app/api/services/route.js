@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import Service from '@/models/Service';
 import Package from '@/models/Package';
+import Client from '@/models/Client';
+import User from '@/models/User';
 import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 
@@ -55,6 +57,26 @@ export async function POST(request) {
         }
 
         const service = await Service.create(body);
+
+        // If service is active, ensure user is added to Client list
+        if (service.status === 'active') {
+            const userId = body.user;
+            const user = await User.findById(userId);
+            
+            if (user) {
+                const existingClient = await Client.findOne({ linkedUser: userId });
+                
+                if (!existingClient) {
+                    await Client.create({
+                        name: user.name,
+                        email: user.email,
+                        phone: user.phone,
+                        linkedUser: userId,
+                        status: 'active'
+                    });
+                }
+            }
+        }
 
         return NextResponse.json({ success: true, data: service }, { status: 201 });
 
