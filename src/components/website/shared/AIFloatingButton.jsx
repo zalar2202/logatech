@@ -121,7 +121,7 @@ export default function AIFloatingButton() {
             {/* Chat Window */}
             <div
                 className={`
-                fixed bottom-24 left-4 right-4 md:absolute md:bottom-20 md:w-[350px] md:left-auto md:right-auto
+                fixed bottom-24 max-md:left-4 max-md:right-4 md:absolute md:bottom-20 md:w-[350px]
                 ${settings.position === "bottom-left" ? "md:left-0" : "md:right-0"}
                 h-[500px] max-h-[60vh] md:max-h-[calc(100vh-10rem)]
                 bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden
