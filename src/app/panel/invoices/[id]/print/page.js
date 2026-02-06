@@ -109,11 +109,11 @@ export default function InvoicePrintPage() {
                             <div className="space-y-2 text-sm">
                                 <div className="flex justify-between md:justify-end gap-10">
                                     <span className="text-gray-500 dark:text-gray-400">Issue Date:</span>
-                                    <span className="font-semibold dark:text-white">{new Date(invoice.issueDate).toLocaleDateString()}</span>
+                                    <span className="font-semibold dark:text-white">{new Date(invoice.issueDate).toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between md:justify-end gap-10">
                                     <span className="text-gray-500 dark:text-gray-400">Due Date:</span>
-                                    <span className="font-semibold dark:text-white">{new Date(invoice.dueDate).toLocaleDateString()}</span>
+                                    <span className="font-semibold dark:text-white">{new Date(invoice.dueDate).toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between md:justify-end gap-10">
                                     <span className="text-gray-500 dark:text-gray-400">Status:</span>

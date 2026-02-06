@@ -27,21 +27,25 @@ export const MainLayout = ({ children }) => {
             style={{ backgroundColor: "var(--color-background)" }}
         >
             {/* Sidebar */}
-            <Sidebar
-                isOpen={isSidebarOpen}
-                onClose={closeSidebar}
-                isCollapsed={isCollapsed}
-                onToggleCollapse={toggleCollapse}
-            />
+            <div className="print:hidden">
+                <Sidebar
+                    isOpen={isSidebarOpen}
+                    onClose={closeSidebar}
+                    isCollapsed={isCollapsed}
+                    onToggleCollapse={toggleCollapse}
+                />
+            </div>
 
             {/* Main content area */}
             <div
                 className={`transition-all duration-300 ${
                     isCollapsed ? "lg:pl-20" : "lg:pl-64"
-                }`}
+                } print:pl-0`}
             >
                 {/* Header */}
-                <Header onMenuClick={toggleSidebar} />
+                <div className="print:hidden">
+                    <Header onMenuClick={toggleSidebar} />
+                </div>
 
                 {/* Page content */}
                 <main
@@ -55,7 +59,9 @@ export const MainLayout = ({ children }) => {
             </div>
 
             {/* Bottom Navigation (Mobile Only) */}
-            <BottomNav onMenuClick={toggleSidebar} />
+            <div className="print:hidden">
+                <BottomNav onMenuClick={toggleSidebar} />
+            </div>
         </div>
     );
 };
