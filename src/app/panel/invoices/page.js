@@ -291,7 +291,7 @@ function InvoicesPage() {
                                             </div>
                                         </td>
                                         <td className="p-4 text-sm text-[var(--color-text-secondary)]">
-                                            {new Date(inv.issueDate).toLocaleDateString()}
+                                            {new Date(inv.issueDate).toLocaleString()}
                                         </td>
                                         <td className="p-4">
                                             {inv.paymentPlan?.isInstallment ? (
@@ -678,7 +678,7 @@ function InvoicesPage() {
                                             </span>
                                         </div>
                                         <p className="text-[10px] text-amber-500 mt-1 italic">
-                                            Please send manual payment instructions to the client.
+                                            Payments instructions will be sant to you by admin.
                                         </p>
                                     </div>
                                 )}
@@ -692,11 +692,11 @@ function InvoicesPage() {
                             </div>
                             <div>
                                 <p className="text-gray-400 mb-1">Issue Date</p>
-                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.issueDate).toLocaleDateString()}</p>
+                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.issueDate).toLocaleString()}</p>
                             </div>
                             <div>
                                 <p className="text-gray-400 mb-1">Due Date</p>
-                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.dueDate).toLocaleDateString()}</p>
+                                <p className="font-medium text-[var(--color-text-primary)]">{new Date(selectedInvoice.dueDate).toLocaleString()}</p>
                             </div>
                         </div>
 
