@@ -215,6 +215,8 @@ npm run seed:users   # Seed sample users
 | **Cookie auth**                       | [docs/PANEL/auth/COOKIE_AUTHENTICATION.md](docs/PANEL/auth/COOKIE_AUTHENTICATION.md) |
 | **Notifications (FCM, UI)**           | [docs/PANEL/notifications/README.md](docs/PANEL/notifications/README.md)             |
 | **Dark mode, tables, layout**         | [docs/PANEL/ui/](docs/PANEL/ui/)                                                     |
+| **Components (Forms, UI)**            | [docs/PANEL/ui/](docs/PANEL/ui/)                                                     |
+| **API Reference**                     | [docs/PANEL/API_REFERENCE.md](docs/PANEL/API_REFERENCE.md)                           |
 | **Pagination, Redux, implementation** | [docs/PANEL/guides/](docs/PANEL/guides/)                                             |
 | **Website (copy, structure)**         | [docs/WEBSITE/](docs/WEBSITE/)                                                       |
 

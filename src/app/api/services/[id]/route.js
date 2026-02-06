@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import Service from '@/models/Service';
+import Client from '@/models/Client';
+import User from '@/models/User';
 import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 
@@ -53,6 +55,26 @@ export async function PUT(request, { params }) {
 
         if (!service) {
             return NextResponse.json({ error: 'Service not found' }, { status: 404 });
+        }
+
+        // If service is active/activated, ensure user is added to Client list
+        if (service.status === 'active') {
+            const userId = service.user;
+            
+            const existingClient = await Client.findOne({ linkedUser: userId });
+            
+            if (!existingClient) {
+                const userDoc = await User.findById(userId);
+                if (userDoc) {
+                    await Client.create({
+                        name: userDoc.name,
+                        email: userDoc.email,
+                        phone: userDoc.phone,
+                        linkedUser: userId,
+                        status: 'active'
+                    });
+                }
+            }
         }
 
         return NextResponse.json({ success: true, data: service });

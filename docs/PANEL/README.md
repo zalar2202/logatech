@@ -16,6 +16,10 @@ Documentation for the **admin panel** (protected dashboard) in this repo. The pa
 | **Redux** (store, slices) | [guides/REDUX_GUIDE.md](guides/REDUX_GUIDE.md) |
 | **Implementation overview** | [guides/IMPLEMENTATION_PLAN.md](guides/IMPLEMENTATION_PLAN.md) |
 | **File upload** | [guides/FILE_UPLOAD.md](guides/FILE_UPLOAD.md) |
+| **Common Components** | [ui/COMMON_COMPONENTS.md](ui/COMMON_COMPONENTS.md) |
+| **Form Components** | [ui/FORMS.md](ui/FORMS.md) |
+| **API Reference** | [API_REFERENCE.md](API_REFERENCE.md) |
+| **Code Structure / Libs** | [LIBRARIES.md](LIBRARIES.md) |
 
 ## Panel routes (this app)
 

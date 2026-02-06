@@ -61,8 +61,7 @@ export async function PUT(request, { params }) {
         }
 
         // Only staff can update status/assignment; users can only add messages
-        if (!['admin', 'manager'].includes(user.role) && 
-            ticket.createdBy.toString() !== user._id.toString()) {
+        if (!['admin', 'manager'].includes(user.role)) {
             return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 

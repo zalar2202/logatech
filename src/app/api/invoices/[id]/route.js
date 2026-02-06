@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import Invoice from '@/models/Invoice';
 import Service from '@/models/Service';
 import Client from '@/models/Client';
+import User from '@/models/User';
 import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 
@@ -127,6 +128,21 @@ export async function PUT(request, { params }) {
                         },
                         { upsert: true, new: true }
                     );
+
+                    // Ensure user is added to Client list if not already there
+                    const existingClient = await Client.findOne({ linkedUser: targetUserId });
+                    if (!existingClient) {
+                         const userDoc = await User.findById(targetUserId);
+                         if (userDoc) {
+                             await Client.create({
+                                 name: userDoc.name,
+                                 email: userDoc.email,
+                                 phone: userDoc.phone,
+                                 linkedUser: targetUserId,
+                                 status: 'active'
+                             });
+                         }
+                    }
                 } else {
                     console.warn(`Cannot activate service for invoice ${id}: No target user found.`);
                 }
