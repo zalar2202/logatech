@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, User, ChevronLeft, Share2, Tag, ArrowLeft, ArrowRight } from "lucide-react";
 import CommentSection from "@/components/website/CommentSection";
+import "@/styles/blog.css";
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;
