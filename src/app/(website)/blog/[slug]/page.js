@@ -141,11 +141,20 @@ export default async function BlogPostPage({ params }) {
 
     return (
         <article className="min-h-screen pt-32 md:pt-40 bg-[var(--color-background)] text-[var(--color-text-primary)] transition-colors duration-300">
-            {/* JSON-LD Schema */}
+            {/* Default JSON-LD Schema */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            
+            {/* Custom/FAQ JSON-LD Schema */}
+            {post.seo?.schema && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: post.seo.schema }}
+                />
+            )}
+
             {/* Hero Section */}
             <section className="relative">
                 {/* Featured Image */}
