@@ -37,7 +37,7 @@ export async function generateMetadata({ params }) {
 
 async function getPost(slug) {
     try {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
         const res = await fetch(`${baseUrl}/api/blog/posts/${slug}`, {
             next: { revalidate: 60 },
         });
@@ -58,7 +58,7 @@ async function getRelatedPosts(categoryId, currentPostId) {
     if (!categoryId) return [];
     
     try {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
         const res = await fetch(
             `${baseUrl}/api/blog/posts?category=${categoryId}&limit=3&status=published`,
             { next: { revalidate: 60 } }
@@ -113,11 +113,17 @@ export default async function BlogPostPage({ params }) {
         post._id
     );
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
+    const postUrl = `${baseUrl}/blog/${post.slug}`;
+    const imageUrl = post.featuredImage?.url?.startsWith('http') 
+        ? post.featuredImage.url 
+        : `${baseUrl}${post.featuredImage?.url || ""}`;
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "headline": post.title,
-        "image": post.featuredImage?.url || "",
+        "image": imageUrl,
         "author": {
             "@type": "Person",
             "name": post.author?.name || "LogaTech Team",
@@ -127,7 +133,7 @@ export default async function BlogPostPage({ params }) {
             "name": "LogaTech",
             "logo": {
                 "@type": "ImageObject",
-                "url": "https://logatech.net/logo.png"
+                "url": `${baseUrl}/logo.png`
             }
         },
         "datePublished": post.publishedAt,
@@ -135,7 +141,7 @@ export default async function BlogPostPage({ params }) {
         "description": post.excerpt || post.title,
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": `https://logatech.net/blog/${post.slug}`
+            "@id": postUrl
         }
     };
 

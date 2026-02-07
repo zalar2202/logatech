@@ -45,6 +45,7 @@ const themeScript = `
 `;
 
 export const metadata = {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net"),
     title: {
         default: "LogaTech",
         template: "%s | LogaTech",
