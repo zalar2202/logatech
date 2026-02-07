@@ -25,6 +25,7 @@ const SEO_LIMITS = {
     metaTitle: { min: 30, max: 60, optimal: 55 },
     metaDescription: { min: 120, max: 160, optimal: 155 },
     slug: { max: 75 },
+    content: { min: 300, optimal: 1000 },
 };
 
 export function SEOPreview({
@@ -34,6 +35,7 @@ export function SEOPreview({
     metaDescription = "",
     ogImage = "",
     keywords = [],
+    content = "",
     noIndex = false,
     noFollow = false,
     onFieldChange,
@@ -70,11 +72,22 @@ export function SEOPreview({
         return { score: 100, status: "success", message: "Good URL structure" };
     };
 
+    const getWordCountScore = () => {
+        // Strip HTML tags
+        const plainText = content.replace(/<[^>]*>/g, ' ');
+        const wordCount = plainText.split(/\s+/).filter(word => word.length > 0).length;
+        
+        if (wordCount === 0) return { score: 0, status: "error", message: "Content is empty", count: 0 };
+        if (wordCount < SEO_LIMITS.content.min) return { score: 40, status: "warning", message: `Too short (${wordCount}/${SEO_LIMITS.content.min} words)`, count: wordCount };
+        return { score: 100, status: "success", message: `Good length (${wordCount} words)`, count: wordCount };
+    };
+
     const titleScore = getTitleScore();
     const descriptionScore = getDescriptionScore();
     const slugScore = getSlugScore();
+    const wordCountScore = getWordCountScore();
 
-    const overallScore = Math.round((titleScore.score + descriptionScore.score + slugScore.score) / 3);
+    const overallScore = Math.round((titleScore.score + descriptionScore.score + slugScore.score + wordCountScore.score) / 4);
 
     const getScoreColor = (score) => {
         if (score >= 80) return "text-green-500";
@@ -239,6 +252,13 @@ export function SEOPreview({
                                 {getStatusIcon(slugScore.status)}
                                 <span className="text-[var(--color-text-secondary)]">
                                     URL: {slugScore.message}
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm">
+                                {getStatusIcon(wordCountScore.status)}
+                                <span className="text-[var(--color-text-secondary)]">
+                                    Content: {wordCountScore.message}
                                 </span>
                             </div>
 

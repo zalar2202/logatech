@@ -768,7 +768,8 @@ export default function EditBlogPostPage({ params }) {
                         metaTitle={postData.seo.metaTitle}
                         metaDescription={postData.seo.metaDescription}
                         ogImage={postData.seo.ogImage || postData.featuredImage.url}
-                        keywords={postData.tags}
+                        keywords={postData.seo.metaKeywords}
+                        content={postData.content}
                         noIndex={postData.seo.noIndex}
                         noFollow={postData.seo.noFollow}
                     />
