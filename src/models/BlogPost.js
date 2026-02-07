@@ -91,6 +91,10 @@ const BlogPostSchema = new mongoose.Schema(
                 type: String,
                 trim: true,
             }],
+            focusKeyword: {
+                type: String,
+                trim: true,
+            },
             canonicalUrl: {
                 type: String,
             },
@@ -106,7 +110,7 @@ const BlogPostSchema = new mongoose.Schema(
                 default: false,
             },
             schema: {
-                type: String, // Custom JSON-LD schema or automated generation
+                type: String, // Custom JSON-LD schema
             },
         },
         

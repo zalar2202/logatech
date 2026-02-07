@@ -54,6 +54,8 @@ export default function EditBlogPostPage({ params }) {
             metaTitle: "",
             metaDescription: "",
             metaKeywords: [],
+            focusKeyword: "",
+            schema: "",
             ogImage: "",
             noIndex: false,
             noFollow: false,
@@ -68,6 +70,7 @@ export default function EditBlogPostPage({ params }) {
     });
 
     const [tagInput, setTagInput] = useState("");
+    const [keywordInput, setKeywordInput] = useState("");
 
     // Fetch post data
     useEffect(() => {
@@ -89,6 +92,8 @@ export default function EditBlogPostPage({ params }) {
                             metaTitle: post.seo?.metaTitle || "",
                             metaDescription: post.seo?.metaDescription || "",
                             metaKeywords: post.seo?.metaKeywords || [],
+                            focusKeyword: post.seo?.focusKeyword || "",
+                            schema: post.seo?.schema || "",
                             ogImage: post.seo?.ogImage || "",
                             noIndex: post.seo?.noIndex || false,
                             noFollow: post.seo?.noFollow || false,
@@ -164,6 +169,25 @@ export default function EditBlogPostPage({ params }) {
             ...prev,
             tags: prev.tags.filter((t) => t !== tagToRemove),
         }));
+    };
+
+    // Handle keyword input
+    const handleAddKeyword = (e) => {
+        if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            const keyword = keywordInput.trim();
+            if (keyword && !postData.seo.metaKeywords.includes(keyword)) {
+                updateSEOField("metaKeywords", [...postData.seo.metaKeywords, keyword]);
+            }
+            setKeywordInput("");
+        }
+    };
+
+    const removeKeyword = (keywordToRemove) => {
+        updateSEOField(
+            "metaKeywords",
+            postData.seo.metaKeywords.filter((k) => k !== keywordToRemove)
+        );
     };
 
     // Image upload handler
@@ -667,6 +691,72 @@ export default function EditBlogPostPage({ params }) {
                                         No Follow
                                     </span>
                                 </label>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-4 pt-4 border-t border-[var(--color-border)]">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Primary Keyword
+                                </label>
+                                <input
+                                    type="text"
+                                    value={postData.seo.focusKeyword}
+                                    onChange={(e) =>
+                                        updateSEOField("focusKeyword", e.target.value)
+                                    }
+                                    placeholder="Main focus keyword"
+                                    className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Secondary Keywords
+                                </label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {postData.seo.metaKeywords.map((keyword, index) => (
+                                        <span
+                                            key={index}
+                                            className="inline-flex items-center gap-1 px-2 py-1 text-sm rounded-full bg-[var(--color-background-tertiary)] text-[var(--color-text-primary)] border border-[var(--color-border)]"
+                                        >
+                                            {keyword}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeKeyword(keyword)}
+                                                className="hover:text-red-500 rounded-full p-0.5"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <input
+                                    type="text"
+                                    value={keywordInput}
+                                    onChange={(e) => setKeywordInput(e.target.value)}
+                                    onKeyDown={handleAddKeyword}
+                                    placeholder="Add keywords (press Enter)"
+                                    className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    Schema JSON-LD
+                                </label>
+                                <textarea
+                                    value={postData.seo.schema}
+                                    onChange={(e) =>
+                                        updateSEOField("schema", e.target.value)
+                                    }
+                                    placeholder='{ "@context": "https://schema.org", ... }'
+                                    rows={5}
+                                    className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] font-mono text-sm"
+                                />
+                                <p className="text-xs mt-1 text-[var(--color-text-secondary)]">
+                                    Paste your FAQ or other JSON-LD schema here.
+                                </p>
                             </div>
                         </div>
                     </Card>
