@@ -7,6 +7,30 @@ import TechStack from "@/components/website/shared/TechStack";
 import FAQAccordion from "@/components/website/homepage/FAQAccordion";
 import GlobalCTA from "@/components/website/shared/GlobalCTA";
 
+export const metadata = {
+    title: "LogaTech - From Code to Cloud",
+    description: "Innovative Digital Solutions & Strategic Web Development. We help businesses design, develop, and deploy scalable tech products.",
+    openGraph: {
+        title: "LogaTech - From Code to Cloud",
+        description: "Innovative Digital Solutions & Strategic Web Development.",
+        type: "website",
+        images: [
+            {
+                url: "/assets/logo/LogaTech-512.webp",
+                width: 512,
+                height: 512,
+                alt: "LogaTech Logo",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "LogaTech - From Code to Cloud",
+        description: "Innovative Digital Solutions & Strategic Web Development.",
+        images: ["/assets/logo/LogaTech-512.webp"],
+    },
+};
+
 export const dynamic = "force-dynamic";
 
 const processSteps = [

@@ -133,7 +133,7 @@ export default async function BlogPostPage({ params }) {
             "name": "LogaTech",
             "logo": {
                 "@type": "ImageObject",
-                "url": `${baseUrl}/logo.png`
+                "url": `${baseUrl}/assets/logo/LogaTech-512.webp`
             }
         },
         "datePublished": post.publishedAt,
