@@ -8,6 +8,20 @@ export const metadata = {
         title: "Blog | LogaTech",
         description: "Read the latest articles, tutorials, and insights from LogaTech.",
         type: "website",
+        images: [
+            {
+                url: "/assets/logo/LogaTech-512.webp",
+                width: 512,
+                height: 512,
+                alt: "LogaTech Logo",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Blog | LogaTech",
+        description: "Read the latest articles, tutorials, and insights from LogaTech.",
+        images: ["/assets/logo/LogaTech-512.webp"],
     },
 };
 

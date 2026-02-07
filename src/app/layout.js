@@ -70,6 +70,28 @@ export const metadata = {
         ],
     },
     manifest: "/assets/favicon/site.webmanifest",
+    openGraph: {
+        type: "website",
+        locale: "en_US",
+        url: "https://logatech.net",
+        siteName: "LogaTech",
+        title: "LogaTech - From Code to Cloud",
+        description: "Innovative Digital Solutions & Strategic Web Development",
+        images: [
+            {
+                url: "/assets/logo/LogaTech-512.webp",
+                width: 512,
+                height: 512,
+                alt: "LogaTech Logo",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "LogaTech",
+        description: "Innovative Digital Solutions & Strategic Web Development",
+        images: ["/assets/logo/LogaTech-512.webp"],
+    },
 };
 
 export default function RootLayout({ children }) {
