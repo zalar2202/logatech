@@ -31,7 +31,10 @@ export async function POST(request) {
         let targetUserId = (isAdmin && userId) ? userId : user._id;
         let targetClientId = (isAdmin && bodyClientId) ? bodyClientId : null;
 
-        const cart = await Cart.findOne({ user: cartSourceId }).populate("items.package");
+        const cart = await Cart.findOne({ user: cartSourceId })
+            .populate("items.package")
+            .populate("appliedPromotion");
+
         if (!cart || cart.items.length === 0) {
             return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
         }
@@ -77,6 +80,36 @@ export async function POST(request) {
             };
         });
 
+        // Calculate Promotion Discount
+        let promotionDiscount = 0;
+        let appliedPromoCode = null;
+        if (cart.appliedPromotion) {
+            const promo = cart.appliedPromotion;
+            // Double check validity
+            const now = new Date();
+            const isActive = promo.isActive && 
+                             (!promo.startDate || promo.startDate <= now) && 
+                             (!promo.endDate || promo.endDate >= now) &&
+                             (promo.usageLimit === null || promo.usedCount < promo.usageLimit) &&
+                             (subtotal >= promo.minPurchase);
+
+            if (isActive) {
+                if (promo.discountType === 'percentage') {
+                    promotionDiscount = (subtotal * promo.discountValue) / 100;
+                } else {
+                    promotionDiscount = promo.discountValue;
+                }
+                promotionDiscount = Math.min(promotionDiscount, subtotal);
+                appliedPromoCode = promo.discountCode;
+
+                // Increment usage
+                const Promotion = (await import("@/models/Promotion")).default;
+                await Promotion.findByIdAndUpdate(promo._id, { $inc: { usedCount: 1 } });
+            }
+        }
+
+        const total = Math.max(0, subtotal - promotionDiscount);
+
         const invoiceData = {
             invoiceNumber: generateInvoiceNumber(),
             client: client._id,
@@ -87,7 +120,11 @@ export async function POST(request) {
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
             items: items,
             subtotal: subtotal,
-            total: subtotal, // Tax handling can be added later
+            promotion: {
+                code: appliedPromoCode,
+                discountAmount: Number(promotionDiscount.toFixed(2))
+            },
+            total: Number(total.toFixed(2)),
             createdBy: user._id
         };
 
@@ -95,6 +132,7 @@ export async function POST(request) {
 
         // 3. Clear Cart
         cart.items = [];
+        cart.appliedPromotion = null;
         await cart.save();
 
         return NextResponse.json({ 
