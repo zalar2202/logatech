@@ -30,9 +30,33 @@ const ClientSchema = new mongoose.Schema(
             enum: ['active', 'inactive', 'prospective'],
             default: 'active',
         },
-        address: {
+        company: {
             type: String,
             trim: true,
+        },
+        website: {
+            type: String,
+            trim: true,
+        },
+        taxId: {
+            type: String,
+            trim: true,
+        },
+        whatsapp: {
+            type: String,
+            trim: true,
+        },
+        preferredCommunication: {
+            type: String,
+            enum: ['email', 'whatsapp', 'phone', 'slack'],
+            default: 'email',
+        },
+        address: {
+            street: { type: String, default: '' },
+            city: { type: String, default: '' },
+            state: { type: String, default: '' },
+            zip: { type: String, default: '' },
+            country: { type: String, default: '' },
         },
         notes: {
             type: String,

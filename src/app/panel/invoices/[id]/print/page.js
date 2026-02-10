@@ -155,11 +155,31 @@ export default function InvoicePrintPage() {
                         <div>
                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Bill To</h4>
                             <div className="text-gray-900 dark:text-white">
-                                <p className="text-lg font-bold">{invoice.client?.name}</p>
+                                <p className="text-lg font-bold">{invoice.client?.company || invoice.client?.name}</p>
                                 <div className="text-gray-500 dark:text-gray-400 text-sm mt-2 space-y-1">
                                     <p>{invoice.client?.email}</p>
                                     <p>{invoice.client?.phone}</p>
-                                    <p>{invoice.client?.address}</p>
+                                    {invoice.client?.taxId && (
+                                        <p className="font-medium text-xs">VAT/TAX ID: {invoice.client.taxId}</p>
+                                    )}
+                                    {invoice.client?.website && (
+                                        <p className="text-indigo-600 dark:text-indigo-400">{invoice.client.website}</p>
+                                    )}
+                                    <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                                        {typeof invoice.client?.address === 'object' ? (
+                                            <>
+                                                {invoice.client.address.street && <p>{invoice.client.address.street}</p>}
+                                                <p>
+                                                    {[invoice.client.address.city, invoice.client.address.state, invoice.client.address.zip]
+                                                        .filter(Boolean)
+                                                        .join(', ')}
+                                                </p>
+                                                {invoice.client.address.country && <p>{invoice.client.address.country}</p>}
+                                            </>
+                                        ) : (
+                                            <p>{invoice.client?.address}</p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
