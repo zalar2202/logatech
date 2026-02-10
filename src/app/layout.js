@@ -60,10 +60,6 @@ export const metadata = {
         apple: [{ url: "/assets/favicon/apple-touch-icon.png" }],
         other: [
             {
-                rel: "android-chrome-192x192",
-                url: "/assets/favicon/android-chrome-192x192.png",
-            },
-            {
                 rel: "android-chrome-512x512",
                 url: "/assets/favicon/android-chrome-512x512.png",
             },
@@ -79,7 +75,7 @@ export const metadata = {
         description: "Innovative Digital Solutions & Strategic Web Development",
         images: [
             {
-                url: "/assets/logo/LogaTech-512.webp",
+                url: "/assets/favicon/android-chrome-512x512.png",
                 width: 512,
                 height: 512,
                 alt: "LogaTech Logo",
@@ -88,9 +84,9 @@ export const metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "LogaTech",
-        description: "Innovative Digital Solutions & Strategic Web Development",
-        images: ["/assets/logo/LogaTech-512.webp"],
+        title: "LogaTech - From Code to Cloud",
+        description: "Innovative Digital Solutions & Strategic Web Development.",
+        images: ["/assets/favicon/android-chrome-512x512.png"],
     },
 };
 

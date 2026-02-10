@@ -25,8 +25,28 @@ export async function generateMetadata({ params }) {
             publishedTime: post.publishedAt,
             authors: [post.author?.name],
             images: post.seo?.ogImage || post.featuredImage?.url
-                ? [{ url: post.seo?.ogImage || post.featuredImage?.url }]
-                : [],
+                ? [
+                      {
+                          url: post.seo?.ogImage || post.featuredImage?.url,
+                          width: 1200,
+                          height: 630,
+                          alt: post.title,
+                      },
+                  ]
+                : [
+                      {
+                          url: "/assets/favicon/android-chrome-512x512.png",
+                          width: 512,
+                          height: 512,
+                          alt: "LogaTech",
+                      },
+                  ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: post.seo?.metaTitle || post.title,
+            description: post.seo?.metaDescription || post.excerpt,
+            images: [post.seo?.ogImage || post.featuredImage?.url || "/assets/favicon/android-chrome-512x512.png"],
         },
         robots: {
             index: !post.seo?.noIndex,
@@ -133,7 +153,7 @@ export default async function BlogPostPage({ params }) {
             "name": "LogaTech",
             "logo": {
                 "@type": "ImageObject",
-                "url": `${baseUrl}/assets/logo/LogaTech-512.webp`
+                "url": `${baseUrl}/assets/favicon/android-chrome-512x512.png`
             }
         },
         "datePublished": post.publishedAt,
