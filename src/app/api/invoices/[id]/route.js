@@ -17,7 +17,10 @@ export async function GET(request, { params }) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const invoice = await Invoice.findById(id).populate('client');
+        const invoice = await Invoice.findById(id).populate({
+            path: 'client',
+            populate: { path: 'linkedUser' }
+        });
         
         if (!invoice) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });

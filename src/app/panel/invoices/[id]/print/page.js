@@ -78,7 +78,7 @@ export default function InvoicePrintPage() {
             </div>
 
             {/* Invoice Paper */}
-            <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden print:shadow-none print:rounded-none">
+            <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden print:shadow-none print:rounded-none print-container print:bg-white print:text-black">
                 {/* Accent Bar */}
                 <div className="h-2 bg-gradient-to-r from-indigo-600 to-purple-600" />
                 
@@ -155,20 +155,30 @@ export default function InvoicePrintPage() {
                         <div>
                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Bill To</h4>
                             <div className="text-gray-900 dark:text-white">
-                                <p className="text-lg font-bold">{invoice.client?.company || invoice.client?.name}</p>
+                                <p className="text-lg font-bold">
+                                    {invoice.client?.company || invoice.client?.linkedUser?.company || invoice.client?.name}
+                                </p>
                                 <div className="text-gray-500 dark:text-gray-400 text-sm mt-2 space-y-1">
-                                    <p>{invoice.client?.email}</p>
-                                    <p>{invoice.client?.phone}</p>
-                                    {invoice.client?.taxId && (
-                                        <p className="font-medium text-xs">VAT/TAX ID: {invoice.client.taxId}</p>
+                                    <p>{invoice.client?.email || invoice.client?.linkedUser?.email}</p>
+                                    <p>{invoice.client?.phone || invoice.client?.linkedUser?.phone}</p>
+                                    
+                                    {(invoice.client?.taxId || invoice.client?.linkedUser?.taxId) && (
+                                        <p className="font-medium text-xs">
+                                            VAT/TAX ID: {invoice.client?.taxId || invoice.client?.linkedUser?.taxId}
+                                        </p>
                                     )}
-                                    {invoice.client?.website && (
-                                        <p className="text-indigo-600 dark:text-indigo-400">{invoice.client.website}</p>
+                                    
+                                    {(invoice.client?.website || invoice.client?.linkedUser?.website) && (
+                                        <p className="text-indigo-600 dark:text-indigo-400">
+                                            {invoice.client?.website || invoice.client?.linkedUser?.website}
+                                        </p>
                                     )}
+
                                     <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-                                        {typeof invoice.client?.address === 'object' ? (
+                                        {/* Hierarchical address check: Client Object -> Client String -> User Object */}
+                                        {typeof invoice.client?.address === 'object' && invoice.client?.address?.street ? (
                                             <>
-                                                {invoice.client.address.street && <p>{invoice.client.address.street}</p>}
+                                                <p>{invoice.client.address.street}</p>
                                                 <p>
                                                     {[invoice.client.address.city, invoice.client.address.state, invoice.client.address.zip]
                                                         .filter(Boolean)
@@ -176,8 +186,20 @@ export default function InvoicePrintPage() {
                                                 </p>
                                                 {invoice.client.address.country && <p>{invoice.client.address.country}</p>}
                                             </>
+                                        ) : typeof invoice.client?.address === 'string' && invoice.client.address ? (
+                                            <p>{invoice.client.address}</p>
+                                        ) : typeof invoice.client?.linkedUser?.address === 'object' && invoice.client?.linkedUser?.address?.street ? (
+                                            <>
+                                                <p>{invoice.client.linkedUser.address.street}</p>
+                                                <p>
+                                                    {[invoice.client.linkedUser.address.city, invoice.client.linkedUser.address.state, invoice.client.linkedUser.address.zip]
+                                                        .filter(Boolean)
+                                                        .join(', ')}
+                                                </p>
+                                                {invoice.client.linkedUser.address.country && <p>{invoice.client.linkedUser.address.country}</p>}
+                                            </>
                                         ) : (
-                                            <p>{invoice.client?.address}</p>
+                                            <p className="text-gray-400 italic">No address on file</p>
                                         )}
                                     </div>
                                 </div>
@@ -369,9 +391,18 @@ export default function InvoicePrintPage() {
             {/* Global Print Styles */}
             <style jsx global>{`
                 @media print {
+                    @page {
+                        margin: 0;
+                        size: auto;
+                    }
                     body {
                         background: white !important;
                         color: black !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+                    .print-container {
+                        padding: 1.5cm !important;
                     }
                     .print\\:hidden {
                         display: none !important;
