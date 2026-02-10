@@ -55,6 +55,10 @@ const PromotionSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        applicableCategories: {
+            type: [String],
+            default: [], // Empty means applies to all
+        },
     },
     {
         timestamps: true,

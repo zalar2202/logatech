@@ -12,6 +12,7 @@ import {
     ArrowRight,
     Package as PackageIcon,
     ShieldCheck,
+    Tag,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -75,7 +76,8 @@ export default function CartPage() {
 
             const res = await axios.post("/api/promotions/validate", {
                 code: cartData.appliedPromotion.discountCode,
-                subtotal: subtotal
+                subtotal: subtotal,
+                items: cartData.items
             });
 
             if (res.data.success) {
@@ -127,7 +129,8 @@ export default function CartPage() {
             const subtotal = calculateSubtotal();
             const res = await axios.post("/api/promotions/validate", {
                 code: promoCode,
-                subtotal: subtotal
+                subtotal: subtotal,
+                items: cart.items
             });
 
             if (res.data.success) {
