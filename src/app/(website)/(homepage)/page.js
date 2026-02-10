@@ -16,7 +16,7 @@ export const metadata = {
         type: "website",
         images: [
             {
-                url: "/assets/logo/LogaTech-512.webp",
+                url: "/assets/favicon/android-chrome-512x512.png",
                 width: 512,
                 height: 512,
                 alt: "LogaTech Logo",
@@ -27,7 +27,7 @@ export const metadata = {
         card: "summary_large_image",
         title: "LogaTech - From Code to Cloud",
         description: "Innovative Digital Solutions & Strategic Web Development.",
-        images: ["/assets/logo/LogaTech-512.webp"],
+        images: ["/assets/favicon/android-chrome-512x512.png"],
     },
 };
 
