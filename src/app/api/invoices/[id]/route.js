@@ -62,10 +62,11 @@ export async function PUT(request, { params }) {
         if (body.client === "") body.client = null;
         if (body.user === "") body.user = null;
 
-        // If items are being updated, recalculate totals
-        if (body.items) {
+        // Recalculate totals if items, taxRate, or promotion are provided
+        if (body.items || body.taxRate !== undefined || body.promotion) {
+             const items = body.items || oldInvoice.items || [];
              let subtotal = 0;
-             const processedItems = body.items.map(item => {
+             const processedItems = items.map(item => {
                 const quantity = Number(item.quantity) || 1;
                 const price = Number(item.unitPrice) || 0;
                 const amount = quantity * price;
@@ -79,16 +80,18 @@ export async function PUT(request, { params }) {
             });
             body.items = processedItems;
             
-            const taxRate = body.taxRate !== undefined ? Number(body.taxRate) : 0;
-            
-            // Let's rely on simple logic: Recalculate total if items passed.
+            const taxRate = body.taxRate !== undefined ? Number(body.taxRate) : (oldInvoice.taxRate || 0);
             const taxAmount = subtotal * (taxRate / 100);
+            
             body.subtotal = subtotal;
             body.taxAmount = taxAmount;
             
             // Handle promotion in total calculation
-            const promoAmount = body.promotion?.discountAmount || oldInvoice?.promotion?.discountAmount || 0;
-            body.total = subtotal + taxAmount - promoAmount;
+            const promoAmount = body.promotion?.discountAmount !== undefined 
+                ? Number(body.promotion.discountAmount) 
+                : (oldInvoice.promotion?.discountAmount || 0);
+                
+            body.total = Math.max(0, subtotal + taxAmount - promoAmount);
         }
 
         const invoice = await Invoice.findByIdAndUpdate(
