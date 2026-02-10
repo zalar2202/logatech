@@ -4,6 +4,7 @@ import Invoice from '@/models/Invoice';
 import Client from '@/models/Client'; // Ensure model is loaded
 import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
+import { convertToBaseCurrency } from '@/lib/currency';
 
 // Helper to generate Invoice Number
 function generateInvoiceNumber() {
@@ -98,8 +99,11 @@ export async function POST(request) {
             ? (subtotal * promo.discountValue) / 100
             : (promo.discountAmount || 0);
         const total = Math.max(0, subtotal + taxAmount - promoDiscount);
+        
+        // 4. Multi-currency Accounting
+        const { amount: totalInBase, rate } = await convertToBaseCurrency(total, body.currency || 'USD');
 
-        // 4. Generate Installments if applicable
+        // 5. Generate Installments if applicable
         const paymentPlan = body.paymentPlan || {};
         if (paymentPlan.isInstallment && paymentPlan.installmentsCount > 0) {
             const installments = [];
@@ -131,6 +135,8 @@ export async function POST(request) {
             taxRate,
             taxAmount,
             total,
+            exchangeRate: rate,
+            totalInBaseCurrency: totalInBase,
             paymentPlan,
             createdBy: user._id
         };

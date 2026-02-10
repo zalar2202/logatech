@@ -40,6 +40,7 @@ export default function DashboardPage() {
         payments: 0,
         tickets: 0,
         services: 0,
+        revenue: { total: 0, paid: 0, pending: 0 }
     });
 
     useEffect(() => {
@@ -53,43 +54,24 @@ export default function DashboardPage() {
 
         const fetchStats = async () => {
             try {
-                const endpoints = isAdmin
-                    ? [
-                          axios.get("/api/packages"),
-                          axios.get("/api/promotions?all=true"),
-                          axios.get("/api/clients"),
-                          axios.get("/api/payments"),
-                          axios.get("/api/tickets"),
-                          axios.get("/api/services"),
-                      ]
-                    : [axios.get("/api/tickets"), axios.get("/api/services")];
-
-                const results = await Promise.all(endpoints);
+                const res = await axios.get("/api/stats/dashboard");
+                const statsData = res.data.data;
 
                 if (isAdmin) {
-                    const [pkgRes, promoRes, clientRes, payRes, ticketRes, svcRes] = results;
                     setCounts({
-                        packages: pkgRes.data.data?.length || 0,
-                        promotions: promoRes.data.data?.length || 0,
-                        clients: clientRes.data.data?.length || 0,
-                        payments: payRes.data.data?.length || 0,
-                        tickets:
-                            ticketRes.data.data?.filter(
-                                (t) => !["resolved", "closed"].includes(t.status)
-                            )?.length || 0,
-                        services:
-                            svcRes.data.data?.filter((s) => s.status === "active")?.length || 0,
+                        packages: statsData.packages || 0,
+                        promotions: statsData.promotions || 0,
+                        clients: statsData.clients || 0,
+                        payments: statsData.payments || 0,
+                        tickets: statsData.tickets || 0,
+                        services: statsData.services || 0,
+                        revenue: statsData.revenue || { total: 0, paid: 0, pending: 0 }
                     });
                 } else {
-                    const [ticketRes, svcRes] = results;
                     setCounts({
                         ...counts,
-                        tickets:
-                            ticketRes.data.data?.filter(
-                                (t) => !["resolved", "closed"].includes(t.status)
-                            )?.length || 0,
-                        services:
-                            svcRes.data.data?.filter((s) => s.status === "active")?.length || 0,
+                        tickets: statsData.tickets || 0,
+                        services: statsData.services || 0,
                     });
                 }
             } catch (e) {
@@ -130,8 +112,8 @@ export default function DashboardPage() {
         },
         {
             title: "Total Revenue",
-            value: `$${(counts.payments * 45).toFixed(0)}`, // Dummy calculation for dashboard feel
-            change: "Payment History",
+            value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(counts.revenue.total),
+            change: `${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(counts.revenue.paid)} paid`,
             icon: CreditCard,
             color: "purple",
             gradient: "from-purple-500 to-pink-500",
@@ -289,6 +271,64 @@ export default function DashboardPage() {
                         );
                     })}
             </div>
+
+            {/* Revenue Summary Widget (Admin Only) */}
+            {["admin", "manager"].includes(user?.role) && (
+                <div className="mb-8">
+                    <Card className="bg-gradient-to-br from-indigo-900/10 to-purple-900/5 border-indigo-100/50">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 className="text-xl font-bold text-[var(--color-text-primary)]">Revenue Summary</h2>
+                                <p className="text-sm text-[var(--color-text-secondary)]">Consolidated income across all currencies (USD Equivalent)</p>
+                            </div>
+                            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+                                <TrendingUp className="w-6 h-6 text-indigo-600" />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Revenue</p>
+                                    <h3 className="text-2xl font-black text-indigo-600">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(counts.revenue.total)}</h3>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                     <div className="h-full bg-indigo-600 w-full" />
+                                </div>
+                                <p className="text-[10px] text-gray-400">Total volume of all active invoices</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Collected Revenue</p>
+                                    <h3 className="text-2xl font-black text-emerald-600">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(counts.revenue.paid)}</h3>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                     <div 
+                                        className="h-full bg-emerald-500" 
+                                        style={{ width: `${(counts.revenue.paid / (counts.revenue.total || 1) * 100).toFixed(0)}%` }} 
+                                     />
+                                </div>
+                                <p className="text-[10px] text-gray-400">{((counts.revenue.paid / (counts.revenue.total || 1)) * 100).toFixed(1)}% of total volume collected</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Outstanding (Pending)</p>
+                                    <h3 className="text-2xl font-black text-amber-600">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(counts.revenue.pending)}</h3>
+                                </div>
+                                <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                     <div 
+                                        className="h-full bg-amber-500" 
+                                        style={{ width: `${(counts.revenue.pending / (counts.revenue.total || 1) * 100).toFixed(0)}%` }} 
+                                     />
+                                </div>
+                                <p className="text-[10px] text-gray-400">{((counts.revenue.pending / (counts.revenue.total || 1)) * 100).toFixed(1)}% currently in pipeline</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Quick Actions */}

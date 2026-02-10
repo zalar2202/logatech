@@ -5,6 +5,7 @@ import Client from '@/models/Client';
 import User from '@/models/User';
 import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
+import { convertToBaseCurrency } from '@/lib/currency';
 
 // GET Single Invoice
 export async function GET(request, { params }) {
@@ -96,6 +97,11 @@ export async function PUT(request, { params }) {
                 : (promo.discountAmount || 0);
                 
             body.total = Math.max(0, subtotal + taxAmount - promoAmount);
+
+            // Recalculate Base Currency for Accounting
+            const { amount: totalInBase, rate } = await convertToBaseCurrency(body.total, body.currency || oldInvoice.currency || 'USD');
+            body.exchangeRate = rate;
+            body.totalInBaseCurrency = totalInBase;
         }
 
         const invoice = await Invoice.findByIdAndUpdate(
