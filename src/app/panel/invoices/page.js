@@ -52,6 +52,10 @@ const invoiceSchema = Yup.object().shape({
         .min(1, "At least one item is required"),
     notes: Yup.string(),
     taxRate: Yup.number().min(0).max(100),
+    promotion: Yup.object().shape({
+        code: Yup.string(),
+        discountAmount: Yup.number().min(0)
+    })
 });
 
 function InvoicesPage() {
@@ -203,7 +207,8 @@ function InvoicesPage() {
             0
         );
         const tax = subtotal * ((Number(values.taxRate) || 0) / 100);
-        return { subtotal, tax, total: subtotal + tax };
+        const discount = Number(values.promotion?.discountAmount) || 0;
+        return { subtotal, tax, discount, total: Math.max(0, subtotal + tax - discount) };
     };
 
     return (
@@ -501,6 +506,10 @@ function InvoicesPage() {
                             installmentAmount: selectedInvoice?.paymentPlan?.installmentAmount || 0,
                             period: selectedInvoice?.paymentPlan?.period || "monthly",
                         },
+                        promotion: {
+                            code: selectedInvoice?.promotion?.code || "",
+                            discountAmount: selectedInvoice?.promotion?.discountAmount || 0,
+                        },
                     }}
                     validationSchema={invoiceSchema}
                     onSubmit={handleSubmit}
@@ -617,23 +626,30 @@ function InvoicesPage() {
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm">
-                                            <span className="flex items-center gap-2">
-                                                Tax Rate (%):
-                                            </span>
+                                            <span>Tax Rate (%):</span>
                                             <div className="w-20">
-                                                <InputField
-                                                    type="number"
-                                                    name="taxRate"
-                                                    min="0"
-                                                    max="100"
-                                                />
+                                                <InputField type="number" name="taxRate" min="0" max="100" />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="flex items-center gap-2">Promotion (Code/Amt):</span>
+                                            <div className="flex gap-2 w-48">
+                                                <InputField name="promotion.code" placeholder="Code" />
+                                                <InputField type="number" name="promotion.discountAmount" placeholder="Amt" min="0" step="0.01" />
                                             </div>
                                         </div>
                                         <div className="flex justify-between text-lg font-bold border-t pt-2 mt-2">
                                             <span>Total:</span>
-                                            <span className="text-indigo-600">
-                                                ${totals.total.toFixed(2)}
-                                            </span>
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-indigo-600">
+                                                    ${totals.total.toFixed(2)}
+                                                </span>
+                                                {totals.discount > 0 && (
+                                                    <span className="text-[10px] text-emerald-600">
+                                                        (Saved ${totals.discount.toFixed(2)})
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

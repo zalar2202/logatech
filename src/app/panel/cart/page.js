@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -34,6 +34,8 @@ export default function CartPage() {
     const [promoCode, setPromoCode] = useState("");
     const [applyingPromo, setApplyingPromo] = useState(false);
     const [appliedPromo, setAppliedPromo] = useState(null);
+    const searchParams = useSearchParams();
+    const promoFromUrl = searchParams.get("promo");
 
     const fetchCart = async () => {
         try {
@@ -64,6 +66,39 @@ export default function CartPage() {
         fetchCart();
         fetchClientsList();
     }, [isAdmin]);
+
+    // Handle initial promo from URL
+    useEffect(() => {
+        const applyPromoFromUrl = async () => {
+             if (promoFromUrl && cart && cart.items.length > 0 && !appliedPromo && !applyingPromo) {
+                const code = promoFromUrl.toUpperCase();
+                setPromoCode(code);
+                
+                setApplyingPromo(true);
+                try {
+                    const subtotal = calculateSubtotal();
+                    const res = await axios.post("/api/promotions/validate", {
+                        code: code,
+                        subtotal: subtotal,
+                        items: cart.items
+                    });
+
+                    if (res.data.success) {
+                        setAppliedPromo(res.data.data);
+                        await axios.put("/api/cart", { promotionId: res.data.data.id });
+                        toast.success("Promotion from link applied!");
+                    }
+                } catch (error) {
+                    // Fail silently for auto-applied link promos to not annoy user
+                    console.error("Link promo failed:", error.response?.data?.message);
+                } finally {
+                    setApplyingPromo(false);
+                }
+            }
+        };
+
+        applyPromoFromUrl();
+    }, [promoFromUrl, cart, appliedPromo]);
 
     const handleApplyPromoOnMount = async (cartData) => {
         try {

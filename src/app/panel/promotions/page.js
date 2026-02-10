@@ -68,10 +68,11 @@ export default function PromotionsPage() {
     }, []);
 
     const handleShare = async (promo) => {
+        const discountText = promo.discountType === 'percentage' ? promo.discountValue + '%' : '$' + promo.discountValue;
         const shareData = {
-            title: promo.title,
-            text: `${promo.title}: Use code ${promo.discountCode} for ${promo.discountType === 'percentage' ? promo.discountValue + '%' : '$' + promo.discountValue} off!`,
-            url: window.location.origin + '/panel/shop'
+            title: `LogaTech Sale: ${discountText} OFF!`,
+            text: `🔥 EXCLUSIVE: Use code ${promo.discountCode} to get ${discountText} off your next project with LogaTech! 🚀 Limited time offer, check it out here:`,
+            url: window.location.origin + '/promo/' + promo.discountCode
         };
 
         if (navigator.share) {

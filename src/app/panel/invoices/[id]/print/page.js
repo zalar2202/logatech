@@ -213,8 +213,10 @@ export default function InvoicePrintPage() {
                             {invoice.paymentPlan?.isInstallment && invoice.paymentPlan.downPayment > 0 ? (
                                 <>
                                     <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between">
-                                        <span className="text-sm font-bold text-gray-900 dark:text-white">Total Package Value</span>
-                                        <span className="text-lg font-bold text-gray-900 dark:text-white">${invoice.total.toFixed(2)}</span>
+                                        <span className="text-sm font-bold text-gray-900 dark:text-white">
+                                            {invoice.promotion?.discountAmount > 0 ? 'Grand Total (Discounted)' : 'Total Package Value'}
+                                        </span>
+                                        <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400 font-black">${invoice.total.toFixed(2)}</span>
                                     </div>
                                     
                                     {/* Down Payment Row */}
