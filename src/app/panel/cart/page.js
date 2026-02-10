@@ -40,11 +40,79 @@ export default function CartPage() {
     const searchParams = useSearchParams();
     const promoFromUrl = searchParams.get("promo");
 
-    // fetchCart definition is already above
+    const fetchCart = async () => {
+        try {
+            const res = await axios.get("/api/cart");
+            setCart(res.data.data);
+            const currency = res.data.data?.currency || 'USD';
+            setSelectedCurrency(currency);
+            
+            // Get rate for saved currency
+            if (currency !== 'USD') {
+                updateExchangeRate(currency);
+            } else {
+                setExchangeRate(1);
+            }
 
-    // ... (rest of the functions)
+            if (res.data.data?.appliedPromotion) {
+                handleApplyPromoOnMount(res.data.data);
+            }
+        } catch (error) {
+            toast.error("Failed to fetch cart");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // Ensure handleCurrencyChange is used in the JSX below instead of inline function
+    const updateExchangeRate = async (currency) => {
+        if (currency === 'USD') {
+            setExchangeRate(1);
+            return;
+        }
+        try {
+            const response = await fetch(`https://api.exchangerate-api.com/v4/latest/USD`);
+            const data = await response.json();
+            const rate = data.rates[currency];
+            setExchangeRate(rate || 1);
+        } catch (error) {
+            console.error("Failed to fetch rate", error);
+            const fallbacks = { 'EUR': 0.92, 'CAD': 1.39, 'TRY': 33.5, 'USD': 1.0 };
+            setExchangeRate(fallbacks[currency] || 1);
+        }
+    };
+
+    const handleCurrencyChange = async (e) => {
+        const newCurrency = e.target.value;
+        setSelectedCurrency(newCurrency);
+        updateExchangeRate(newCurrency);
+        
+        try {
+            await axios.put('/api/cart', { currency: newCurrency });
+            toast.success(`Currency changed to ${newCurrency}`);
+        } catch (error) {
+            toast.error('Failed to update currency');
+        }
+    };
+
+    const calculateSubtotal = () => {
+        if (!cart || !cart.items) return 0;
+        const subtotalUSD = cart.items.reduce((acc, item) => {
+            const price = Number(item.package?.price) || 0;
+            const quantity = Number(item.quantity) || 1;
+            return acc + (price * quantity);
+        }, 0);
+        
+        return subtotalUSD * exchangeRate;
+    };
+
+    const calculateTotal = () => {
+        const subtotal = calculateSubtotal();
+        let discount = 0;
+        if (appliedPromo) {
+             discount = appliedPromo.discountAmount * exchangeRate;
+        }
+        return Math.max(0, subtotal - discount);
+    };
 
     const fetchClientsList = async () => {
         if (!isAdmin) return;
@@ -319,16 +387,7 @@ export default function CartPage() {
                                 <select 
                                     className="w-full p-2.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-gray-900 text-sm font-semibold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                                     value={selectedCurrency}
-                                    onChange={async (e) => {
-                                        const newCurrency = e.target.value;
-                                        setSelectedCurrency(newCurrency);
-                                        try {
-                                            await axios.put('/api/cart', { currency: newCurrency });
-                                            toast.success(`Currency changed to ${newCurrency}`);
-                                        } catch (error) {
-                                            toast.error('Failed to update currency');
-                                        }
-                                    }}
+                                    onChange={handleCurrencyChange}
                                 >
                                     <option value="USD">🇺🇸 USD - US Dollar ($)</option>
                                     <option value="EUR">🇪🇺 EUR - Euro (€)</option>
