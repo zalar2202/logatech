@@ -85,21 +85,40 @@ export async function POST(request) {
         let appliedPromoCode = null;
         if (cart.appliedPromotion) {
             const promo = cart.appliedPromotion;
+            
+            // Check category applicability
+            let applicableSubtotal = subtotal;
+            let isCategoryApplicable = true;
+            if (promo.applicableCategories && promo.applicableCategories.length > 0) {
+                const applicableItems = cart.items.filter(item => 
+                    promo.applicableCategories.includes(item.package?.category)
+                );
+                
+                if (applicableItems.length > 0) {
+                    applicableSubtotal = applicableItems.reduce((acc, item) => 
+                        acc + (item.package.price * item.quantity), 0
+                    );
+                } else {
+                    isCategoryApplicable = false;
+                }
+            }
+
             // Double check validity
             const now = new Date();
-            const isActive = promo.isActive && 
+            const isValid = promo.isActive && 
                              (!promo.startDate || promo.startDate <= now) && 
                              (!promo.endDate || promo.endDate >= now) &&
                              (promo.usageLimit === null || promo.usedCount < promo.usageLimit) &&
-                             (subtotal >= promo.minPurchase);
+                             (subtotal >= promo.minPurchase) &&
+                             isCategoryApplicable;
 
-            if (isActive) {
+            if (isValid) {
                 if (promo.discountType === 'percentage') {
-                    promotionDiscount = (subtotal * promo.discountValue) / 100;
+                    promotionDiscount = (applicableSubtotal * promo.discountValue) / 100;
                 } else {
                     promotionDiscount = promo.discountValue;
                 }
-                promotionDiscount = Math.min(promotionDiscount, subtotal);
+                promotionDiscount = Math.min(promotionDiscount, applicableSubtotal);
                 appliedPromoCode = promo.discountCode;
 
                 // Increment usage

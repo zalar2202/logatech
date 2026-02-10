@@ -5,7 +5,7 @@ import Promotion from '@/models/Promotion';
 export async function POST(request) {
     try {
         await connectDB();
-        const { code, subtotal } = await request.json();
+        const { code, subtotal, items = [] } = await request.json();
 
         if (!code) {
             return NextResponse.json({ success: false, message: 'Code is required' }, { status: 400 });
@@ -34,7 +34,30 @@ export async function POST(request) {
             return NextResponse.json({ success: false, message: 'This promotion has reached its usage limit' }, { status: 400 });
         }
 
-        // Check minimum purchase
+        // Check category applicability if items are provided
+        let applicableSubtotal = subtotal;
+        if (promo.applicableCategories && promo.applicableCategories.length > 0 && items.length > 0) {
+            const applicableItems = items.filter(item => {
+                const category = item.category || item.package?.category;
+                return promo.applicableCategories.includes(category);
+            });
+
+            if (applicableItems.length === 0) {
+                const categoriesStr = promo.applicableCategories.join(', ');
+                return NextResponse.json({ 
+                    success: false, 
+                    message: `This promotion only applies to: ${categoriesStr}` 
+                }, { status: 400 });
+            }
+
+            applicableSubtotal = applicableItems.reduce((acc, item) => {
+                const price = Number(item.price || item.package?.price) || 0;
+                const quantity = Number(item.quantity) || 1;
+                return acc + (price * quantity);
+            }, 0);
+        }
+
+        // Check minimum purchase (against total subtotal)
         if (subtotal < promo.minPurchase) {
             return NextResponse.json({ 
                 success: false, 
@@ -42,16 +65,16 @@ export async function POST(request) {
             }, { status: 400 });
         }
 
-        // Calculate discount
+        // Calculate discount (on applicable subtotal)
         let discountAmount = 0;
         if (promo.discountType === 'percentage') {
-            discountAmount = (subtotal * promo.discountValue) / 100;
+            discountAmount = (applicableSubtotal * promo.discountValue) / 100;
         } else {
             discountAmount = promo.discountValue;
         }
 
-        // Ensure discount doesn't exceed subtotal
-        discountAmount = Math.min(discountAmount, subtotal);
+        // Ensure discount doesn't exceed applicable subtotal
+        discountAmount = Math.min(discountAmount, applicableSubtotal);
 
         return NextResponse.json({ 
             success: true, 
@@ -60,7 +83,8 @@ export async function POST(request) {
                 code: promo.discountCode,
                 discountType: promo.discountType,
                 discountValue: promo.discountValue,
-                discountAmount: Number(discountAmount.toFixed(2))
+                discountAmount: Number(discountAmount.toFixed(2)),
+                applicableCategories: promo.applicableCategories
             } 
         });
 
