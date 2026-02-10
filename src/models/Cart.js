@@ -31,6 +31,11 @@ const CartSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Promotion",
         },
+        currency: {
+            type: String,
+            enum: ['USD', 'EUR', 'CAD', 'TRY'],
+            default: 'USD',
+        },
     },
     { timestamps: true }
 );

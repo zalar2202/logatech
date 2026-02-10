@@ -36,7 +36,7 @@ export async function PUT(request) {
         const user = await verifyAuth(request);
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const { promotionId, userId } = await request.json();
+        const { promotionId, currency, userId } = await request.json();
         const isAdmin = ["admin", "manager"].includes(user.role);
         const cartUserId = (isAdmin && userId) ? userId : user._id;
 
@@ -45,7 +45,9 @@ export async function PUT(request) {
             return NextResponse.json({ error: "Cart not found" }, { status: 404 });
         }
 
-        cart.appliedPromotion = promotionId || null;
+        if (promotionId !== undefined) cart.appliedPromotion = promotionId || null;
+        if (currency !== undefined) cart.currency = currency;
+        
         await cart.save();
 
         const populatedCart = await cart.populate([

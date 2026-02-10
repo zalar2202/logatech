@@ -19,6 +19,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { formatCurrency } from "@/lib/utils";
 
 export default function CartPage() {
     const router = useRouter();
@@ -30,6 +31,7 @@ export default function CartPage() {
     const [checkoutLoading, setCheckoutLoading] = useState(false);
     const [clients, setClients] = useState([]);
     const [selectedClientId, setSelectedClientId] = useState("");
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     
     const [promoCode, setPromoCode] = useState("");
     const [applyingPromo, setApplyingPromo] = useState(false);
@@ -41,6 +43,7 @@ export default function CartPage() {
         try {
             const res = await axios.get("/api/cart");
             setCart(res.data.data);
+            setSelectedCurrency(res.data.data?.currency || 'USD');
             if (res.data.data?.appliedPromotion) {
                 // If cart has a promotion, validate it to get current discount amount
                 handleApplyPromoOnMount(res.data.data);
@@ -273,7 +276,7 @@ export default function CartPage() {
                                          </p>
                                          <div className="flex items-center justify-between">
                                              <span className="text-xl font-bold text-indigo-600">
-                                                 {item.package?.price ? `$${item.package.price.toLocaleString()}` : item.package?.startingPrice || "$0.00"}
+                                                 {item.package?.price ? formatCurrency(item.package.price, selectedCurrency) : item.package?.startingPrice || formatCurrency(0, selectedCurrency)}
                                              </span>
                                             <button
                                                 onClick={() => removeLineItem(item._id)}
@@ -325,18 +328,48 @@ export default function CartPage() {
                     <div className="lg:col-span-1">
                         <Card className="sticky top-8">
                             <h3 className="text-lg font-bold mb-6">Order Summary</h3>
+                            
+                            {/* Currency Selector */}
+                            <div className="mb-6 p-4 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-800 rounded-xl">
+                                <label className="text-xs font-bold text-indigo-800 dark:text-indigo-400 mb-2 block uppercase tracking-widest">
+                                    Payment Currency
+                                </label>
+                                <select 
+                                    className="w-full p-2.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-gray-900 text-sm font-semibold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                    value={selectedCurrency}
+                                    onChange={async (e) => {
+                                        const newCurrency = e.target.value;
+                                        setSelectedCurrency(newCurrency);
+                                        try {
+                                            await axios.put('/api/cart', { currency: newCurrency });
+                                            toast.success(`Currency changed to ${newCurrency}`);
+                                        } catch (error) {
+                                            toast.error('Failed to update currency');
+                                        }
+                                    }}
+                                >
+                                    <option value="USD">🇺🇸 USD - US Dollar ($)</option>
+                                    <option value="EUR">🇪🇺 EUR - Euro (€)</option>
+                                    <option value="CAD">🇨🇦 CAD - Canadian Dollar (C$)</option>
+                                    <option value="TRY">🇹🇷 TRY - Turkish Lira (₺)</option>
+                                </select>
+                                <p className="text-[10px] text-indigo-600 dark:text-indigo-500 mt-2">
+                                    Select your preferred currency for payment
+                                </p>
+                            </div>
+
                             <div className="space-y-4 mb-6">
                                 <div className="flex justify-between text-[var(--color-text-secondary)]">
                                     <span>Subtotal</span>
                                     <span className="font-semibold text-[var(--color-text-primary)]">
-                                        ${calculateSubtotal().toLocaleString()}
+                                        {formatCurrency(calculateSubtotal(), selectedCurrency)}
                                     </span>
                                 </div>
                                 {appliedPromo && (
                                     <div className="flex justify-between text-emerald-600">
                                         <span>Promotion ({appliedPromo.code})</span>
                                         <span className="font-semibold">
-                                            -${appliedPromo.discountAmount.toLocaleString()}
+                                            -{formatCurrency(appliedPromo.discountAmount, selectedCurrency)}
                                         </span>
                                     </div>
                                 )}
@@ -350,7 +383,7 @@ export default function CartPage() {
                                 <div className="flex justify-between text-xl font-bold">
                                     <span>Total</span>
                                     <span className="text-indigo-600">
-                                        ${calculateTotal().toLocaleString()}
+                                        {formatCurrency(calculateTotal(), selectedCurrency)}
                                     </span>
                                 </div>
                             </div>
