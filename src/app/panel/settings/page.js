@@ -102,6 +102,18 @@ export default function SettingsPage() {
                     phone: user.phone || "",
                     bio: user.bio || "",
                     avatar: null,
+                    company: user.company || "",
+                    website: user.website || "",
+                    taxId: user.taxId || "",
+                    whatsapp: user.whatsapp || "",
+                    preferredCommunication: user.preferredCommunication || "email",
+                    address: {
+                        street: user.address?.street || "",
+                        city: user.address?.city || "",
+                        state: user.address?.state || "",
+                        zip: user.address?.zip || "",
+                        country: user.address?.country || "",
+                    },
                     technicalDetails: {
                         domainName: user.technicalDetails?.domainName || "",
                         serverIP: user.technicalDetails?.serverIP || "",
@@ -162,6 +174,75 @@ export default function SettingsPage() {
                             rows={4}
                             helperText="Maximum 500 characters"
                         />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <InputField
+                                label="Company / Organization"
+                                name="company"
+                                placeholder="LogaTech"
+                            />
+                            <InputField
+                                label="Tax / Business ID"
+                                name="taxId"
+                                placeholder="VAT-123456"
+                            />
+                            <InputField
+                                label="Website"
+                                name="website"
+                                placeholder="https://example.com"
+                            />
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-[var(--color-text-primary)]">Preferred Communication</label>
+                                <select 
+                                    className="w-full p-2.5 rounded-lg border bg-[var(--color-background-elevated)] border-[var(--color-border)] focus:ring-2 focus:ring-indigo-500"
+                                    value={values.preferredCommunication}
+                                    onChange={(e) => setFieldValue("preferredCommunication", e.target.value)}
+                                >
+                                    <option value="email">Email</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="phone">Phone Call</option>
+                                    <option value="slack">Slack</option>
+                                </select>
+                            </div>
+                            <InputField
+                                label="WhatsApp Number"
+                                name="whatsapp"
+                                placeholder="+1 (555) 123-4567"
+                            />
+                        </div>
+
+                        <div className="pt-6 mt-6 border-t border-[var(--color-border)]">
+                            <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Mailing Address</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="md:col-span-2">
+                                    <InputField
+                                        label="Street Address"
+                                        name="address.street"
+                                        placeholder="123 Tech Square"
+                                    />
+                                </div>
+                                <InputField
+                                    label="City"
+                                    name="address.city"
+                                    placeholder="Istanbul"
+                                />
+                                <InputField
+                                    label="State / Province"
+                                    name="address.state"
+                                    placeholder="Marmara"
+                                />
+                                <InputField
+                                    label="ZIP / Postal Code"
+                                    name="address.zip"
+                                    placeholder="34000"
+                                />
+                                <InputField
+                                    label="Country"
+                                    name="address.country"
+                                    placeholder="Turkey"
+                                />
+                            </div>
+                        </div>
 
                         <FileUploadField
                             label="Profile Picture"

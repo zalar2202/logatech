@@ -22,6 +22,18 @@ export const profileUpdateSchema = Yup.object({
         .trim()
         .nullable(),
     avatar: Yup.mixed().nullable(), // File validation handled by FileUploadField
+    company: Yup.string().nullable().trim(),
+    website: Yup.string().url('Invalid URL format').nullable().trim(),
+    taxId: Yup.string().nullable().trim(),
+    whatsapp: Yup.string().matches(phoneRegex, 'Invalid WhatsApp number format').nullable().trim(),
+    preferredCommunication: Yup.string().oneOf(['email', 'whatsapp', 'phone', 'slack']).nullable(),
+    address: Yup.object({
+        street: Yup.string().nullable().trim(),
+        city: Yup.string().nullable().trim(),
+        state: Yup.string().nullable().trim(),
+        zip: Yup.string().nullable().trim(),
+        country: Yup.string().nullable().trim(),
+    }).nullable(),
     technicalDetails: Yup.object({
         domainName: Yup.string().nullable().trim(),
         serverIP: Yup.string().nullable().trim(),

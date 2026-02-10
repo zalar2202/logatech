@@ -141,7 +141,9 @@ export async function POST(request) {
             subtotal: subtotal,
             promotion: {
                 code: appliedPromoCode,
-                discountAmount: Number(promotionDiscount.toFixed(2))
+                discountAmount: Number(promotionDiscount.toFixed(2)),
+                discountType: cart.appliedPromotion?.discountType || 'fixed',
+                discountValue: cart.appliedPromotion?.discountValue || 0
             },
             total: Number(total.toFixed(2)),
             createdBy: user._id

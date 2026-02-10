@@ -87,9 +87,10 @@ export async function PUT(request, { params }) {
             body.taxAmount = taxAmount;
             
             // Handle promotion in total calculation
-            const promoAmount = body.promotion?.discountAmount !== undefined 
-                ? Number(body.promotion.discountAmount) 
-                : (oldInvoice.promotion?.discountAmount || 0);
+            const promo = body.promotion || oldInvoice.promotion || {};
+            const promoAmount = (promo.discountType === 'percentage' && promo.discountValue)
+                ? (subtotal * promo.discountValue) / 100
+                : (promo.discountAmount || 0);
                 
             body.total = Math.max(0, subtotal + taxAmount - promoAmount);
         }
