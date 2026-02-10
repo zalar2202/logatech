@@ -32,8 +32,8 @@ import {
     DollarSign,
 } from "lucide-react";
 import * as Yup from "yup";
-
 import { useSearchParams } from "next/navigation";
+import { formatCurrency } from "@/lib/utils";
 
 const invoiceSchema = Yup.object().shape({
     client: Yup.string().required("Client is required"),
@@ -52,6 +52,7 @@ const invoiceSchema = Yup.object().shape({
         .min(1, "At least one item is required"),
     notes: Yup.string(),
     taxRate: Yup.number().min(0).max(100),
+    currency: Yup.string().oneOf(["USD", "EUR", "CAD", "TRY"]).required("Currency is required"),
     promotion: Yup.object().shape({
         code: Yup.string(),
         discountAmount: Yup.number().min(0),
@@ -341,7 +342,7 @@ function InvoicesPage() {
                                             })()}
                                         </td>
                                         <td className="p-4 font-black text-[var(--color-text-primary)] text-right">
-                                            ${inv.total?.toFixed(2)}
+                                            {formatCurrency(inv.total, inv.currency)}
                                         </td>
                                         <td className="p-4 text-center">
                                             {(() => {
@@ -521,6 +522,7 @@ function InvoicesPage() {
                             discountType: selectedInvoice?.promotion?.discountType || "fixed",
                             discountValue: selectedInvoice?.promotion?.discountValue ?? "",
                         },
+                        currency: selectedInvoice?.currency || "USD",
                     }}
                     validationSchema={invoiceSchema}
                     onSubmit={handleSubmit}
@@ -530,7 +532,7 @@ function InvoicesPage() {
                         const totals = calculateTotals(values);
                         return (
                             <Form className="space-y-6">
-                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
                                     <SelectField name="client" label="Client">
                                         <option value="">-- Select Client --</option>
                                         {clients.map((c) => (
@@ -557,6 +559,12 @@ function InvoicesPage() {
                                     </SelectField>
                                     <InputField type="date" name="issueDate" label="Issue Date" />
                                     <InputField type="date" name="dueDate" label="Due Date" />
+                                    <SelectField name="currency" label="Currency">
+                                        <option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="CAD">CAD (C$)</option>
+                                        <option value="TRY">TRY (₺)</option>
+                                    </SelectField>
                                 </div>
 
                                 {/* Items Table */}
@@ -594,7 +602,7 @@ function InvoicesPage() {
                                                                 name={`items.${index}.unitPrice`}
                                                                 min="0"
                                                                 step="0.01"
-                                                                prefix="$"
+                                                                placeholder="0.00"
                                                             />
                                                         </div>
                                                         <div className="col-span-1 pt-2 flex justify-center">
@@ -633,7 +641,13 @@ function InvoicesPage() {
                                         <div className="flex justify-between text-sm">
                                             <span>Subtotal:</span>
                                             <span className="font-semibold">
-                                                ${totals.subtotal.toFixed(2)}
+                                                {formatCurrency(totals.subtotal, values.currency)}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span>Tax Amount:</span>
+                                            <span className="font-semibold">
+                                                {formatCurrency(totals.taxAmount, values.currency)}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm">
@@ -667,7 +681,7 @@ function InvoicesPage() {
                                                                     setFieldValue("promotion.discountAmount", discountAmount);
                                                                     setFieldValue("promotion.discountType", discountType);
                                                                     setFieldValue("promotion.discountValue", discountValue);
-                                                                    toast.success(`Promo applied: ${discountType === 'percentage' ? discountValue + '%' : '$' + discountValue} off`);
+                                                                    toast.success(`Promo applied: ${discountType === 'percentage' ? discountValue + '%' : formatCurrency(discountValue, values.currency)} off`);
                                                                 }
                                                             } catch (err) {
                                                                 toast.error(err.response?.data?.message || "Invalid code");
@@ -684,11 +698,11 @@ function InvoicesPage() {
                                             <span>Total:</span>
                                             <div className="flex flex-col items-end">
                                                 <span className="text-indigo-600">
-                                                    ${totals.total.toFixed(2)}
+                                                    {formatCurrency(totals.total, values.currency)}
                                                 </span>
                                                 {totals.discount > 0 && (
                                                     <span className="text-[10px] text-emerald-600">
-                                                        (Saved ${totals.discount.toFixed(2)})
+                                                        (Saved {formatCurrency(totals.discount, values.currency)})
                                                     </span>
                                                 )}
                                             </div>
@@ -840,8 +854,8 @@ function InvoicesPage() {
                                         <tr key={idx}>
                                             <td className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-medium">{item.description}</td>
                                             <td className="px-4 py-4 text-sm text-[var(--color-text-secondary)] text-center">{item.quantity}</td>
-                                            <td className="px-4 py-4 text-sm text-[var(--color-text-secondary)] text-right">${item.unitPrice?.toFixed(2)}</td>
-                                            <td className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-bold text-right">${(item.quantity * item.unitPrice).toFixed(2)}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-secondary)] text-right">{formatCurrency(item.unitPrice, selectedInvoice.currency)}</td>
+                                            <td className="px-4 py-4 text-sm text-[var(--color-text-primary)] font-bold text-right">{formatCurrency(item.quantity * item.unitPrice, selectedInvoice.currency)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -852,21 +866,21 @@ function InvoicesPage() {
                             <div className="w-64 space-y-3">
                                 <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
                                     <span>Subtotal</span>
-                                    <span>${selectedInvoice.subtotal?.toFixed(2) || (selectedInvoice.total / (1 + (selectedInvoice.taxRate || 0)/100)).toFixed(2)}</span>
+                                    <span>{formatCurrency(selectedInvoice.subtotal || (selectedInvoice.total / (1 + (selectedInvoice.taxRate || 0)/100)), selectedInvoice.currency)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
                                     <span>Tax ({selectedInvoice.taxRate || 0}%)</span>
-                                    <span>${(selectedInvoice.taxAmount || 0).toFixed(2)}</span>
+                                    <span>{formatCurrency(selectedInvoice.taxAmount || 0, selectedInvoice.currency)}</span>
                                 </div>
                                 {selectedInvoice.promotion?.discountAmount > 0 && (
                                     <div className="flex justify-between text-sm text-emerald-600 font-bold">
                                         <span>Promotion ({selectedInvoice.promotion.code})</span>
-                                        <span>-${selectedInvoice.promotion.discountAmount.toFixed(2)}</span>
+                                        <span>-{formatCurrency(selectedInvoice.promotion.discountAmount, selectedInvoice.currency)}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between text-xl font-bold text-[var(--color-text-primary)] border-t pt-3 dark:border-gray-700">
                                     <span>Total</span>
-                                    <span className="text-indigo-600">${selectedInvoice.total?.toFixed(2)}</span>
+                                    <span className="text-indigo-600">{formatCurrency(selectedInvoice.total, selectedInvoice.currency)}</span>
                                 </div>
                             </div>
                         </div>
@@ -897,7 +911,7 @@ function InvoicesPage() {
                                             ? 'text-emerald-600 dark:text-emerald-400'
                                             : 'text-amber-600 dark:text-amber-400'
                                         }`}>
-                                            ${selectedInvoice.paymentPlan.downPayment?.toFixed(2)}
+                                            {formatCurrency(selectedInvoice.paymentPlan.downPayment, selectedInvoice.currency)}
                                         </span>
                                     </div>
 
@@ -930,7 +944,7 @@ function InvoicesPage() {
                                                 ? 'text-emerald-600 dark:text-emerald-400'
                                                 : 'text-indigo-900 dark:text-indigo-100'
                                         }`}>
-                                            ${(selectedInvoice.total - selectedInvoice.paymentPlan.downPayment).toFixed(2)}
+                                            {formatCurrency(selectedInvoice.total - selectedInvoice.paymentPlan.downPayment, selectedInvoice.currency)}
                                         </span>
                                     </div>
                                     
@@ -939,7 +953,7 @@ function InvoicesPage() {
                                             <div>
                                                 <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-bold">Instalments</p>
                                                 <p className="text-sm font-bold text-indigo-900 dark:text-indigo-100">
-                                                    {selectedInvoice.paymentPlan.installmentsCount} x ${selectedInvoice.paymentPlan.installmentAmount?.toFixed(2)}
+                                                    {selectedInvoice.paymentPlan.installmentsCount} x {formatCurrency(selectedInvoice.paymentPlan.installmentAmount, selectedInvoice.currency)}
                                                 </p>
                                             </div>
                                             <div>

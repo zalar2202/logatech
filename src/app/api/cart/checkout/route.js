@@ -158,6 +158,7 @@ export async function POST(request) {
                 discountValue: cart.appliedPromotion?.discountValue || 0
             },
             total: Number(total.toFixed(2)),
+            currency: client.currency || 'USD',
             createdBy: user._id
         };
 
