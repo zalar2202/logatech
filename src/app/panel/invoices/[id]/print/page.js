@@ -332,9 +332,9 @@ export default function InvoicePrintPage() {
                             <div className="w-48 h-px bg-gray-300 dark:bg-gray-700 mb-2" />
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Authorized Signature</p>
                         </div>
-                        <div className="text-right">
-                            <p className="text-sm font-bold text-gray-900 dark:text-white">LogaTech LLC</p>
-                            <p className="text-xs text-gray-400 mt-1">www.logatech.com</p>
+                        <div className="text-center pt-8 border-t border-gray-100 dark:border-gray-800">
+                            <p className="text-gray-400 text-xs mb-1">Thank you for your business!</p>
+                            <p className="text-gray-300 text-[10px]">www.logatech.net</p>
                         </div>
                     </div>
 

@@ -5,6 +5,8 @@ The LogaTech Promotion System allows administrators to create and manage discoun
 
 ## Key Features
 - **Discount Types:** Supports "Percentage" and "Fixed Amount".
+- **Category Restrictions:** Limit promotions to specific service categories (e.g., Design only, excluding Hosting).
+- **Sharing:** Easily share promotion details and codes via Web Share API or Clipboard.
 - **Usage Limits:** Limit the total number of times a promotion can be used.
 - **Minimum Purchase:** Set a minimum subtotal requirement for a promotion to be valid.
 - **Date Range:** Define start and end dates for promotion validity.
@@ -23,6 +25,7 @@ The LogaTech Promotion System allows administrators to create and manage discoun
 - `startDate`: Optional start date.
 - `endDate`: Optional expiration date.
 - `isActive`: Boolean toggle.
+- `applicableCategories`: Array of strings representing service categories (e.g. `['design', 'development']`). If empty, the promotion applies to all categories.
 
 ### Cart Model (`src/models/Cart.js`)
 - `appliedPromotion`: Reference to the currently applied `Promotion`.
@@ -36,8 +39,9 @@ The LogaTech Promotion System allows administrators to create and manage discoun
 
 ### Validation
 `POST /api/promotions/validate`
-- **Body:** `{ code: string, subtotal: number }`
-- **Returns:** Calculated discount amount and promotion details if valid.
+- **Body:** `{ code: string, subtotal: number, items: Array }`
+    - `items`: Required for category-specific discounts. Should contain objects with `price`, `quantity`, and `category` (or `package.category`).
+- **Returns:** Calculated discount amount and promotion details if valid. Note: Discounts are calculated only on items matching the `applicableCategories`.
 
 ### Management
 `GET /api/promotions` - List promotions.
