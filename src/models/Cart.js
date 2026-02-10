@@ -27,6 +27,10 @@ const CartSchema = new mongoose.Schema(
             unique: true,
         },
         items: [CartItemSchema],
+        appliedPromotion: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Promotion",
+        },
     },
     { timestamps: true }
 );

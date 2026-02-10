@@ -16,12 +16,44 @@ export async function GET(request) {
 
         const cartUserId = (isAdmin && targetUserId) ? targetUserId : user._id;
 
-        let cart = await Cart.findOne({ user: cartUserId }).populate("items.package");
+        let cart = await Cart.findOne({ user: cartUserId })
+            .populate("items.package")
+            .populate("appliedPromotion");
+            
         if (!cart) {
             cart = await Cart.create({ user: cartUserId, items: [] });
         }
 
         return NextResponse.json({ success: true, data: cart });
+    } catch (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function PUT(request) {
+    try {
+        await dbConnect();
+        const user = await verifyAuth(request);
+        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+        const { promotionId, userId } = await request.json();
+        const isAdmin = ["admin", "manager"].includes(user.role);
+        const cartUserId = (isAdmin && userId) ? userId : user._id;
+
+        const cart = await Cart.findOne({ user: cartUserId });
+        if (!cart) {
+            return NextResponse.json({ error: "Cart not found" }, { status: 404 });
+        }
+
+        cart.appliedPromotion = promotionId || null;
+        await cart.save();
+
+        const populatedCart = await cart.populate([
+            { path: "items.package" },
+            { path: "appliedPromotion" }
+        ]);
+
+        return NextResponse.json({ success: true, data: populatedCart });
     } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

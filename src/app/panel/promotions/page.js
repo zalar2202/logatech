@@ -18,8 +18,11 @@ import { useRouter } from "next/navigation";
 const PromotionSchema = Yup.object().shape({
     title: Yup.string().required("Required"),
     description: Yup.string().required("Required"),
-    discountCode: Yup.string(),
-    discountAmount: Yup.string(),
+    discountCode: Yup.string().required("Required"),
+    discountType: Yup.string().oneOf(['percentage', 'fixed']).required("Required"),
+    discountValue: Yup.number().min(0, "Must be positive").required("Required"),
+    minPurchase: Yup.number().min(0, "Must be positive"),
+    usageLimit: Yup.number().nullable().min(0, "Must be positive"),
     isActive: Yup.boolean(),
 });
 
@@ -54,11 +57,15 @@ export default function PromotionsPage() {
 
     const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         try {
+            const payload = {
+                ...values,
+                usageLimit: values.usageLimit === "" ? null : values.usageLimit
+            };
             if (editingPromotion) {
-                await axios.put(`/api/promotions/${editingPromotion._id}`, values);
+                await axios.put(`/api/promotions/${editingPromotion._id}`, payload);
                 toast.success("Promotion updated");
             } else {
-                await axios.post("/api/promotions", values);
+                await axios.post("/api/promotions", payload);
                 toast.success("Promotion created");
             }
             fetchPromotions();
@@ -123,14 +130,24 @@ export default function PromotionsPage() {
                                 {promo.description}
                             </p>
 
-                            <div className="flex items-center gap-4 text-sm text-[var(--color-text-tertiary)] mb-6">
+                            <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm text-[var(--color-text-tertiary)] mb-6">
                                 <div className="flex items-center gap-1.5">
                                     <Percent size={14} className="text-[var(--color-primary)]" />
-                                    <span>{promo.discountAmount || "Varies"}</span>
+                                    <span className="font-semibold text-[var(--color-text-primary)]">
+                                        {promo.discountType === 'percentage' ? `${promo.discountValue}%` : `$${promo.discountValue}`} Off
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <Calendar size={14} />
                                     <span>Until {promo.endDate ? new Date(promo.endDate).toLocaleDateString() : 'Endless'}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Tag size={14} />
+                                    <span>Min: ${promo.minPurchase || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Save size={14} />
+                                    <span>Used: {promo.usedCount} / {promo.usageLimit || '∞'}</span>
                                 </div>
                             </div>
 
@@ -153,11 +170,18 @@ export default function PromotionsPage() {
                 title={editingPromotion ? "Edit Promotion" : "Create Promotion"}
             >
                 <Formik
-                    initialValues={editingPromotion || {
+                    initialValues={editingPromotion ? {
+                        ...editingPromotion,
+                        startDate: editingPromotion.startDate ? new Date(editingPromotion.startDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                        endDate: editingPromotion.endDate ? new Date(editingPromotion.endDate).toISOString().split('T')[0] : "",
+                    } : {
                         title: "",
                         description: "",
                         discountCode: "",
-                        discountAmount: "",
+                        discountType: "fixed",
+                        discountValue: 0,
+                        minPurchase: 0,
+                        usageLimit: "",
                         startDate: new Date().toISOString().split('T')[0],
                         endDate: "",
                         isActive: true
@@ -167,7 +191,7 @@ export default function PromotionsPage() {
                     enableReinitialize
                 >
                     {({ isSubmitting, values, setFieldValue }) => (
-                        <Form className="space-y-4 py-4">
+                        <Form className="space-y-4 py-4 max-h-[70vh] overflow-y-auto px-1">
                             <InputField name="title" label="Promotion Title" placeholder="e.g. New Year Special" required />
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">Description</label>
@@ -179,9 +203,26 @@ export default function PromotionsPage() {
                                 />
                             </div>
 
+                            <InputField name="discountCode" label="Discount Code" placeholder="NEW2026" required />
+
                             <div className="grid grid-cols-2 gap-4">
-                                <InputField name="discountCode" label="Discount Code" placeholder="NEW2026" />
-                                <InputField name="discountAmount" label="Discount Amount" placeholder="20% OFF" />
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Discount Type</label>
+                                    <select
+                                        className="w-full p-2.5 rounded-lg border bg-[var(--color-background-elevated)] border-[var(--color-border)]"
+                                        value={values.discountType}
+                                        onChange={(e) => setFieldValue("discountType", e.target.value)}
+                                    >
+                                        <option value="fixed">Fixed Amount ($)</option>
+                                        <option value="percentage">Percentage (%)</option>
+                                    </select>
+                                </div>
+                                <InputField name="discountValue" label="Discount Value" type="number" required />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <InputField name="minPurchase" label="Min Purchase ($)" type="number" />
+                                <InputField name="usageLimit" label="Usage Limit (empty for ∞)" type="number" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -199,7 +240,7 @@ export default function PromotionsPage() {
                                 <label htmlFor="isActivePromo" className="text-sm font-medium">Active (visible to users)</label>
                             </div>
 
-                            <div className="flex gap-2 justify-end pt-4">
+                            <div className="flex gap-2 justify-end pt-4 sticky bottom-0 bg-[var(--color-background-elevated)] pb-2">
                                 <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancel</Button>
                                 <Button type="submit" loading={isSubmitting} icon={<Save size={18} />}>
                                     {editingPromotion ? "Update Promotion" : "Create Promotion"}

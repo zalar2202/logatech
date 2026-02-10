@@ -14,12 +14,34 @@ const PromotionSchema = new mongoose.Schema(
         },
         discountCode: {
             type: String,
+            required: [true, 'Discount code is required'],
+            unique: true,
             trim: true,
             uppercase: true,
         },
-        discountAmount: {
+        discountType: {
             type: String,
-            trim: true,
+            enum: ['percentage', 'fixed'],
+            default: 'fixed',
+            required: true,
+        },
+        discountValue: {
+            type: Number,
+            required: true,
+            min: 0,
+        },
+        minPurchase: {
+            type: Number,
+            default: 0,
+            min: 0,
+        },
+        usageLimit: {
+            type: Number,
+            default: null, // null means unlimited
+        },
+        usedCount: {
+            type: Number,
+            default: 0,
         },
         startDate: {
             type: Date,
@@ -27,6 +49,7 @@ const PromotionSchema = new mongoose.Schema(
         },
         endDate: {
             type: Date,
+            default: null,
         },
         isActive: {
             type: Boolean,

@@ -798,8 +798,14 @@ function InvoicesPage() {
                                 </div>
                                 <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
                                     <span>Tax ({selectedInvoice.taxRate || 0}%)</span>
-                                    <span>${((selectedInvoice.total || 0) - (selectedInvoice.subtotal || 0)).toFixed(2)}</span>
+                                    <span>${((selectedInvoice.total || 0) - (selectedInvoice.subtotal || 0) + (selectedInvoice.promotion?.discountAmount || 0)).toFixed(2)}</span>
                                 </div>
+                                {selectedInvoice.promotion?.discountAmount > 0 && (
+                                    <div className="flex justify-between text-sm text-emerald-600 font-bold">
+                                        <span>Promotion ({selectedInvoice.promotion.code})</span>
+                                        <span>-${selectedInvoice.promotion.discountAmount.toFixed(2)}</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between text-xl font-bold text-[var(--color-text-primary)] border-t pt-3 dark:border-gray-700">
                                     <span>Total</span>
                                     <span className="text-indigo-600">${selectedInvoice.total?.toFixed(2)}</span>

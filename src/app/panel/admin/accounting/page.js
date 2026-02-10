@@ -5,7 +5,7 @@ import AccountingStats from '@/components/accounting/AccountingStats';
 import TransactionsTable from '@/components/accounting/TransactionsTable';
 import ExpensesTable from '@/components/accounting/ExpensesTable';
 import AddIcon from '@mui/icons-material/Add';
-import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, DollarSign, Wallet, Tag } from "lucide-react";
 import Link from "next/link";
 import { Modal } from "@/components/common/Modal";
 import { Button } from "@/components/common/Button";
@@ -52,6 +52,10 @@ export default function AdminAccountingPage() {
             .filter(exp => exp.status === 'paid')
             .reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
+        const totalPromotions = invoices
+            .filter(inv => inv.status === 'paid')
+            .reduce((sum, inv) => sum + (inv.promotion?.discountAmount || 0), 0);
+
         const netProfit = revenue - totalExpenses;
         const profitMargin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
         
@@ -61,6 +65,7 @@ export default function AdminAccountingPage() {
         return {
             totalRevenue: revenue,
             totalExpenses,
+            totalPromotions,
             netProfit,
             outstanding,
             paidCount,
@@ -193,6 +198,14 @@ export default function AdminAccountingPage() {
             trend: metrics.netProfit >= 0 ? "up" : "down", 
             description: "Revenue - Expenses",
             icon: <Wallet className="w-5 h-5 text-indigo-500" />
+        },
+        { 
+            title: "Promotion Savings", 
+            value: `$${metrics.totalPromotions.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 
+            percentage: "User Benefits", 
+            trend: "neutral", 
+            description: "Total discounts given",
+            icon: <Tag className="w-5 h-5 text-purple-500" />
         },
         { 
             title: "Outstanding", 

@@ -201,6 +201,13 @@ export default function InvoicePrintPage() {
                                 <span>Tax ({invoice.taxRate}%)</span>
                                 <span className="font-semibold text-gray-900 dark:text-white">${invoice.taxAmount.toFixed(2)}</span>
                             </div>
+
+                            {invoice.promotion?.discountAmount > 0 && (
+                                <div className="flex justify-between text-sm text-emerald-600 font-bold">
+                                    <span>Promotion ({invoice.promotion.code})</span>
+                                    <span>-${invoice.promotion.discountAmount.toFixed(2)}</span>
+                                </div>
+                            )}
                             
                             {/* Installment Breakdown */}
                             {invoice.paymentPlan?.isInstallment && invoice.paymentPlan.downPayment > 0 ? (

@@ -21,18 +21,27 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function CartPage() {
     const router = useRouter();
+    const { user: currentUser } = useAuth();
+    const isAdmin = currentUser && ['admin', 'manager'].includes(currentUser.role);
+    
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [checkoutLoading, setCheckoutLoading] = useState(false);
     const [clients, setClients] = useState([]);
     const [selectedClientId, setSelectedClientId] = useState("");
-    const { user: currentUser } = useAuth();
-    const isAdmin = currentUser && ['admin', 'manager'].includes(currentUser.role);
+    
+    const [promoCode, setPromoCode] = useState("");
+    const [applyingPromo, setApplyingPromo] = useState(false);
+    const [appliedPromo, setAppliedPromo] = useState(null);
 
     const fetchCart = async () => {
         try {
             const res = await axios.get("/api/cart");
             setCart(res.data.data);
+            if (res.data.data?.appliedPromotion) {
+                // If cart has a promotion, validate it to get current discount amount
+                handleApplyPromoOnMount(res.data.data);
+            }
         } catch (error) {
             toast.error("Failed to fetch cart");
         } finally {
@@ -54,6 +63,29 @@ export default function CartPage() {
         fetchCart();
         fetchClientsList();
     }, [isAdmin]);
+
+    const handleApplyPromoOnMount = async (cartData) => {
+        try {
+            const itemsToSubtotal = cartData.items || [];
+            const subtotal = itemsToSubtotal.reduce((acc, item) => {
+                const price = Number(item.package?.price) || 0;
+                const quantity = Number(item.quantity) || 1;
+                return acc + (price * quantity);
+            }, 0);
+
+            const res = await axios.post("/api/promotions/validate", {
+                code: cartData.appliedPromotion.discountCode,
+                subtotal: subtotal
+            });
+
+            if (res.data.success) {
+                setAppliedPromo(res.data.data);
+                setPromoCode(cartData.appliedPromotion.discountCode);
+            }
+        } catch (error) {
+            console.error("Failed to auto-apply promotion", error);
+        }
+    };
 
     const removeLineItem = async (itemId) => {
         try {
@@ -86,13 +118,56 @@ export default function CartPage() {
         }
     };
 
-    const calculateTotal = () => {
+    const handleApplyPromotion = async (e) => {
+        if (e) e.preventDefault();
+        if (!promoCode) return;
+
+        setApplyingPromo(true);
+        try {
+            const subtotal = calculateSubtotal();
+            const res = await axios.post("/api/promotions/validate", {
+                code: promoCode,
+                subtotal: subtotal
+            });
+
+            if (res.data.success) {
+                setAppliedPromo(res.data.data);
+                // Update cart in DB
+                await axios.put("/api/cart", { promotionId: res.data.data.id });
+                toast.success("Promotion applied!");
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Invalid promotion code");
+            setAppliedPromo(null);
+        } finally {
+            setApplyingPromo(false);
+        }
+    };
+
+    const removePromotion = async () => {
+        try {
+            await axios.put("/api/cart", { promotionId: null });
+            setAppliedPromo(null);
+            setPromoCode("");
+            toast.success("Promotion removed");
+        } catch (error) {
+            toast.error("Failed to remove promotion");
+        }
+    };
+
+    const calculateSubtotal = () => {
         if (!cart || !cart.items) return 0;
         return cart.items.reduce((acc, item) => {
             const price = Number(item.package?.price) || 0;
             const quantity = Number(item.quantity) || 1;
             return acc + (price * quantity);
         }, 0);
+    };
+
+    const calculateTotal = () => {
+        const subtotal = calculateSubtotal();
+        const discount = appliedPromo ? appliedPromo.discountAmount : 0;
+        return Math.max(0, subtotal - discount);
     };
 
     if (loading) {
@@ -174,6 +249,38 @@ export default function CartPage() {
                                 </div>
                             </Card>
                         ))}
+
+                        {/* Promotion Input */}
+                        <Card className="p-6">
+                            <h4 className="text-sm font-bold mb-4 flex items-center gap-2">
+                                <Tag className="w-4 h-4 text-indigo-600" />
+                                Have a promotion code?
+                            </h4>
+                            <form onSubmit={handleApplyPromotion} className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Enter code"
+                                    className="flex-1 px-4 py-2 rounded-lg border bg-[var(--color-background-elevated)] border-[var(--color-border)] focus:ring-2 focus:ring-indigo-500 outline-none uppercase font-mono"
+                                    value={promoCode}
+                                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                                    disabled={!!appliedPromo}
+                                />
+                                {appliedPromo ? (
+                                    <Button variant="danger" type="button" onClick={removePromotion}>
+                                        Remove
+                                    </Button>
+                                ) : (
+                                    <Button type="submit" loading={applyingPromo}>
+                                        Apply
+                                    </Button>
+                                )}
+                            </form>
+                            {appliedPromo && (
+                                <p className="mt-2 text-xs text-emerald-600 font-medium">
+                                    Promotional code "{appliedPromo.code}" applied!
+                                </p>
+                            )}
+                        </Card>
                     </div>
 
                     {/* Summary */}
@@ -184,9 +291,17 @@ export default function CartPage() {
                                 <div className="flex justify-between text-[var(--color-text-secondary)]">
                                     <span>Subtotal</span>
                                     <span className="font-semibold text-[var(--color-text-primary)]">
-                                        ${calculateTotal().toLocaleString()}
+                                        ${calculateSubtotal().toLocaleString()}
                                     </span>
                                 </div>
+                                {appliedPromo && (
+                                    <div className="flex justify-between text-emerald-600">
+                                        <span>Promotion ({appliedPromo.code})</span>
+                                        <span className="font-semibold">
+                                            -${appliedPromo.discountAmount.toLocaleString()}
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between text-[var(--color-text-secondary)]">
                                     <span>Tax</span>
                                     <span className="font-semibold text-[var(--color-text-primary)]">
