@@ -47,7 +47,9 @@ const InvoiceSchema = new mongoose.Schema(
         
         promotion: {
             code: { type: String, uppercase: true },
-            discountAmount: { type: Number, default: 0 }
+            discountAmount: { type: Number, default: 0 },
+            discountType: { type: String, enum: ['percentage', 'fixed'], default: 'fixed' },
+            discountValue: { type: Number, default: 0 }
         },
         
         total: { type: Number, required: true, default: 0 },

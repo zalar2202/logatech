@@ -79,7 +79,22 @@ export async function PUT(request) {
             updateData.name = formData.get('name');
             updateData.phone = formData.get('phone');
             updateData.bio = formData.get('bio');
+            updateData.company = formData.get('company');
+            updateData.website = formData.get('website');
+            updateData.taxId = formData.get('taxId');
+            updateData.whatsapp = formData.get('whatsapp');
+            updateData.preferredCommunication = formData.get('preferredCommunication');
             avatarFile = formData.get('avatar');
+
+            // Handle address if sent as JSON string
+            const address = formData.get('address');
+            if (address) {
+                try {
+                    updateData.address = JSON.parse(address);
+                } catch (e) {
+                    console.error('Error parsing address from FormData:', e);
+                }
+            }
 
             // Handle technicalDetails if sent as JSON string in FormData
             const techDetails = formData.get('technicalDetails');
@@ -140,6 +155,17 @@ export async function PUT(request) {
         if (updateData.name) user.name = updateData.name.trim();
         if (updateData.phone !== undefined) user.phone = updateData.phone ? updateData.phone.trim() : '';
         if (updateData.bio !== undefined) user.bio = updateData.bio ? updateData.bio.trim() : '';
+        if (updateData.company !== undefined) user.company = updateData.company ? updateData.company.trim() : '';
+        if (updateData.website !== undefined) user.website = updateData.website ? updateData.website.trim() : '';
+        if (updateData.taxId !== undefined) user.taxId = updateData.taxId ? updateData.taxId.trim() : '';
+        if (updateData.whatsapp !== undefined) user.whatsapp = updateData.whatsapp ? updateData.whatsapp.trim() : '';
+        if (updateData.preferredCommunication !== undefined) user.preferredCommunication = updateData.preferredCommunication;
+        if (updateData.address !== undefined) {
+            user.address = {
+                ...user.address,
+                ...updateData.address
+            };
+        }
         if (updateData.avatar) user.avatar = updateData.avatar;
         if (updateData.technicalDetails !== undefined) {
             user.technicalDetails = {
@@ -165,6 +191,12 @@ export async function PUT(request) {
                     phone: user.phone,
                     avatar: user.avatar,
                     bio: user.bio,
+                    company: user.company,
+                    website: user.website,
+                    taxId: user.taxId,
+                    whatsapp: user.whatsapp,
+                    preferredCommunication: user.preferredCommunication,
+                    address: user.address,
                     technicalDetails: user.technicalDetails,
                     lastLogin: user.lastLogin,
                     createdAt: user.createdAt,

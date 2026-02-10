@@ -41,6 +41,16 @@ export const updateProfile = async (profileData) => {
             formData.append("bio", profileData.bio || "");
             formData.append("avatar", profileData.avatar);
             
+            if (profileData.company) formData.append("company", profileData.company);
+            if (profileData.website) formData.append("website", profileData.website);
+            if (profileData.taxId) formData.append("taxId", profileData.taxId);
+            if (profileData.whatsapp) formData.append("whatsapp", profileData.whatsapp);
+            if (profileData.preferredCommunication) formData.append("preferredCommunication", profileData.preferredCommunication);
+            
+            if (profileData.address) {
+                formData.append("address", JSON.stringify(profileData.address));
+            }
+
             if (profileData.technicalDetails) {
                 formData.append("technicalDetails", JSON.stringify(profileData.technicalDetails));
             }

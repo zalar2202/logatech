@@ -51,10 +51,15 @@ export async function POST(request) {
             }
 
             applicableSubtotal = applicableItems.reduce((acc, item) => {
-                const price = Number(item.price || item.package?.price) || 0;
+                const price = Number(item.price || item.unitPrice || item.package?.price) || 0;
                 const quantity = Number(item.quantity) || 1;
                 return acc + (price * quantity);
             }, 0);
+        } else if (promo.applicableCategories && promo.applicableCategories.length > 0 && items.length > 0) {
+            // If items are provided but don't have categories, and promotion HAS categories,
+            // we should probably warn or assume they don't apply.
+            // But for manual items, let's assume they don't apply if they don't have a category field.
+            applicableSubtotal = 0; 
         }
 
         // Check minimum purchase (against total subtotal)

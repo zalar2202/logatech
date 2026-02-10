@@ -58,6 +58,38 @@ const UserSchema = new mongoose.Schema(
             maxlength: [500, 'Bio cannot exceed 500 characters'],
             default: '',
         },
+        company: {
+            type: String,
+            trim: true,
+            default: '',
+        },
+        website: {
+            type: String,
+            trim: true,
+            default: '',
+        },
+        taxId: {
+            type: String,
+            trim: true,
+            default: '',
+        },
+        whatsapp: {
+            type: String,
+            trim: true,
+            default: '',
+        },
+        preferredCommunication: {
+            type: String,
+            enum: ['email', 'whatsapp', 'phone', 'slack'],
+            default: 'email',
+        },
+        address: {
+            street: { type: String, default: '' },
+            city: { type: String, default: '' },
+            state: { type: String, default: '' },
+            zip: { type: String, default: '' },
+            country: { type: String, default: '' },
+        },
         technicalDetails: {
             domainName: {
                 type: String,

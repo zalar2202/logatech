@@ -93,7 +93,10 @@ export async function POST(request) {
 
         const taxRate = Number(body.taxRate) || 0;
         const taxAmount = subtotal * (taxRate / 100);
-        const promoDiscount = body.promotion?.discountAmount || 0;
+        const promo = body.promotion || {};
+        const promoDiscount = (promo.discountType === 'percentage' && promo.discountValue)
+            ? (subtotal * promo.discountValue) / 100
+            : (promo.discountAmount || 0);
         const total = Math.max(0, subtotal + taxAmount - promoDiscount);
 
         // 4. Generate Installments if applicable

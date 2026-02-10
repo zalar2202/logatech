@@ -54,7 +54,9 @@ const invoiceSchema = Yup.object().shape({
     taxRate: Yup.number().min(0).max(100),
     promotion: Yup.object().shape({
         code: Yup.string(),
-        discountAmount: Yup.number().min(0)
+        discountAmount: Yup.number().min(0),
+        discountType: Yup.string().oneOf(['percentage', 'fixed']),
+        discountValue: Yup.number()
     })
 });
 
@@ -207,7 +209,14 @@ function InvoicesPage() {
             0
         );
         const tax = subtotal * ((Number(values.taxRate) || 0) / 100);
-        const discount = Number(values.promotion?.discountAmount) || 0;
+        
+        let discount = Number(values.promotion?.discountAmount) || 0;
+        
+        // If we have type/value info, recalculate the amount (dynamic percentage)
+        if (values.promotion?.discountType === 'percentage' && values.promotion?.discountValue) {
+            discount = (subtotal * values.promotion.discountValue) / 100;
+        }
+
         return { subtotal, tax, discount, total: Math.max(0, subtotal + tax - discount) };
     };
 
@@ -509,6 +518,8 @@ function InvoicesPage() {
                         promotion: {
                             code: selectedInvoice?.promotion?.code || "",
                             discountAmount: selectedInvoice?.promotion?.discountAmount || 0,
+                            discountType: selectedInvoice?.promotion?.discountType || "fixed",
+                            discountValue: selectedInvoice?.promotion?.discountValue || 0,
                         },
                     }}
                     validationSchema={invoiceSchema}
@@ -633,8 +644,39 @@ function InvoicesPage() {
                                         </div>
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="flex items-center gap-2">Promotion (Code/Amt):</span>
-                                            <div className="flex gap-2 w-48">
-                                                <InputField name="promotion.code" placeholder="Code" />
+                                            <div className="flex flex-col gap-2 w-48">
+                                                <div className="flex gap-1">
+                                                    <div className="flex-1">
+                                                        <InputField name="promotion.code" placeholder="Code" />
+                                                    </div>
+                                                    <Button 
+                                                        type="button" 
+                                                        variant="secondary" 
+                                                        size="sm" 
+                                                        className="px-2"
+                                                        onClick={async () => {
+                                                            if (!values.promotion.code) return;
+                                                            try {
+                                                                const res = await axios.post("/api/promotions/validate", {
+                                                                    code: values.promotion.code,
+                                                                    subtotal: totals.subtotal,
+                                                                    items: values.items
+                                                                });
+                                                                if (res.data.success) {
+                                                                    const { discountAmount, discountType, discountValue } = res.data.data;
+                                                                    setFieldValue("promotion.discountAmount", discountAmount);
+                                                                    setFieldValue("promotion.discountType", discountType);
+                                                                    setFieldValue("promotion.discountValue", discountValue);
+                                                                    toast.success(`Promo applied: ${discountType === 'percentage' ? discountValue + '%' : '$' + discountValue} off`);
+                                                                }
+                                                            } catch (err) {
+                                                                toast.error(err.response?.data?.message || "Invalid code");
+                                                            }
+                                                        }}
+                                                    >
+                                                        Apply
+                                                    </Button>
+                                                </div>
                                                 <InputField type="number" name="promotion.discountAmount" placeholder="Amt" min="0" step="0.01" />
                                             </div>
                                         </div>
