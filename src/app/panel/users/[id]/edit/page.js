@@ -234,6 +234,37 @@ export default function EditUserPage({ params }) {
                                 </SelectField>
                             </div>
 
+                            {/* Professional Details Section */}
+                            <div className="pt-6 mt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                                <h3 className="text-lg font-semibold mb-4 text-[var(--color-text-primary)]">Professional Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <InputField name="company" label="Company / Organization" placeholder="LogaTech" />
+                                    <InputField name="taxId" label="Tax / VAT ID" placeholder="VAT-123456" />
+                                    <InputField name="website" label="Website" placeholder="www.example.com" />
+                                    <InputField name="whatsapp" label="WhatsApp Number" placeholder="+1 (555) 000-0000" />
+                                    <SelectField name="preferredCommunication" label="Preferred Communication">
+                                        <option value="email">Email</option>
+                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="phone">Phone Call</option>
+                                        <option value="slack">Slack</option>
+                                    </SelectField>
+                                </div>
+                            </div>
+
+                            {/* Billing Address Section */}
+                            <div className="pt-6 mt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                                <h3 className="text-lg font-semibold mb-4 text-[var(--color-text-primary)]">Billing Address</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div className="md:col-span-2">
+                                        <InputField name="address.street" label="Street Address" placeholder="123 Tech Square" />
+                                    </div>
+                                    <InputField name="address.city" label="City" placeholder="Istanbul" />
+                                    <InputField name="address.state" label="State / Province" placeholder="Marmara" />
+                                    <InputField name="address.zip" label="ZIP / Postal Code" placeholder="34000" />
+                                    <InputField name="address.country" label="Country" placeholder="Turkey" />
+                                </div>
+                            </div>
+
                             {/* Technical Details Section */}
                             <div className="pt-6 mt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
                                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>

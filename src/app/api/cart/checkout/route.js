@@ -63,6 +63,18 @@ export async function POST(request) {
                 name: targetUser.name,
                 email: targetUser.email,
                 linkedUser: targetUserId,
+                company: targetUser.company || '',
+                website: targetUser.website || '',
+                taxId: targetUser.taxId || '',
+                whatsapp: targetUser.whatsapp || '',
+                preferredCommunication: targetUser.preferredCommunication || 'email',
+                address: {
+                    street: targetUser.address?.street || '',
+                    city: targetUser.address?.city || '',
+                    state: targetUser.address?.state || '',
+                    zip: targetUser.address?.zip || '',
+                    country: targetUser.address?.country || '',
+                },
                 status: 'active'
             });
         }

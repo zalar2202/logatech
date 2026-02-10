@@ -201,8 +201,51 @@ export default function ViewUserPage({ params }) {
                         </p>
                     </div>
 
+                    {/* Professional Details Section */}
+                    <div className="pt-6 mt-6 border-t" style={{ borderColor: "var(--color-border)" }}>
+                        <h3 className="text-lg font-semibold mb-4 text-[var(--color-text-primary)]">Professional Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="text-sm font-medium block mb-1 text-[var(--color-text-secondary)]">Company</label>
+                                <p className="text-base text-[var(--color-text-primary)]">{user.company || "Not provided"}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium block mb-1 text-[var(--color-text-secondary)]">Tax / VAT ID</label>
+                                <p className="text-base text-[var(--color-text-primary)]">{user.taxId || "Not provided"}</p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium block mb-1 text-[var(--color-text-secondary)]">Website</label>
+                                <p className="text-base text-[var(--color-text-primary)]">
+                                    {user.website ? (
+                                        <a href={user.website.startsWith('http') ? user.website : `https://${user.website}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                                            {user.website}
+                                        </a>
+                                    ) : "Not provided"}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium block mb-1 text-[var(--color-text-secondary)]">Preferred Comm.</label>
+                                <p className="text-sm capitalize text-[var(--color-text-primary)]">{user.preferredCommunication || "Email"}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Address Section */}
+                    <div className="pt-6 mt-6 border-t" style={{ borderColor: "var(--color-border)" }}>
+                        <h3 className="text-lg font-semibold mb-4 text-[var(--color-text-primary)]">Billing Address</h3>
+                        {user.address?.street ? (
+                            <div className="text-sm space-y-1 text-[var(--color-text-primary)]">
+                                <p>{user.address.street}</p>
+                                <p>{[user.address.city, user.address.state, user.address.zip].filter(Boolean).join(', ')}</p>
+                                <p>{user.address.country}</p>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-[var(--color-text-secondary)]">No address provided</p>
+                        )}
+                    </div>
+
                     {/* Role & Status */}
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-2 gap-6 pt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
                         <div>
                             <label
                                 className="text-sm font-medium block mb-2"
