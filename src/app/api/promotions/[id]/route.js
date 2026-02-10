@@ -7,7 +7,8 @@ import { getAuthToken } from '@/lib/cookies';
 export async function GET(request, { params }) {
     try {
         await connectDB();
-        const promo = await Promotion.findById(params.id);
+        const { id } = await params;
+        const promo = await Promotion.findById(id);
         if (!promo) return NextResponse.json({ success: false, message: 'Promotion not found' }, { status: 404 });
         return NextResponse.json({ success: true, data: promo });
     } catch (error) {
@@ -24,8 +25,9 @@ export async function PUT(request, { params }) {
         }
 
         await connectDB();
+        const { id } = await params;
         const body = await request.json();
-        const promo = await Promotion.findByIdAndUpdate(params.id, body, { new: true, runValidators: true });
+        const promo = await Promotion.findByIdAndUpdate(id, body, { new: true, runValidators: true });
         if (!promo) return NextResponse.json({ success: false, message: 'Promotion not found' }, { status: 404 });
         return NextResponse.json({ success: true, data: promo });
     } catch (error) {
@@ -42,7 +44,8 @@ export async function DELETE(request, { params }) {
         }
 
         await connectDB();
-        const promo = await Promotion.findByIdAndDelete(params.id);
+        const { id } = await params;
+        const promo = await Promotion.findByIdAndDelete(id);
         if (!promo) return NextResponse.json({ success: false, message: 'Promotion not found' }, { status: 404 });
         return NextResponse.json({ success: true, message: 'Promotion deleted' });
     } catch (error) {

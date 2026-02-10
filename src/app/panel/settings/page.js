@@ -141,7 +141,7 @@ export default function SettingsPage() {
                     }
                 }}
             >
-                {({ isSubmitting, setFieldValue }) => (
+                {({ isSubmitting, setFieldValue, values }) => (
                     <Form className="space-y-4">
                         <InputField
                             label="Full Name"
