@@ -11,11 +11,13 @@ export function CartProvider({ children }) {
     const [cartItems, setCartItems] = useState([]);
     const [cartCount, setCartCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [cartCurrency, setCartCurrency] = useState('USD');
 
     const fetchCart = async () => {
         if (!isAuthenticated) {
             setCartItems([]);
             setCartCount(0);
+            setCartCurrency('USD');
             return;
         }
 
@@ -24,6 +26,7 @@ export function CartProvider({ children }) {
             const { data } = await axios.get('/api/cart');
             if (data.success) {
                 setCartItems(data.data.items || []);
+                setCartCurrency(data.data.currency || 'USD');
                 const count = (data.data.items || []).reduce((acc, item) => acc + item.quantity, 0);
                 setCartCount(count);
             }
@@ -43,11 +46,26 @@ export function CartProvider({ children }) {
         fetchCart();
     };
 
+    const updateCurrency = async (currency) => {
+        try {
+            const { data } = await axios.get('/api/cart');
+            if (data.success) {
+                await axios.put('/api/cart', { currency });
+                setCartCurrency(currency);
+                refreshCart();
+            }
+        } catch (error) {
+            console.error('Failed to update cart currency:', error);
+        }
+    };
+
     const value = {
         cartItems,
         cartCount,
+        cartCurrency,
         loading,
-        refreshCart
+        refreshCart,
+        updateCurrency
     };
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
