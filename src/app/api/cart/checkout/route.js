@@ -5,6 +5,7 @@ import Cart from "@/models/Cart";
 import Invoice from "@/models/Invoice";
 import Client from "@/models/Client";
 import Package from "@/models/Package";
+import { convertToBaseCurrency } from "@/lib/currency";
 
 // Helper to generate Invoice Number (copied from invoices API for consistency)
 function generateInvoiceNumber() {
@@ -140,6 +141,8 @@ export async function POST(request) {
         }
 
         const total = Math.max(0, subtotal - promotionDiscount);
+        const currency = client.currency || 'USD';
+        const { amount: totalInBase, rate } = await convertToBaseCurrency(total, currency);
 
         const invoiceData = {
             invoiceNumber: generateInvoiceNumber(),
@@ -158,7 +161,9 @@ export async function POST(request) {
                 discountValue: cart.appliedPromotion?.discountValue || 0
             },
             total: Number(total.toFixed(2)),
-            currency: client.currency || 'USD',
+            currency: currency,
+            exchangeRate: rate,
+            totalInBaseCurrency: totalInBase,
             createdBy: user._id
         };
 
