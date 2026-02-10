@@ -38,6 +38,18 @@ export const userSchema = Yup.object().shape({
     phone: Yup.string()
         .nullable()
         .trim(),
+    company: Yup.string().nullable().trim(),
+    website: Yup.string().nullable().trim(),
+    taxId: Yup.string().nullable().trim(),
+    whatsapp: Yup.string().nullable().trim(),
+    preferredCommunication: Yup.string().oneOf(['email', 'whatsapp', 'phone', 'slack']).nullable(),
+    address: Yup.object({
+        street: Yup.string().nullable().trim(),
+        city: Yup.string().nullable().trim(),
+        state: Yup.string().nullable().trim(),
+        zip: Yup.string().nullable().trim(),
+        country: Yup.string().nullable().trim(),
+    }).nullable(),
     technicalDetails: Yup.object({
         domainName: Yup.string().nullable().trim(),
         serverIP: Yup.string().nullable().trim(),
@@ -57,6 +69,18 @@ export const userInitialValues = {
     role: 'user',
     status: 'active',
     phone: '',
+    company: '',
+    website: '',
+    taxId: '',
+    whatsapp: '',
+    preferredCommunication: 'email',
+    address: {
+        street: '',
+        city: '',
+        state: '',
+        zip: '',
+        country: '',
+    },
     technicalDetails: {
         domainName: '',
         serverIP: '',
@@ -76,6 +100,18 @@ export const getUserEditInitialValues = (user) => ({
     role: user?.role || 'user',
     status: user?.status || 'active',
     phone: user?.phone || '',
+    company: user?.company || '',
+    website: user?.website || '',
+    taxId: user?.taxId || '',
+    whatsapp: user?.whatsapp || '',
+    preferredCommunication: user?.preferredCommunication || 'email',
+    address: {
+        street: user?.address?.street || '',
+        city: user?.address?.city || '',
+        state: user?.address?.state || '',
+        zip: user?.address?.zip || '',
+        country: user?.address?.country || '',
+    },
     technicalDetails: {
         domainName: user?.technicalDetails?.domainName || '',
         serverIP: user?.technicalDetails?.serverIP || '',

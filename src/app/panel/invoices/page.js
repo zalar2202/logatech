@@ -503,23 +503,23 @@ function InvoicesPage() {
                             ? new Date(selectedInvoice.dueDate).toISOString().split("T")[0]
                             : new Date(Date.now() + 12096e5).toISOString().split("T")[0],
                         status: selectedInvoice?.status || "draft",
-                        items: selectedInvoice?.items || [
-                            { description: "", quantity: 1, unitPrice: 0 },
+                         items: selectedInvoice?.items || [
+                            { description: "", quantity: 1, unitPrice: "" },
                         ],
                         notes: selectedInvoice?.notes || "",
-                        taxRate: selectedInvoice?.taxRate || 0,
+                        taxRate: selectedInvoice?.taxRate ?? "",
                         paymentPlan: {
                             isInstallment: selectedInvoice?.paymentPlan?.isInstallment || false,
-                            downPayment: selectedInvoice?.paymentPlan?.downPayment || 0,
-                            installmentsCount: selectedInvoice?.paymentPlan?.installmentsCount || 0,
-                            installmentAmount: selectedInvoice?.paymentPlan?.installmentAmount || 0,
+                            downPayment: selectedInvoice?.paymentPlan?.downPayment ?? "",
+                            installmentsCount: selectedInvoice?.paymentPlan?.installmentsCount ?? "",
+                            installmentAmount: selectedInvoice?.paymentPlan?.installmentAmount ?? "",
                             period: selectedInvoice?.paymentPlan?.period || "monthly",
                         },
                         promotion: {
                             code: selectedInvoice?.promotion?.code || "",
-                            discountAmount: selectedInvoice?.promotion?.discountAmount || 0,
+                            discountAmount: selectedInvoice?.promotion?.discountAmount ?? "",
                             discountType: selectedInvoice?.promotion?.discountType || "fixed",
-                            discountValue: selectedInvoice?.promotion?.discountValue || 0,
+                            discountValue: selectedInvoice?.promotion?.discountValue ?? "",
                         },
                     }}
                     validationSchema={invoiceSchema}
