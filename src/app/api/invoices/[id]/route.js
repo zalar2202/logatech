@@ -52,6 +52,10 @@ export async function PUT(request, { params }) {
         }
 
         const body = await request.json();
+        const oldInvoice = await Invoice.findById(id);
+        if (!oldInvoice) {
+            return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+        }
 
         // Sanitize ObjectIds to avoid Mongoose casting errors with empty strings
         if (body.package === "") body.package = null;
@@ -76,24 +80,15 @@ export async function PUT(request, { params }) {
             body.items = processedItems;
             
             const taxRate = body.taxRate !== undefined ? Number(body.taxRate) : 0;
-            // Note: If taxRate isn't in body, we might need to fetch the existing one to calculate taxAmount correctly if we were strict. 
-            // For MVP simplicity, assumes if items change, frontend sends everything or we accept minor drift until refetch. 
-            // Better: Recalculate everything thoroughly.
-            
-            // To be safe, let's just use the body's values assuming frontend sends full state, 
-            // OR strictly, we should just save what's passed if we trust frontend, 
-            // BUT for financial data, backend logic is safer.
             
             // Let's rely on simple logic: Recalculate total if items passed.
             const taxAmount = subtotal * (taxRate / 100);
             body.subtotal = subtotal;
             body.taxAmount = taxAmount;
-            body.total = subtotal + taxAmount;
-        }
-
-        const oldInvoice = await Invoice.findById(id);
-        if (!oldInvoice) {
-            return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+            
+            // Handle promotion in total calculation
+            const promoAmount = body.promotion?.discountAmount || oldInvoice?.promotion?.discountAmount || 0;
+            body.total = subtotal + taxAmount - promoAmount;
         }
 
         const invoice = await Invoice.findByIdAndUpdate(
