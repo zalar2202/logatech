@@ -37,7 +37,7 @@ const InvoiceSchema = new mongoose.Schema(
         },
         issueDate: { type: Date, required: true, default: Date.now },
         dueDate: { type: Date, required: true },
-        currency: { type: String, default: 'USD' },
+        currency: { type: String, enum: ['USD', 'EUR', 'CAD', 'TRY'], default: 'USD' },
         
         items: [InvoiceItemSchema],
         

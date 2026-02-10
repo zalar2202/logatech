@@ -291,10 +291,12 @@ export default function ClientsPage() {
                                         <td className="p-4">
                                             <div className="font-semibold text-gray-900 dark:text-gray-100">{client.name}</div>
                                             <div className="text-xs text-gray-500">
-                                                {client.address?.street ? (
-                                                    `${client.address.street}, ${client.address.city || ""}`
+                                                {typeof client.address === 'object' && client.address?.street ? (
+                                                    `${client.address.street}${client.address.city ? `, ${client.address.city}` : ""}`
+                                                ) : typeof client.address === 'string' && client.address ? (
+                                                    client.address
                                                 ) : (
-                                                    client.address || "No address provided"
+                                                    "No address provided"
                                                 )}
                                             </div>
                                         </td>
@@ -438,6 +440,7 @@ export default function ClientsPage() {
                                 country: selectedClient?.address?.country || "",
                             },
                             notes: selectedClient?.notes || "",
+                            currency: selectedClient?.currency || "USD",
                         }}
                         validationSchema={clientSchema}
                         onSubmit={handleSubmit}
@@ -453,6 +456,12 @@ export default function ClientsPage() {
                                         <option value="active">Active</option>
                                         <option value="prospective">Prospective</option>
                                         <option value="inactive">Inactive</option>
+                                    </SelectField>
+                                    <SelectField name="currency" label="Preferred Currency">
+                                        <option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="CAD">CAD (C$)</option>
+                                        <option value="TRY">TRY (₺)</option>
                                     </SelectField>
                                 </div>
 
@@ -542,7 +551,7 @@ export default function ClientsPage() {
                                             <tr key={inv._id} className="border-t dark:border-gray-700">
                                                 <td className="p-3 font-medium text-indigo-600">{inv.invoiceNumber}</td>
                                                 <td className="p-3 text-gray-500">{new Date(inv.issueDate).toLocaleDateString()}</td>
-                                                <td className="p-3 font-bold">${inv.total?.toFixed(2)}</td>
+                                                <td className="p-3 font-bold">${(inv.total || 0).toFixed(2)}</td>
                                                 <td className="p-3">
                                                     <Badge variant={inv.status === 'paid' ? 'success' : inv.status === 'overdue' ? 'danger' : 'warning'}>
                                                         {inv.status}

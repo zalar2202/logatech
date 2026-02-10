@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import { Loader2, Download, Printer, ArrowLeft, Clock } from "lucide-react";
 import { Button } from "@/components/common/Button";
+import { formatCurrency } from "@/lib/utils";
 
 export default function InvoicePrintPage() {
     const { id } = useParams();
@@ -224,8 +225,8 @@ export default function InvoicePrintPage() {
                                     <tr key={idx} className="text-sm dark:text-gray-300">
                                         <td className="p-4 font-medium text-gray-900 dark:text-white">{item.description}</td>
                                         <td className="p-4 text-center">{item.quantity}</td>
-                                        <td className="p-4 text-right">${item.unitPrice.toFixed(2)}</td>
-                                        <td className="p-4 text-right font-bold text-gray-900 dark:text-white">${item.amount.toFixed(2)}</td>
+                                        <td className="p-4 text-right">{formatCurrency(item.unitPrice, invoice.currency)}</td>
+                                        <td className="p-4 text-right font-bold text-gray-900 dark:text-white">{formatCurrency(item.amount, invoice.currency)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -237,17 +238,17 @@ export default function InvoicePrintPage() {
                         <div className="w-full md:w-1/3 space-y-4">
                             <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                                 <span>Subtotal</span>
-                                <span className="font-semibold text-gray-900 dark:text-white">${invoice.subtotal.toFixed(2)}</span>
+                                <span className="font-semibold text-gray-900 dark:text-white">{formatCurrency(invoice.subtotal, invoice.currency)}</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                                 <span>Tax ({invoice.taxRate}%)</span>
-                                <span className="font-semibold text-gray-900 dark:text-white">${invoice.taxAmount.toFixed(2)}</span>
+                                <span className="font-semibold text-gray-900 dark:text-white">{formatCurrency(invoice.taxAmount, invoice.currency)}</span>
                             </div>
 
                             {invoice.promotion?.discountAmount > 0 && (
                                 <div className="flex justify-between text-sm text-emerald-600 font-bold">
                                     <span>Promotion ({invoice.promotion.code})</span>
-                                    <span>-${invoice.promotion.discountAmount.toFixed(2)}</span>
+                                    <span>-{formatCurrency(invoice.promotion.discountAmount, invoice.currency)}</span>
                                 </div>
                             )}
                             
@@ -258,7 +259,7 @@ export default function InvoicePrintPage() {
                                         <span className="text-sm font-bold text-gray-900 dark:text-white">
                                             {invoice.promotion?.discountAmount > 0 ? 'Grand Total (Discounted)' : 'Total Package Value'}
                                         </span>
-                                        <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400 font-black">${invoice.total.toFixed(2)}</span>
+                                        <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400 font-black">{formatCurrency(invoice.total, invoice.currency)}</span>
                                     </div>
                                     
                                     {/* Down Payment Row */}
@@ -279,7 +280,7 @@ export default function InvoicePrintPage() {
                                             ? 'text-emerald-600 dark:text-emerald-400'
                                             : 'text-amber-600 dark:text-amber-400'
                                         }`}>
-                                            ${invoice.paymentPlan.downPayment.toFixed(2)}
+                                            {formatCurrency(invoice.paymentPlan.downPayment, invoice.currency)}
                                         </span>
                                     </div>
 
@@ -312,14 +313,14 @@ export default function InvoicePrintPage() {
                                                 ? 'text-xl font-black text-emerald-600 dark:text-emerald-400'
                                                 : 'text-gray-700 dark:text-gray-300'
                                         }`}>
-                                            ${(invoice.total - invoice.paymentPlan.downPayment).toFixed(2)}
+                                            {formatCurrency(invoice.total - invoice.paymentPlan.downPayment, invoice.currency)}
                                         </span>
                                     </div>
                                 </>
                             ) : (
                                 <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between">
                                     <span className="text-lg font-bold text-gray-900 dark:text-white">Total</span>
-                                    <span className="text-2xl font-black text-indigo-600">${invoice.total.toFixed(2)}</span>
+                                    <span className="text-2xl font-black text-indigo-600">{formatCurrency(invoice.total, invoice.currency)}</span>
                                 </div>
                             )}
                         </div>
@@ -335,13 +336,13 @@ export default function InvoicePrintPage() {
                             <div className="flex flex-wrap gap-x-12 gap-y-6">
                                 <div>
                                     <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Down Payment</p>
-                                    <p className="text-lg font-bold text-indigo-900 dark:text-white">${invoice.paymentPlan.downPayment?.toFixed(2)}</p>
+                                    <p className="text-lg font-bold text-indigo-900 dark:text-white">{formatCurrency(invoice.paymentPlan.downPayment, invoice.currency)}</p>
                                 </div>
                                 {invoice.paymentPlan.installmentAmount > 0 ? (
                                     <>
                                         <div>
                                             <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Installment Amt</p>
-                                            <p className="text-lg font-bold text-indigo-900 dark:text-white">${invoice.paymentPlan.installmentAmount?.toFixed(2)}</p>
+                                            <p className="text-lg font-bold text-indigo-900 dark:text-white">{formatCurrency(invoice.paymentPlan.installmentAmount, invoice.currency)}</p>
                                         </div>
                                         <div>
                                             <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Frequency</p>
@@ -351,7 +352,7 @@ export default function InvoicePrintPage() {
                                 ) : (
                                     <div>
                                         <p className="text-[10px] text-indigo-400 dark:text-indigo-500 uppercase font-black mb-1">Remaining Balance</p>
-                                        <p className="text-lg font-bold text-indigo-900 dark:text-white">${(invoice.total - invoice.paymentPlan.downPayment).toFixed(2)}</p>
+                                        <p className="text-lg font-bold text-indigo-900 dark:text-white">{formatCurrency(invoice.total - invoice.paymentPlan.downPayment, invoice.currency)}</p>
                                     </div>
                                 )}
                                 <div>
