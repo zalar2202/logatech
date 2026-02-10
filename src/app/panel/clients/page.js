@@ -38,7 +38,18 @@ const clientSchema = Yup.object().shape({
     phone: Yup.string(),
     status: Yup.string().oneOf(['active', 'inactive', 'prospective']),
     linkedUser: Yup.string().nullable(),
-    address: Yup.string(),
+    company: Yup.string().nullable(),
+    website: Yup.string().nullable(),
+    taxId: Yup.string().nullable(),
+    whatsapp: Yup.string().nullable(),
+    preferredCommunication: Yup.string().oneOf(['email', 'whatsapp', 'phone', 'slack']),
+    address: Yup.object({
+        street: Yup.string().nullable(),
+        city: Yup.string().nullable(),
+        state: Yup.string().nullable(),
+        zip: Yup.string().nullable(),
+        country: Yup.string().nullable(),
+    }),
     notes: Yup.string(),
 });
 
@@ -279,7 +290,13 @@ export default function ClientsPage() {
                                     <tr key={client._id} className="border-b last:border-0 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                         <td className="p-4">
                                             <div className="font-semibold text-gray-900 dark:text-gray-100">{client.name}</div>
-                                            <div className="text-xs text-gray-500">{client.address || "No address provided"}</div>
+                                            <div className="text-xs text-gray-500">
+                                                {client.address?.street ? (
+                                                    `${client.address.street}, ${client.address.city || ""}`
+                                                ) : (
+                                                    client.address || "No address provided"
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="p-4">
                                             {client.contactPerson && <div className="text-sm font-medium">{client.contactPerson}</div>}
@@ -408,7 +425,18 @@ export default function ClientsPage() {
                             phone: selectedClient?.phone || "",
                             status: selectedClient?.status || "active",
                             linkedUser: selectedClient?.linkedUser?._id || selectedClient?.linkedUser || "",
-                            address: selectedClient?.address || "",
+                            company: selectedClient?.company || "",
+                            website: selectedClient?.website || "",
+                            taxId: selectedClient?.taxId || "",
+                            whatsapp: selectedClient?.whatsapp || "",
+                            preferredCommunication: selectedClient?.preferredCommunication || "email",
+                            address: {
+                                street: selectedClient?.address?.street || "",
+                                city: selectedClient?.address?.city || "",
+                                state: selectedClient?.address?.state || "",
+                                zip: selectedClient?.address?.zip || "",
+                                country: selectedClient?.address?.country || "",
+                            },
                             notes: selectedClient?.notes || "",
                         }}
                         validationSchema={clientSchema}
@@ -433,6 +461,21 @@ export default function ClientsPage() {
                                     <InputField name="phone" label="Phone" placeholder="+1..." />
                                 </div>
 
+                                <div className="grid grid-cols-2 gap-4">
+                                    <InputField name="website" label="Website" placeholder="www.example.com" />
+                                    <InputField name="taxId" label="VAT / Tax ID" placeholder="Business Registration #" />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <InputField name="whatsapp" label="WhatsApp" placeholder="+1..." />
+                                    <SelectField name="preferredCommunication" label="Preferred Contact">
+                                        <option value="email">Email</option>
+                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="phone">Phone</option>
+                                        <option value="slack">Slack</option>
+                                    </SelectField>
+                                </div>
+
                                 <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">
                                     <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
                                         <User className="w-4 h-4 text-gray-500" /> Linked User Account
@@ -446,7 +489,18 @@ export default function ClientsPage() {
                                     <p className="text-xs text-gray-400 mt-1">Linking a user allows them to see their company's invoices.</p>
                                 </div>
 
-                                <TextareaField name="address" label="Billing Address" rows={2} />
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-medium border-b pb-1 dark:border-gray-700">Billing Address</h4>
+                                    <InputField name="address.street" label="Street Address" />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <InputField name="address.city" label="City" />
+                                        <InputField name="address.state" label="State/Province" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <InputField name="address.zip" label="ZIP / Postal Code" />
+                                        <InputField name="address.country" label="Country" />
+                                    </div>
+                                </div>
                                 <TextareaField name="notes" label="Internal Notes" rows={3} />
 
                                 <div className="flex justify-end gap-3 pt-4">

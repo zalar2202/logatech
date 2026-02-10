@@ -23,7 +23,13 @@ export const profileUpdateSchema = Yup.object({
         .nullable(),
     avatar: Yup.mixed().nullable(), // File validation handled by FileUploadField
     company: Yup.string().nullable().trim(),
-    website: Yup.string().url('Invalid URL format').nullable().trim(),
+    website: Yup.string()
+        .matches(
+            /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+            'Invalid URL format'
+        )
+        .nullable()
+        .trim(),
     taxId: Yup.string().nullable().trim(),
     whatsapp: Yup.string().matches(phoneRegex, 'Invalid WhatsApp number format').nullable().trim(),
     preferredCommunication: Yup.string().oneOf(['email', 'whatsapp', 'phone', 'slack']).nullable(),
