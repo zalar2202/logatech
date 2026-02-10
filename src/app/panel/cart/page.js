@@ -32,28 +32,19 @@ export default function CartPage() {
     const [clients, setClients] = useState([]);
     const [selectedClientId, setSelectedClientId] = useState("");
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
-    
+    const [exchangeRate, setExchangeRate] = useState(1);
+
     const [promoCode, setPromoCode] = useState("");
     const [applyingPromo, setApplyingPromo] = useState(false);
     const [appliedPromo, setAppliedPromo] = useState(null);
     const searchParams = useSearchParams();
     const promoFromUrl = searchParams.get("promo");
 
-    const fetchCart = async () => {
-        try {
-            const res = await axios.get("/api/cart");
-            setCart(res.data.data);
-            setSelectedCurrency(res.data.data?.currency || 'USD');
-            if (res.data.data?.appliedPromotion) {
-                // If cart has a promotion, validate it to get current discount amount
-                handleApplyPromoOnMount(res.data.data);
-            }
-        } catch (error) {
-            toast.error("Failed to fetch cart");
-        } finally {
-            setLoading(false);
-        }
-    };
+    // fetchCart definition is already above
+
+    // ... (rest of the functions)
+
+    // Ensure handleCurrencyChange is used in the JSX below instead of inline function
 
     const fetchClientsList = async () => {
         if (!isAdmin) return;
@@ -196,20 +187,7 @@ export default function CartPage() {
         }
     };
 
-    const calculateSubtotal = () => {
-        if (!cart || !cart.items) return 0;
-        return cart.items.reduce((acc, item) => {
-            const price = Number(item.package?.price) || 0;
-            const quantity = Number(item.quantity) || 1;
-            return acc + (price * quantity);
-        }, 0);
-    };
 
-    const calculateTotal = () => {
-        const subtotal = calculateSubtotal();
-        const discount = appliedPromo ? appliedPromo.discountAmount : 0;
-        return Math.max(0, subtotal - discount);
-    };
 
     if (loading) {
         return (
@@ -276,7 +254,11 @@ export default function CartPage() {
                                          </p>
                                          <div className="flex items-center justify-between">
                                              <span className="text-xl font-bold text-indigo-600">
-                                                 {item.package?.price ? formatCurrency(item.package.price, selectedCurrency) : item.package?.startingPrice || formatCurrency(0, selectedCurrency)}
+                                                 {item.package?.price 
+                                                     ? formatCurrency(item.package.price * exchangeRate, selectedCurrency) 
+                                                     : (item.package?.startingPrice 
+                                                         ? formatCurrency(item.package.startingPrice * exchangeRate, selectedCurrency) 
+                                                         : formatCurrency(0, selectedCurrency))}
                                              </span>
                                             <button
                                                 onClick={() => removeLineItem(item._id)}

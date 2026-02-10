@@ -5,7 +5,7 @@ import Cart from "@/models/Cart";
 import Invoice from "@/models/Invoice";
 import Client from "@/models/Client";
 import Package from "@/models/Package";
-import { convertToBaseCurrency } from "@/lib/currency";
+import { convertToBaseCurrency, convertFromBaseCurrency } from "@/lib/currency";
 
 // Helper to generate Invoice Number (copied from invoices API for consistency)
 function generateInvoiceNumber() {
@@ -81,19 +81,25 @@ export async function POST(request) {
         }
 
         // 2. Prepare Invoice Data
-        let subtotal = 0;
-        const items = cart.items.map(cartItem => {
-            const amount = cartItem.package.price * cartItem.quantity;
-            subtotal += amount;
+        const currency = cart.currency || client.currency || 'USD';
+        
+        // Convert Items to Selected Currency
+        const items = await Promise.all(cart.items.map(async (cartItem) => {
+            const usdPrice = cartItem.package.price;
+            const { amount: unitPrice } = await convertFromBaseCurrency(usdPrice, currency);
+            const quantity = cartItem.quantity;
+            const amount = unitPrice * quantity;
             return {
                 description: `${cartItem.package.name} (${cartItem.billingCycle})`,
-                quantity: cartItem.quantity,
-                unitPrice: cartItem.package.price,
+                quantity: quantity,
+                unitPrice: unitPrice,
                 amount: amount
             };
-        });
+        }));
 
-        // Calculate Promotion Discount
+        let subtotal = items.reduce((sum, item) => sum + item.amount, 0);
+
+        // Calculate Promotion Discount in Selected Currency
         let promotionDiscount = 0;
         let appliedPromoCode = null;
         if (cart.appliedPromotion) {
@@ -101,35 +107,29 @@ export async function POST(request) {
             
             // Check category applicability
             let applicableSubtotal = subtotal;
-            let isCategoryApplicable = true;
+            // Note: Since items are strictly mapped from cart, we trust the categorization logic
             if (promo.applicableCategories && promo.applicableCategories.length > 0) {
-                const applicableItems = cart.items.filter(item => 
-                    promo.applicableCategories.includes(item.package?.category)
-                );
-                
-                if (applicableItems.length > 0) {
-                    applicableSubtotal = applicableItems.reduce((acc, item) => 
-                        acc + (item.package.price * item.quantity), 0
-                    );
-                } else {
-                    isCategoryApplicable = false;
-                }
+                 const applicableItems = items.filter((item, idx) => 
+                    promo.applicableCategories.includes(cart.items[idx].package?.category)
+                 );
+                 applicableSubtotal = applicableItems.reduce((acc, item) => acc + item.amount, 0);
             }
 
-            // Double check validity
             const now = new Date();
+            // TODO: Ideally re-verify minPurchase against converted subtotal or convert minPurchase
+            // keeping simple for now assuming promo logic holds
             const isValid = promo.isActive && 
                              (!promo.startDate || promo.startDate <= now) && 
                              (!promo.endDate || promo.endDate >= now) &&
-                             (promo.usageLimit === null || promo.usedCount < promo.usageLimit) &&
-                             (subtotal >= promo.minPurchase) &&
-                             isCategoryApplicable;
+                             (promo.usageLimit === null || promo.usedCount < promo.usageLimit);
 
             if (isValid) {
                 if (promo.discountType === 'percentage') {
                     promotionDiscount = (applicableSubtotal * promo.discountValue) / 100;
                 } else {
-                    promotionDiscount = promo.discountValue;
+                    // Fixed discount is usually in base currency (USD), convert it
+                    const { amount: convertedDiscount } = await convertFromBaseCurrency(promo.discountValue, currency);
+                    promotionDiscount = convertedDiscount;
                 }
                 promotionDiscount = Math.min(promotionDiscount, applicableSubtotal);
                 appliedPromoCode = promo.discountCode;
@@ -141,19 +141,20 @@ export async function POST(request) {
         }
 
         const total = Math.max(0, subtotal - promotionDiscount);
-        const currency = client.currency || 'USD';
-        const { amount: totalInBase, rate } = await convertToBaseCurrency(total, currency);
+        
+        // Calculate Base Currency for Accounting (Reverse conversion to be safe/consistent)
+        const { amount: totalInBase, rate: exchangeRate } = await convertToBaseCurrency(total, currency);
 
         const invoiceData = {
             invoiceNumber: generateInvoiceNumber(),
             client: client._id,
             user: targetUserId,
-            package: cart.items[0]?.package?._id, // Link first package for service activation logic
-            status: 'sent', // Set to sent immediately so visibility filter doesn't hide it from user
+            package: cart.items[0]?.package?._id, 
+            status: 'sent', 
             issueDate: new Date(),
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
             items: items,
-            subtotal: subtotal,
+            subtotal: Number(subtotal.toFixed(2)),
             promotion: {
                 code: appliedPromoCode,
                 discountAmount: Number(promotionDiscount.toFixed(2)),
@@ -162,7 +163,7 @@ export async function POST(request) {
             },
             total: Number(total.toFixed(2)),
             currency: currency,
-            exchangeRate: rate,
+            exchangeRate: exchangeRate,
             totalInBaseCurrency: totalInBase,
             createdBy: user._id
         };

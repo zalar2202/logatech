@@ -37,7 +37,25 @@ export async function getExchangeRate(from) {
 }
 
 /**
- * Convert an amount to the base currency
+ * Convert an amount from base currency to target currency
+ * @param {number} amount - Amount in base currency (USD)
+ * @param {string} to - Target currency code
+ * @returns {Promise<{amount: number, rate: number}>} Converted amount and rate used
+ */
+export async function convertFromBaseCurrency(amount, to) {
+    // We fetch rate for "TO" currency relative to base (e.g., 1 EUR = 1.08 USD)
+    // To convert 100 USD to EUR: 100 / 1.08 = 92.59 EUR
+    const rateToUSD = await getExchangeRate(to);
+    const convertedAmount = amount / rateToUSD;
+    
+    return {
+        amount: Number(convertedAmount.toFixed(2)),
+        rate: rateToUSD
+    };
+}
+
+/**
+ * Convert an amount to the base currency (for accounting)
  * @param {number} amount - Amount in source currency
  * @param {string} from - Source currency code
  * @returns {Promise<{amount: number, rate: number}>} Converted amount and rate used
