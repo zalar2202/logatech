@@ -99,11 +99,11 @@ export default function InvoicePrintPage() {
                                 </span>
                             </div>
                             <div className="space-y-1 text-sm text-gray-500 dark:text-gray-400">
-                                <p>123 Digital Avenue</p>
-                                <p>Tech City, TC 10101</p>
+                                <p>6082 Sk. Kinikli Mh, No:1 D:7</p>
+                                <p>Pamukkale / Denizli</p>
+                                <p>Turkey</p>
                                 <p>contact@logatech.net</p>
-                                <p>www.logatech.net</p>
-                                <p>+1 (555) 000-1111</p>
+                                <p>0090 551 061 98 56</p>
                             </div>
                         </div>
 
