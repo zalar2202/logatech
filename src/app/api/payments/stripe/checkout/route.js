@@ -8,6 +8,10 @@ export async function POST(request) {
     try {
         await dbConnect();
 
+        if (!stripe) {
+            return NextResponse.json({ error: "Stripe is not configured on the server" }, { status: 500 });
+        }
+
         const user = await verifyAuth(request);
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
