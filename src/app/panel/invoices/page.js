@@ -87,6 +87,16 @@ function InvoicesPage() {
         init();
     }, []);
 
+    // Handle Stripe redirect status
+    useEffect(() => {
+        const stripeStatus = searchParams.get("status");
+        if (stripeStatus === "success") {
+            toast.success("Payment successful! Your invoice is being updated.");
+        } else if (stripeStatus === "cancel") {
+            toast.error("Payment cancelled.");
+        }
+    }, [searchParams]);
+
     // Effect to open detail view if ID is in URL
     useEffect(() => {
         if (invoiceIdParam && invoices.length > 0) {
@@ -1000,6 +1010,7 @@ function InvoicesPage() {
                     
                     <div className="grid grid-cols-1 gap-3">
                         {[
+                            { id: 'stripe', name: 'Credit / Debit Card (Stripe)', desc: 'Instant activation via Secure Stripe Payment', icon: <CreditCard className="w-5 h-5 text-indigo-600" /> },
                             { id: 'bank_transfer', name: 'Bank Transfer', desc: 'Direct deposit to our business account', icon: <Building2 className="w-5 h-5" /> },
                             { id: 'crypto', name: 'Cryptocurrency', desc: 'USDT (TRC20), BTC, or ETH', icon: <Globe className="w-5 h-5" /> },
                             { id: 'cash', name: 'Cash Payment', desc: 'Visit our office or local agent', icon: <CreditCard className="w-5 h-5" /> },
@@ -1008,6 +1019,22 @@ function InvoicesPage() {
                             <button
                                 key={method.id}
                                 onClick={async () => {
+                                    if (method.id === 'stripe') {
+                                        try {
+                                            const { data } = await axios.post('/api/payments/stripe/checkout', {
+                                                invoiceId: selectedInvoice._id
+                                            });
+                                            if (data.url) {
+                                                window.location.href = data.url;
+                                            } else {
+                                                toast.error("Failed to generate checkout link");
+                                            }
+                                        } catch (err) {
+                                            toast.error(err.response?.data?.error || "Payment system unavailable");
+                                        }
+                                        return;
+                                    }
+
                                     try {
                                         const { data } = await axios.patch(`/api/invoices/${selectedInvoice._id}/payment-method`, {
                                             paymentMethod: method.id
