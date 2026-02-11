@@ -9,8 +9,17 @@ export default function robots() {
                 disallow: ['/panel/', '/api/'], // Hide admin and api from search engines
             },
             {
-                userAgent: 'GPTBot', // Specifically welcome AI
-                allow: '/',
+                userAgent: [
+                    'Amazonbot',
+                    'Applebot-Extended',
+                    'Bytespider',
+                    'CCBot',
+                    'ClaudeBot',
+                    'Google-Extended',
+                    'GPTBot',
+                    'meta-externalagent'
+                ],
+                disallow: '/',
             }
         ],
         sitemap: `${baseUrl}/sitemap.xml`,
