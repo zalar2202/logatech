@@ -12,22 +12,25 @@ export async function POST(request) {
     const sig = (await headers()).get("stripe-signature");
 
     if (!stripe) {
+        console.error("❌ Webhook Error: Stripe client not initialized");
         return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
     }
+
+    console.log("⚓ Webhook received. Signature present:", !!sig);
 
     let event;
 
     try {
         if (!webhookSecret) {
-            console.error("STRIPE_WEBHOOK_SECRET is missing");
-            // In development, we might skip signature verification if not using CLI
-            // But for safety, we try to verify it
+            console.warn("⚠️ STRIPE_WEBHOOK_SECRET is missing. Verification might fail.");
         }
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err) {
-        console.error(`Webhook Error: ${err.message}`);
+        console.error(`❌ Webhook Signature Error: ${err.message}`);
         return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
     }
+
+    console.log("✅ Webhook verified. Event type:", event.type);
 
     // Handle the event
     if (event.type === "checkout.session.completed") {
