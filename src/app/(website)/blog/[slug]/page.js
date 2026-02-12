@@ -15,49 +15,30 @@ export async function generateMetadata({ params }) {
     
     if (!post) {
         return {
-            title: "Post Not Found | LogaTech",
+            title: "Post Not Found",
+            description: "The requested blog post could not be found.",
         };
     }
 
-    const metaTitle = post.seo?.metaTitle || post.title;
-    const metaDescription = post.seo?.metaDescription || post.excerpt || post.content?.replace(/<[^>]*>/g, '').substring(0, 160).trim();
-    const metaKeywords = post.seo?.metaKeywords?.join(", ") || post.tags?.join(", ");
+    const title = post.seo?.metaTitle || post.title;
+    const description = post.seo?.metaDescription || post.excerpt || post.content?.replace(/<[^>]*>/g, ' ').substring(0, 160).trim() || post.title;
 
     return {
-        title: post.seo?.metaTitle ? post.seo.metaTitle : {
-            default: `${post.title} | LogaTech Blog`,
-            template: `%s | LogaTech`,
-        },
-        description: metaDescription || "Expert insights into design, development, deployment and maintenance by LogaTech.",
-        keywords: metaKeywords,
+        title: `${title} | LogaTech`,
+        description: description,
+        keywords: post.seo?.metaKeywords?.join(", ") || post.tags?.join(", "),
         openGraph: {
-            title: metaTitle,
-            description: metaDescription,
+            title: title,
+            description: description,
             type: "article",
             publishedTime: post.publishedAt,
             authors: [post.author?.name],
-            images: post.seo?.ogImage || post.featuredImage?.url
-                ? [
-                      {
-                          url: post.seo?.ogImage || post.featuredImage?.url,
-                          width: 1200,
-                          height: 630,
-                          alt: post.title,
-                      },
-                  ]
-                : [
-                      {
-                          url: "/assets/favicon/android-chrome-512x512.png",
-                          width: 512,
-                          height: 512,
-                          alt: "LogaTech",
-                      },
-                  ],
+            images: post.seo?.ogImage || post.featuredImage?.url || "/assets/favicon/android-chrome-512x512.png",
         },
         twitter: {
             card: "summary_large_image",
-            title: metaTitle,
-            description: metaDescription,
+            title: title,
+            description: description,
             images: [post.seo?.ogImage || post.featuredImage?.url || "/assets/favicon/android-chrome-512x512.png"],
         },
         robots: {
