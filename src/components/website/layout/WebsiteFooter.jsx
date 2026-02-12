@@ -18,7 +18,7 @@ export default function WebsiteFooter() {
                         height={24}
                         className="w-6 h-6 object-contain"
                     />
-                    <span>LogaTech</span>
+                    <h2 className="text-xl font-bold m-0">LogaTech</h2>
                 </div>
                 <div className="footer-links flex flex-wrap justify-center gap-x-6 gap-y-2 mb-4 text-sm font-medium">
                     <Link href="/services/design" className="hover:text-[var(--color-primary)] transition-colors">Design</Link>

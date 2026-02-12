@@ -168,12 +168,12 @@ export default function CommentSection({ postId, allowComments }) {
                                         <User size={20} />
                                     </div>
                                     <div>
-                                        <h5 className="font-bold text-[var(--text-primary)]">
+                                        <h4 className="font-bold text-[var(--text-primary)]">
                                             {comment.authorName}
                                             {comment.isAdminComment && (
                                                 <span className="ml-2 inline-block px-1.5 py-0.5 text-[10px] bg-[var(--accent-color)] text-white rounded shadow-sm">ADMIN</span>
                                             )}
-                                        </h5>
+                                        </h4>
                                         <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                                             <Clock size={12} />
                                             {formatDate(comment.createdAt)}

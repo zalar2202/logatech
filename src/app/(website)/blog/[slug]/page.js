@@ -20,30 +20,59 @@ export async function generateMetadata({ params }) {
         };
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
+    
+    // Helper to ensure image URLs are absolute for social media crawlers
+    const getAbsoluteImageUrl = (url) => {
+        if (!url) return `${baseUrl}/assets/logo/LogaTech-512.webp`;
+        if (url.startsWith('http')) return url;
+        // Ensure leading slash if missing
+        const path = url.startsWith('/') ? url : `/${url}`;
+        return `${baseUrl}${path}`;
+    };
+
     const title = post.seo?.metaTitle || post.title;
     const description = post.seo?.metaDescription || post.excerpt || post.content?.replace(/<[^>]*>/g, ' ').substring(0, 160).trim() || post.title;
+    const ogImage = getAbsoluteImageUrl(post.seo?.ogImage || post.featuredImage?.url);
 
     return {
         title: `${title} | LogaTech`,
         description: description,
         keywords: post.seo?.metaKeywords?.join(", ") || post.tags?.join(", "),
+        metadataBase: new URL(baseUrl),
         openGraph: {
             title: title,
             description: description,
+            url: `${baseUrl}/blog/${slug}`,
+            siteName: "LogaTech",
             type: "article",
             publishedTime: post.publishedAt,
             authors: [post.author?.name],
-            images: post.seo?.ogImage || post.featuredImage?.url || "/assets/favicon/android-chrome-512x512.png",
+            images: [
+                {
+                    url: ogImage,
+                    width: 1200,
+                    height: 630,
+                    alt: title,
+                }
+            ],
         },
         twitter: {
             card: "summary_large_image",
             title: title,
             description: description,
-            images: [post.seo?.ogImage || post.featuredImage?.url || "/assets/favicon/android-chrome-512x512.png"],
+            images: [ogImage],
         },
         robots: {
             index: !post.seo?.noIndex,
             follow: !post.seo?.noFollow,
+            googleBot: {
+                index: true,
+                follow: true,
+                'max-video-preview': -1,
+                'max-image-preview': 'large',
+                'max-snippet': -1,
+            },
         },
     };
 }
@@ -128,9 +157,9 @@ export default async function BlogPostPage({ params }) {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
     const postUrl = `${baseUrl}/blog/${post.slug}`;
-    const imageUrl = post.featuredImage?.url?.startsWith('http') 
-        ? post.featuredImage.url 
-        : `${baseUrl}${post.featuredImage?.url || ""}`;
+    const imageUrl = post.featuredImage?.url 
+        ? (post.featuredImage.url.startsWith('http') ? post.featuredImage.url : `${baseUrl}${post.featuredImage.url.startsWith('/') ? '' : '/'}${post.featuredImage.url}`)
+        : `${baseUrl}/assets/logo/LogaTech-512.webp`;
 
     const jsonLd = {
         "@context": "https://schema.org",
