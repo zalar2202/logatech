@@ -1984,10 +1984,10 @@ html {
 }
 
 .website-layout .design-hero-title {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 8vw, 3.5rem);
     font-weight: 700;
     color: var(--color-text-primary);
-    line-height: 1.2;
+    line-height: 1.1;
     margin: 0;
 }
 
@@ -1997,17 +1997,17 @@ html {
 }
 
 .website-layout .design-hero-subtitle {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
     color: var(--color-primary);
     font-weight: 600;
     margin: 0;
 }
 
 .design-hero-description {
-    font-size: 1.2rem;
+    font-size: clamp(0.95rem, 3vw, 1.2rem);
     color: var(--color-text-secondary);
     max-width: 700px;
-    line-height: 1.7;
+    line-height: 1.6;
     margin: 0;
 }
 
@@ -2566,7 +2566,7 @@ html {
     }
 
     .website-layout .design-hero-title {
-        font-size: 2.75rem;
+        font-size: clamp(2rem, 7vw, 3rem);
     }
 
     .service-breakdown-grid {
@@ -2593,7 +2593,7 @@ html {
 
 @media (max-width: 768px) {
     .design-hero {
-        padding: 100px 24px 60px;
+        padding: 80px 24px 40px;
         min-height: auto;
     }
 
@@ -2606,7 +2606,8 @@ html {
     }
 
     .design-hero-description {
-        font-size: 1.05rem;
+        font-size: 1rem;
+        padding: 0 10px;
     }
 
     .ideal-for-grid {
@@ -2652,9 +2653,15 @@ html {
         font-size: 1.85rem;
     }
 
+    .design-hero-title .highlight {
+        display: inline;
+    }
+
     .design-hero-cta {
         flex-direction: column;
         width: 100%;
+        align-items: center;
+        gap: 12px;
     }
 
     .design-hero-cta a {

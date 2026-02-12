@@ -188,10 +188,10 @@ export default async function BlogPostPage({ params }) {
                 {post.featuredImage?.url ? (
                     <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
                         <Image
+                            key={post._id}
                             src={post.featuredImage.url}
                             alt={post.featuredImage.alt || post.title}
                             fill
-                            priority
                             unoptimized={true}
                             className="object-cover"
                         />
