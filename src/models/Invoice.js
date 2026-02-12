@@ -78,7 +78,7 @@ const InvoiceSchema = new mongoose.Schema(
         
         paymentMethod: {
             type: String,
-            enum: ['bank_transfer', 'crypto', 'cash', 'other', null],
+            enum: ['bank_transfer', 'crypto', 'cash', 'other', 'stripe', 'credit_card', null],
             default: null
         },
         paymentNotes: { type: String },

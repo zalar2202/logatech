@@ -416,7 +416,7 @@ function InvoicesPage() {
                                             {inv.paymentMethod && inv.status !== 'paid' && (
                                                 <div className="mt-1">
                                                     <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800">
-                                                        METHOD: {inv.paymentMethod.replace('_', ' ').toUpperCase()}
+                                                        METHOD: {inv.paymentMethod === 'stripe' ? 'CARD' : inv.paymentMethod.replace('_', ' ').toUpperCase()}
                                                     </span>
                                                 </div>
                                             )}
@@ -1010,7 +1010,7 @@ function InvoicesPage() {
                     
                     <div className="grid grid-cols-1 gap-3">
                         {[
-                            { id: 'stripe', name: 'Credit / Debit Card', desc: 'Instant activation via Secure Stripe Payment', icon: <CreditCard className="w-5 h-5 text-indigo-600" /> },
+                            { id: 'stripe', name: 'Credit / Debit Card', desc: 'Secure payment via Card', icon: <CreditCard className="w-5 h-5 text-indigo-600" /> },
                             { id: 'bank_transfer', name: 'Bank Transfer', desc: 'Direct deposit to our business account', icon: <Building2 className="w-5 h-5" /> },
                             { id: 'crypto', name: 'Cryptocurrency', desc: 'USDT (TRC20), BTC, or ETH', icon: <Globe className="w-5 h-5" /> },
                             { id: 'cash', name: 'Cash Payment', desc: 'Visit our office or local agent', icon: <CreditCard className="w-5 h-5" /> },

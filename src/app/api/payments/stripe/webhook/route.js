@@ -35,16 +35,26 @@ export async function POST(request) {
     // Handle the event
     if (event.type === "checkout.session.completed") {
         const session = event.data.object;
-        const invoiceId = session.metadata.invoiceId;
+        const invoiceId = session.metadata?.invoiceId;
+
+        console.log(`📦 Processing checkout.session.completed for Invoice ID: ${invoiceId}`);
+        console.log("📝 Session Metadata:", JSON.stringify(session.metadata, null, 2));
+
+        if (!invoiceId) {
+            console.error("❌ Webhook Error: No invoiceId found in session metadata");
+            return NextResponse.json({ error: "No invoiceId in metadata" }, { status: 400 });
+        }
 
         await dbConnect();
 
         try {
             const invoice = await Invoice.findById(invoiceId);
             if (!invoice) {
-                console.error("Invoice not found in webhook:", invoiceId);
-                return NextResponse.json({ received: true });
+                console.error(`❌ Webhook Error: Invoice with ID ${invoiceId} not found in database`);
+                return NextResponse.json({ received: true }); // Still return 200 to Stripe
             }
+
+            console.log(`🔍 Found Invoice: ${invoice.invoiceNumber}. Current Status: ${invoice.status}`);
 
             // Create a payment record
             const paymentAmount = session.amount_total / 100;
@@ -60,22 +70,28 @@ export async function POST(request) {
                 notes: `Stripe Payment - Session ID: ${session.id}`,
             });
 
-            // Update Invoice Status
+            console.log(`💰 Payment record created: ${newPayment._id}`);
+
+            // Update Invoice Status and Method
+            invoice.paymentMethod = "stripe";
+            
             if (invoice.paymentPlan?.isInstallment && invoice.status === "sent") {
-                // Was down payment
+                // Was down payment (first payment)
                 invoice.status = "partial";
+                console.log("📈 Setting status to 'partial' (Down Payment received)");
             } else {
                 // Was full payment or remaining balance
                 invoice.status = "paid";
+                console.log("📈 Setting status to 'paid'");
             }
 
             await invoice.save();
             
-            console.log(`✅ Payment received for Invoice ${invoice.invoiceNumber}. New Status: ${invoice.status}`);
+            console.log(`✅ SUCCESS: Invoice ${invoice.invoiceNumber} updated to ${invoice.status}`);
 
         } catch (error) {
-            console.error("Error updating invoice in webhook:", error);
-            return NextResponse.json({ error: "Db error" }, { status: 500 });
+            console.error("❌ Webhook Database Error:", error);
+            return NextResponse.json({ error: "Database update failed" }, { status: 500 });
         }
     }
 
