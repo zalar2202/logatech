@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 /**
  * Footer - Simple footer component for website pages
@@ -19,7 +20,12 @@ export default function WebsiteFooter() {
                     />
                     <span>LogaTech</span>
                 </div>
-                <div className="footer-tagline">Design · Develop · Deploy · Maintain</div>
+                <div className="footer-links flex flex-wrap justify-center gap-x-6 gap-y-2 mb-4 text-sm font-medium">
+                    <Link href="/services/design" className="hover:text-[var(--color-primary)] transition-colors">Design</Link>
+                    <Link href="/services/develop" className="hover:text-[var(--color-primary)] transition-colors">Develop</Link>
+                    <Link href="/services/deploy" className="hover:text-[var(--color-primary)] transition-colors">Deploy</Link>
+                    <Link href="/services/maintain" className="hover:text-[var(--color-primary)] transition-colors">Maintain</Link>
+                </div>
                 <div className="copyright">
                     © 2019-{currentYear} LogaTech. All Rights Reserved.
                 </div>

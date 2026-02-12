@@ -14,11 +14,39 @@ export const metadata = {
     title: "Deployment Services | LogaTech",
     description:
         "Launch your web application with confidence. Enterprise-grade cloud infrastructure, CI/CD automation, and zero-downtime deployments.",
+    alternates: {
+        canonical: "/services/deploy",
+    },
+    openGraph: {
+        title: "Seamless Web Deployment Services | LogaTech",
+        description: "Launch with confidence using our enterprise-grade cloud infrastructure and automation services.",
+        url: "/services/deploy",
+        type: "website",
+    },
 };
 
 export default function DeployServicePage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Seamless Web Deployment",
+        "provider": {
+            "@type": "Organization",
+            "name": "LogaTech",
+            "url": "https://logatech.net",
+        },
+        "description":
+            "Launch your web application with confidence. Enterprise-grade cloud infrastructure, CI/CD automation, and zero-downtime deployments.",
+        "serviceType": "Cloud Deployment",
+        "areaServed": "Global",
+    };
+
     return (
         <div className="page deploy-page main-content">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <DeployHero />
             <DeployTargetClients />
             <DeployServices />

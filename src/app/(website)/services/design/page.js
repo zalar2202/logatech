@@ -14,11 +14,39 @@ export const metadata = {
     title: "Design Services | LogaTech",
     description:
         "Strategic web design that elevates your brand, communicates your message, and converts visitors into customers. Beautiful, strategic, built for growth.",
+    alternates: {
+        canonical: "/services/design",
+    },
+    openGraph: {
+        title: "Strategic Web Design Services | LogaTech",
+        description: "Elevate your brand with beautiful, strategic web design built for growth and conversion.",
+        url: "/services/design",
+        type: "website",
+    },
 };
 
 export default function DesignServicePage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Strategic Web Design",
+        "provider": {
+            "@type": "Organization",
+            "name": "LogaTech",
+            "url": "https://logatech.net",
+        },
+        "description":
+            "Strategic web design that elevates your brand, communicates your message, and converts visitors into customers. Beautiful, strategic, built for growth.",
+        "serviceType": "Web Design",
+        "areaServed": "Global",
+    };
+
     return (
         <div className="page design-page main-content">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <DesignHero />
             <IdealFor />
             <ServiceBreakdown />
