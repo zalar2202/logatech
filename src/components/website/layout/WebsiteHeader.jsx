@@ -233,6 +233,7 @@ export default function WebsiteHeader() {
                                         href="/panel/cart"
                                         className="navbar-cart-link relative"
                                         title="My Cart"
+                                        aria-label="My Cart"
                                     >
                                         <ShoppingCart className="w-5 h-5" />
                                         {cartCount > 0 && (

@@ -154,6 +154,7 @@ export default function AIFloatingButton() {
                     <button
                         onClick={() => setIsOpen(false)}
                         className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                        aria-label="Close chat"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -211,6 +212,7 @@ export default function AIFloatingButton() {
                             type="submit"
                             disabled={!input.trim() || loading}
                             className="absolute right-2 p-2 text-indigo-600 hover:scale-110 disabled:opacity-50 disabled:scale-100 transition-all"
+                            aria-label="Send message"
                         >
                             <Send className="w-5 h-5" />
                         </button>
@@ -254,6 +256,7 @@ export default function AIFloatingButton() {
                             e.stopPropagation();
                             setShowGreeting(false);
                         }}
+                        aria-label="Dismiss greeting"
                     >
                         <X className="w-3 h-3" />
                     </button>
@@ -274,6 +277,7 @@ export default function AIFloatingButton() {
                 style={{
                     background: `linear-gradient(135deg, ${settings.primaryColor} 0%, #7c3aed 100%)`,
                 }}
+                aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
             >
                 {isOpen ? (
                     <X className="w-7 h-7 text-white" />
