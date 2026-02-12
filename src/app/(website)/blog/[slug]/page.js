@@ -60,7 +60,7 @@ async function getPost(slug) {
     try {
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
         const res = await fetch(`${baseUrl}/api/blog/posts/${slug}`, {
-            next: { revalidate: 60 },
+            next: { revalidate: 0 },
         });
         
         if (!res.ok) {
