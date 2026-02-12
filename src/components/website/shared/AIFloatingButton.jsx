@@ -228,6 +228,7 @@ export default function AIFloatingButton() {
                         absolute bottom-20 ${settings.position === "bottom-left" ? "left-0" : "right-0"}
                         bg-white dark:bg-gray-900 shadow-2xl rounded-2xl p-4 border border-indigo-100 dark:border-indigo-900/30
                         w-[220px] animate-fade-in-up cursor-pointer hover:shadow-indigo-500/10 transition-all
+                        max-md:hidden
                     `}
                     onClick={() => {
                         setIsOpen(true);
