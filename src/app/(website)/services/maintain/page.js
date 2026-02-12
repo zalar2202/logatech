@@ -13,11 +13,39 @@ export const metadata = {
     title: "Maintenance & Support Services | LogaTech",
     description:
         "Proactive website maintenance, security patching, and 24/7 uptime monitoring. Keep your digital business running smoothly with LogaTech support plans.",
+    alternates: {
+        canonical: "/services/maintain",
+    },
+    openGraph: {
+        title: "Proactive Website Maintenance Services | LogaTech",
+        description: "Keep your digital business running smoothly with our proactive maintenance and support plans.",
+        url: "/services/maintain",
+        type: "website",
+    },
 };
 
 export default function MaintainServicePage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Website Maintenance & Support",
+        "provider": {
+            "@type": "Organization",
+            "name": "LogaTech",
+            "url": "https://logatech.net",
+        },
+        "description":
+            "Proactive website maintenance, security patching, and 24/7 uptime monitoring. Keep your digital business running smoothly with LogaTech support plans.",
+        "serviceType": "Website Maintenance",
+        "areaServed": "Global",
+    };
+
     return (
         <div className="page maintain-page main-content">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <MaintainHero />
             <MaintainTargetClients />
             <MaintainServices />

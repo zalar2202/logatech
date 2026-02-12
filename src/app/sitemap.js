@@ -5,11 +5,21 @@ export default async function sitemap() {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://logatech.net';
 
     // Static pages
-    const routes = ['', '/blog', '/about', '/services', '/process'].map((route) => ({
+    const routes = [
+        '', 
+        '/blog', 
+        '/about', 
+        '/services', 
+        '/services/design',
+        '/services/develop',
+        '/services/deploy',
+        '/services/maintain',
+        '/process'
+    ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
         changeFrequency: 'weekly',
-        priority: route === '' ? 1 : 0.8,
+        priority: route === '' ? 1 : route.startsWith('/services/') ? 0.9 : 0.8,
     }));
 
     try {

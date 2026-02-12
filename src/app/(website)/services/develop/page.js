@@ -15,11 +15,39 @@ export const metadata = {
     title: "Development Services | LogaTech",
     description:
         "Build high-performance web applications with robust, scalable, and secure code. We transform ideas into powerful digital products.",
+    alternates: {
+        canonical: "/services/develop",
+    },
+    openGraph: {
+        title: "Expert Web Development Services | LogaTech",
+        description: "Transform your ideas into powerful digital products with our scalable and secure development services.",
+        url: "/services/develop",
+        type: "website",
+    },
 };
 
 export default function DevelopServicePage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Expert Web Development",
+        "provider": {
+            "@type": "Organization",
+            "name": "LogaTech",
+            "url": "https://logatech.net",
+        },
+        "description":
+            "Build high-performance web applications with robust, scalable, and secure code. We transform ideas into powerful digital products.",
+        "serviceType": "Web Development",
+        "areaServed": "Global",
+    };
+
     return (
         <div className="page develop-page main-content">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <DevelopHero />
             <TargetClients />
             <TechCapabilities />
