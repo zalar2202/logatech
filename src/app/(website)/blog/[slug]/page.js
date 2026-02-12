@@ -197,27 +197,33 @@ export default async function BlogPostPage({ params }) {
                     <div className="h-[40vh] bg-gradient-to-br from-[var(--accent-color)] to-purple-600" />
                 )}
 
+                {/* Top Navigation Overlay */}
+                <div className="absolute top-0 left-0 right-0 px-4 pt-10 z-20">
+                    <div className="max-w-4xl mx-auto">
+                        <Link
+                            href="/blog"
+                            className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
+                        >
+                            <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                            Back to Blog
+                        </Link>
+                    </div>
+                </div>
+
                 {/* Content Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 px-4 pb-12 z-10">
                     <div className="max-w-4xl mx-auto text-white">
-                        {/* Back Link */}
-                        <Link
-                            href="/blog"
-                            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors"
-                        >
-                            <ChevronLeft size={18} />
-                            Back to Blog
-                        </Link>
-
                         {/* Category */}
                         {post.category && (
-                            <Link
-                                href={`/blog/category/${post.category.slug}`}
-                                className="inline-block px-3 py-1 mb-4 text-sm font-medium rounded-full backdrop-blur-sm"
-                                style={{ backgroundColor: `${post.category.color}CC` }}
-                            >
-                                {post.category.name}
-                            </Link>
+                            <div className="mb-4">
+                                <Link
+                                    href={`/blog/category/${post.category.slug}`}
+                                    className="inline-block px-3 py-1 text-sm font-medium rounded-full backdrop-blur-sm hover:brightness-110 transition-all"
+                                    style={{ backgroundColor: `${post.category.color}CC` }}
+                                >
+                                    {post.category.name}
+                                </Link>
+                            </div>
                         )}
 
                         {/* Title */}
