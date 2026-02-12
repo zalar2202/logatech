@@ -18,11 +18,11 @@ export async function GET() {
         if (!token) {
             return NextResponse.json(
                 {
-                    success: false,
+                    success: true,
                     authenticated: false,
-                    message: "Not authenticated - no token found",
+                    message: "Guest session",
                 },
-                { status: 401 }
+                { status: 200 }
             );
         }
 
@@ -33,11 +33,11 @@ export async function GET() {
         } catch (error) {
             return NextResponse.json(
                 {
-                    success: false,
+                    success: true,
                     authenticated: false,
                     message: error.message || "Invalid or expired token",
                 },
-                { status: 401 }
+                { status: 200 }
             );
         }
 
@@ -50,11 +50,11 @@ export async function GET() {
         if (!user) {
             return NextResponse.json(
                 {
-                    success: false,
+                    success: true,
                     authenticated: false,
                     message: "User not found",
                 },
-                { status: 401 }
+                { status: 200 }
             );
         }
 
