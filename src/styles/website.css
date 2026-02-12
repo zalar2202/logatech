@@ -309,8 +309,8 @@
     --gradient-glow: radial-gradient(circle at center, rgba(50, 18, 122, 0.15) 0%, transparent 70%);
 
     /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(0, 0, 0, 0.05);
     --glass-blur: blur(20px);
 }
 
@@ -776,7 +776,7 @@ html {
     align-items: center;
     gap: 6px;
     padding: 10px 16px;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 500;
@@ -1954,11 +1954,10 @@ html {
     position: relative;
     width: 100%;
     min-height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background: var(--gradient-glow);
-    padding: 120px 40px 80px;
+    padding: 120px 40px 100px;
+    align-items: center;
+    overflow: hidden;
 }
 
 .design-hero-content {
@@ -2593,7 +2592,7 @@ html {
 
 @media (max-width: 768px) {
     .design-hero {
-        padding: 80px 24px 40px;
+        padding: 100px 24px 80px;
         min-height: auto;
     }
 
