@@ -192,6 +192,7 @@ export default async function BlogPostPage({ params }) {
                             alt={post.featuredImage.alt || post.title}
                             fill
                             priority
+                            unoptimized={true}
                             className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
@@ -244,6 +245,7 @@ export default async function BlogPostPage({ params }) {
                                             alt={post.author.name}
                                             width={32}
                                             height={32}
+                                            unoptimized={true}
                                             className="rounded-full"
                                         />
                                     ) : (
@@ -315,6 +317,7 @@ export default async function BlogPostPage({ params }) {
                                                 alt={post.author.name}
                                                 width={64}
                                                 height={64}
+                                                unoptimized={true}
                                                 className="rounded-full"
                                             />
                                         ) : (
@@ -364,6 +367,7 @@ export default async function BlogPostPage({ params }) {
                                                 src={relatedPost.featuredImage.url}
                                                 alt={relatedPost.title}
                                                 fill
+                                                unoptimized={true}
                                                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
                                         ) : (
