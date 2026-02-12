@@ -1,11 +1,7 @@
 import "@/styles/website.css";
 import WebsiteHeader from "@/components/website/layout/WebsiteHeader";
 import WebsiteFooter from "@/components/website/layout/WebsiteFooter";
-import dynamic from "next/dynamic";
-
-const AIFloatingButton = dynamic(() => import("@/components/website/shared/AIFloatingButton"), {
-    ssr: false,
-});
+import LazyAIBot from "@/components/website/shared/LazyAIBot";
 
 export default function WebsiteLayout({ children }) {
     return (
@@ -13,7 +9,7 @@ export default function WebsiteLayout({ children }) {
             <WebsiteHeader />
             <main>{children}</main>
             <WebsiteFooter />
-            <AIFloatingButton />
+            <LazyAIBot />
         </div>
     );
 }
