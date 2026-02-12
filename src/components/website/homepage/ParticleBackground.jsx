@@ -90,7 +90,11 @@ export default function ParticleBackground({ className = "" }) {
 
         // Initialize particles
         function initParticles() {
-            const particleCount = Math.min(100, Math.floor((canvas.width * canvas.height) / 15000));
+            const isMobile = window.innerWidth < 768;
+            // Dramatically reduce particles on mobile (1/3 of desktop density)
+            const density = isMobile ? 40000 : 15000;
+            const particleCount = Math.min(isMobile ? 30 : 100, Math.floor((canvas.width * canvas.height) / density));
+            
             particles = [];
             for (let i = 0; i < particleCount; i++) {
                 particles.push(new Particle());
@@ -99,6 +103,9 @@ export default function ParticleBackground({ className = "" }) {
 
         // Draw connections between nearby particles
         function drawConnections() {
+            const isMobile = window.innerWidth < 768;
+            if (isMobile) return; // Completely disable connections on mobile for massive CPU savings
+
             const maxDistance = 150;
             const primaryColor =
                 getComputedStyle(document.documentElement)
@@ -126,6 +133,12 @@ export default function ParticleBackground({ className = "" }) {
 
         // Animation loop
         function animate() {
+            // Stop animation if page is hidden to save battery/resources
+            if (document.hidden) {
+                animationFrameId = requestAnimationFrame(animate);
+                return;
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw connections first (behind particles)

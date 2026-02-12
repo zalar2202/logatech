@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Inter, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "@/styles/tailwind.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -6,16 +6,6 @@ import { StoreProvider } from "@/lib/StoreProvider";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { Toaster } from "sonner";
-
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
 
 // Website fonts (used by website pages)
 const inter = Inter({
@@ -97,7 +87,7 @@ export default function RootLayout({ children }) {
                 <script dangerouslySetInnerHTML={{ __html: themeScript }} />
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${playfairDisplay.variable} antialiased`}
+                className={`${inter.variable} ${playfairDisplay.variable} antialiased`}
                 suppressHydrationWarning
             >
                 <ThemeProvider>
