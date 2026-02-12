@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, User, ChevronLeft, Share2, Tag, ArrowLeft, ArrowRight } from "lucide-react";
 import CommentSection from "@/components/website/CommentSection";
@@ -186,10 +187,12 @@ export default async function BlogPostPage({ params }) {
                 {/* Featured Image */}
                 {post.featuredImage?.url ? (
                     <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-                        <img
+                        <Image
                             src={post.featuredImage.url}
                             alt={post.featuredImage.alt || post.title}
-                            className="w-full h-full object-cover"
+                            fill
+                            priority
+                            className="object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                     </div>
@@ -236,10 +239,12 @@ export default async function BlogPostPage({ params }) {
                             {post.author && post.showAuthor !== false && (
                                 <div className="flex items-center gap-2">
                                     {post.author.avatar ? (
-                                        <img
+                                        <Image
                                             src={post.author.avatar}
                                             alt={post.author.name}
-                                            className="w-8 h-8 rounded-full"
+                                            width={32}
+                                            height={32}
+                                            className="rounded-full"
                                         />
                                     ) : (
                                         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -305,10 +310,12 @@ export default async function BlogPostPage({ params }) {
                                 <div className="mt-12 p-6 rounded-2xl bg-[var(--card-bg)] border border-[var(--border-color)]">
                                     <div className="flex items-start gap-4">
                                         {post.author.avatar ? (
-                                            <img
+                                            <Image
                                                 src={post.author.avatar}
                                                 alt={post.author.name}
-                                                className="w-16 h-16 rounded-full"
+                                                width={64}
+                                                height={64}
+                                                className="rounded-full"
                                             />
                                         ) : (
                                             <div className="w-16 h-16 rounded-full bg-[var(--bg-tertiary)] flex items-center justify-center">
@@ -353,10 +360,11 @@ export default async function BlogPostPage({ params }) {
                                 >
                                     <div className="h-40 overflow-hidden">
                                         {relatedPost.featuredImage?.url ? (
-                                            <img
+                                            <Image
                                                 src={relatedPost.featuredImage.url}
                                                 alt={relatedPost.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-gradient-to-br from-[var(--accent-color)] to-purple-600" />
