@@ -2,8 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, User, ChevronLeft, Share2, Tag, ArrowLeft, ArrowRight } from "lucide-react";
+import WebsiteThemeToggle from "@/components/website/layout/WebsiteThemeToggle";
+import { MoveLeft, ChevronRight } from "lucide-react";
 import CommentSection from "@/components/website/CommentSection";
 import "@/styles/blog.css";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
     const { slug } = await params;
@@ -59,8 +63,8 @@ export async function generateMetadata({ params }) {
 async function getPost(slug) {
     try {
         const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
-        const res = await fetch(`${baseUrl}/api/blog/posts/${slug}`, {
-            next: { revalidate: 0 },
+        const res = await fetch(`${baseUrl}/api/blog/posts/${slug}?t=${Date.now()}`, {
+            cache: "no-store",
         });
         
         if (!res.ok) {
@@ -167,7 +171,7 @@ export default async function BlogPostPage({ params }) {
     };
 
     return (
-        <article className="min-h-screen pt-32 md:pt-40 bg-[var(--color-background)] text-[var(--color-text-primary)] transition-colors duration-300">
+        <article key={post.slug} className="min-h-screen pt-32 md:pt-40 bg-[var(--color-background)] text-[var(--color-text-primary)] transition-colors duration-300">
             {/* Default JSON-LD Schema */}
             <script
                 type="application/ld+json"
@@ -188,10 +192,11 @@ export default async function BlogPostPage({ params }) {
                 {post.featuredImage?.url ? (
                     <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
                         <img
-                            key={post._id}
+                            key={`${post._id}-${post.slug}`}
                             src={post.featuredImage.url}
                             alt={post.featuredImage.alt || post.title}
                             className="w-full h-full object-cover"
+                            loading="eager"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                     </div>
@@ -239,9 +244,11 @@ export default async function BlogPostPage({ params }) {
                                 <div className="flex items-center gap-2">
                                     {post.author.avatar ? (
                                         <img
+                                            key={`${post.author.name}-avatar`}
                                             src={post.author.avatar}
                                             alt={post.author.name}
                                             className="w-8 h-8 rounded-full"
+                                            loading="eager"
                                         />
                                     ) : (
                                         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
@@ -308,6 +315,7 @@ export default async function BlogPostPage({ params }) {
                                     <div className="flex items-start gap-4">
                                         {post.author.avatar ? (
                                             <img
+                                                key={`${post.author.name}-bio-avatar`}
                                                 src={post.author.avatar}
                                                 alt={post.author.name}
                                                 className="w-16 h-16 rounded-full"
@@ -356,6 +364,7 @@ export default async function BlogPostPage({ params }) {
                                     <div className="h-40 overflow-hidden">
                                         {relatedPost.featuredImage?.url ? (
                                             <img
+                                                key={relatedPost._id}
                                                 src={relatedPost.featuredImage.url}
                                                 alt={relatedPost.title}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
