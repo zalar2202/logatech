@@ -8,11 +8,18 @@ import { headers } from "next/headers";
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(request) {
-    const body = await request.text();
+    let body;
+    try {
+        body = await request.text();
+    } catch (err) {
+        console.error("❌ Webhook Error: Could not read request body");
+        return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+    }
+
     const sig = (await headers()).get("stripe-signature");
 
     if (!stripe) {
-        console.error("❌ Webhook Error: Stripe client not initialized");
+        console.error("❌ Webhook Error: Stripe client not initialized. Check STRIPE_SECRET_KEY.");
         return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
     }
 
@@ -22,15 +29,17 @@ export async function POST(request) {
 
     try {
         if (!webhookSecret) {
-            console.warn("⚠️ STRIPE_WEBHOOK_SECRET is missing. Verification might fail.");
+            console.warn("⚠️ STRIPE_WEBHOOK_SECRET is missing. signature verification will fail.");
         }
+        // Verification requires the RAW string body and the signature
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err) {
-        console.error(`❌ Webhook Signature Error: ${err.message}`);
-        return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+        console.error(`❌ Webhook Signature Verification Failed: ${err.message}`);
+        console.log("💡 Hint: Ensure STRIPE_WEBHOOK_SECRET matches the one in your Stripe Dashboard for this URL.");
+        return NextResponse.json({ error: `Signature Error: ${err.message}` }, { status: 400 });
     }
 
-    console.log("✅ Webhook verified. Event type:", event.type);
+    console.log(`✅ Webhook Verified: ${event.type} [${event.id}]`);
 
     // Handle the event
     if (event.type === "checkout.session.completed") {
