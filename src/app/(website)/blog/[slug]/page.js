@@ -19,13 +19,20 @@ export async function generateMetadata({ params }) {
         };
     }
 
+    const metaTitle = post.seo?.metaTitle || post.title;
+    const metaDescription = post.seo?.metaDescription || post.excerpt || post.content?.replace(/<[^>]*>/g, '').substring(0, 160).trim();
+    const metaKeywords = post.seo?.metaKeywords?.join(", ") || post.tags?.join(", ");
+
     return {
-        title: post.seo?.metaTitle || `${post.title} | LogaTech Blog`,
-        description: post.seo?.metaDescription || post.excerpt || "",
-        keywords: post.seo?.metaKeywords?.join(", ") || post.tags?.join(", "),
+        title: post.seo?.metaTitle ? post.seo.metaTitle : {
+            default: `${post.title} | LogaTech Blog`,
+            template: `%s | LogaTech`,
+        },
+        description: metaDescription || "Expert insights into design, development, deployment and maintenance by LogaTech.",
+        keywords: metaKeywords,
         openGraph: {
-            title: post.seo?.metaTitle || post.title,
-            description: post.seo?.metaDescription || post.excerpt,
+            title: metaTitle,
+            description: metaDescription,
             type: "article",
             publishedTime: post.publishedAt,
             authors: [post.author?.name],
@@ -49,8 +56,8 @@ export async function generateMetadata({ params }) {
         },
         twitter: {
             card: "summary_large_image",
-            title: post.seo?.metaTitle || post.title,
-            description: post.seo?.metaDescription || post.excerpt,
+            title: metaTitle,
+            description: metaDescription,
             images: [post.seo?.ogImage || post.featuredImage?.url || "/assets/favicon/android-chrome-512x512.png"],
         },
         robots: {
@@ -163,7 +170,7 @@ export default async function BlogPostPage({ params }) {
         },
         "datePublished": post.publishedAt,
         "dateModified": post.updatedAt,
-        "description": post.excerpt || post.title,
+        "description": post.seo?.metaDescription || post.excerpt || post.title,
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": postUrl
