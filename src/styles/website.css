@@ -725,7 +725,7 @@ html {
 
 .header-top.scrolled {
     background: var(--glass-bg);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border);
@@ -1953,11 +1953,12 @@ html {
 .design-hero {
     position: relative;
     width: 100%;
-    min-height: 80vh;
-    background: var(--gradient-glow);
-    padding: 120px 40px 100px;
+    min-height: 100vh;
+    display: flex;
     align-items: center;
-    overflow: hidden;
+    justify-content: center;
+    background: var(--gradient-glow);
+    padding: 140px 40px 120px;
 }
 
 .design-hero-content {
@@ -2592,8 +2593,8 @@ html {
 
 @media (max-width: 768px) {
     .design-hero {
-        padding: 100px 24px 80px;
-        min-height: auto;
+        padding: 120px 24px 100px;
+        min-height: 100vh;
     }
 
     .website-layout .design-hero-title {
