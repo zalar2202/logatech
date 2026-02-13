@@ -76,7 +76,7 @@ export default function CartPage() {
             setExchangeRate(rate || 1);
         } catch (error) {
             console.error("Failed to fetch rate", error);
-            const fallbacks = { 'EUR': 0.92, 'CAD': 1.39, 'TRY': 33.5, 'USD': 1.0 };
+            const fallbacks = { 'EUR': 0.92, 'CAD': 1.39, 'TRY': 33.5, 'AED': 3.67, 'USD': 1.0 };
             setExchangeRate(fallbacks[currency] || 1);
         }
     };
@@ -393,6 +393,7 @@ export default function CartPage() {
                                     <option value="EUR">🇪🇺 EUR - Euro (€)</option>
                                     <option value="CAD">🇨🇦 CAD - Canadian Dollar (C$)</option>
                                     <option value="TRY">🇹🇷 TRY - Turkish Lira (₺)</option>
+                                    <option value="AED">🇦🇪 AED - UAE Dirham (د.إ)</option>
                                 </select>
                                 <p className="text-[10px] text-indigo-600 dark:text-indigo-500 mt-2">
                                     Select your preferred currency for payment
