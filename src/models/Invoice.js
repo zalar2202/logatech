@@ -37,7 +37,7 @@ const InvoiceSchema = new mongoose.Schema(
         },
         issueDate: { type: Date, required: true, default: Date.now },
         dueDate: { type: Date, required: true },
-        currency: { type: String, enum: ['USD', 'EUR', 'CAD', 'TRY'], default: 'USD' },
+        currency: { type: String, enum: ['USD', 'EUR', 'CAD', 'TRY', 'AED'], default: 'USD' },
         baseCurrency: { type: String, default: 'USD' }, // Reporting currency
         exchangeRate: { type: Number, default: 1.0 },   // 1 unit of 'currency' = X units of 'baseCurrency'
         totalInBaseCurrency: { type: Number, default: 0 }, // Consolidated value for accounting
