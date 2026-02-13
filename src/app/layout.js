@@ -1,4 +1,5 @@
 import { Inter, Playfair_Display } from "next/font/google";
+import Script from "next/script";
 import "@/styles/tailwind.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -90,6 +91,21 @@ export default function RootLayout({ children }) {
                 className={`${inter.variable} ${playfairDisplay.variable} antialiased`}
                 suppressHydrationWarning
             >
+                <Script
+                    strategy="afterInteractive"
+                    src="https://www.googletagmanager.com/gtag/js?id=G-EJ6FKV74BQ"
+                />
+                <Script
+                    id="google-analytics"
+                    strategy="afterInteractive"
+                >
+                    {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+                        gtag('config', 'G-EJ6FKV74BQ');
+                    `}
+                </Script>
                 <ThemeProvider>
                     <AuthProvider>
                         <StoreProvider>
