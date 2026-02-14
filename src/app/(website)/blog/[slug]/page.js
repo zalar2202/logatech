@@ -200,7 +200,19 @@ export default async function BlogPostPage({ params }) {
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ 
-                        __html: post.seo.schema.replace(/<\/?script[^>]*>/gi, "") 
+                        __html: (() => {
+                            try {
+                                const cleaned = post.seo.schema.replace(/<\/?script[^>]*>/gi, "");
+                                const json = JSON.parse(cleaned);
+                                // Add name if missing to avoid "Unnamed item" in GSC
+                                if (!json.name) {
+                                    json.name = `${post.title} FAQ`;
+                                }
+                                return JSON.stringify(json);
+                            } catch (e) {
+                                return post.seo.schema.replace(/<\/?script[^>]*>/gi, "");
+                            }
+                        })()
                     }}
                 />
             )}
