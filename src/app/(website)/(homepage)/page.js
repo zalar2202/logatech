@@ -109,9 +109,11 @@ export default function HomePage() {
         "url": "https://logatech.net",
         "logo": "https://logatech.net/assets/favicon/android-chrome-512x512.png",
         "sameAs": [
-            "https://twitter.com/logatech", 
-            "https://www.linkedin.com/company/logatech",
-            "https://github.com/logatech"
+            "https://www.linkedin.com/company/logatechnet/",
+            "https://x.com/logatechnet",
+            "https://github.com/LogaTech-net",
+            "https://instagram.com/logatechnet",
+            "https://clutch.co/profile/logatech"
         ],
         "contactPoint": {
             "@type": "ContactPoint",
