@@ -95,9 +95,10 @@ export default function CommentSection({ postId, allowComments }) {
                 <h4 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Leave a Comment</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-[var(--text-secondary)]">Name *</label>
+                        <label htmlFor="comment-author-name" className="block text-sm font-medium mb-1 text-[var(--text-secondary)]">Name *</label>
                         <input
                             type="text"
+                            id="comment-author-name"
                             name="authorName"
                             value={formData.authorName}
                             onChange={handleChange}
@@ -107,9 +108,10 @@ export default function CommentSection({ postId, allowComments }) {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-[var(--text-secondary)]">Email *</label>
+                        <label htmlFor="comment-author-email" className="block text-sm font-medium mb-1 text-[var(--text-secondary)]">Email *</label>
                         <input
                             type="email"
+                            id="comment-author-email"
                             name="authorEmail"
                             value={formData.authorEmail}
                             onChange={handleChange}
@@ -124,6 +126,7 @@ export default function CommentSection({ postId, allowComments }) {
                 <div className="hidden">
                     <input
                         type="text"
+                        id="comment-website-honeypot"
                         name="website"
                         value={formData.website}
                         onChange={handleChange}
@@ -133,8 +136,9 @@ export default function CommentSection({ postId, allowComments }) {
                 </div>
 
                 <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1 text-[var(--text-secondary)]">Comment *</label>
+                    <label htmlFor="comment-content" className="block text-sm font-medium mb-1 text-[var(--text-secondary)]">Comment *</label>
                     <textarea
+                        id="comment-content"
                         name="content"
                         value={formData.content}
                         onChange={handleChange}
