@@ -123,6 +123,13 @@ async function getRelatedPosts(categoryId, currentPostId) {
     }
 }
 
+// Helper to process content and add lazy loading to images
+function processContent(content) {
+    if (!content) return "";
+    // detailed regex to capture img tags and inject loading="lazy" if not present
+    return content.replace(/<img((?!.*loading=)[^>]+)>/g, '<img loading="lazy" decoding="async" $1>');
+}
+
 function formatDate(dateString) {
     if (!dateString) return "";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -327,9 +334,8 @@ export default async function BlogPostPage({ params }) {
                                     prose-strong:text-[var(--color-text-primary)]
                                     prose-blockquote:border-[var(--color-primary)]
                                     prose-blockquote:text-[var(--color-text-secondary)]
-                                    prose-code:bg-[var(--color-background-tertiary)]
                                     prose-pre:bg-[var(--color-background-tertiary)]"
-                                dangerouslySetInnerHTML={{ __html: post.content }}
+                                dangerouslySetInnerHTML={{ __html: processContent(post.content) }}
                             />
 
                             {/* Tags */}
@@ -355,12 +361,15 @@ export default async function BlogPostPage({ params }) {
                                 <div className="mt-12 p-6 rounded-2xl bg-[var(--card-bg)] border border-[var(--border-color)]">
                                     <div className="flex items-start gap-4">
                                         {post.author.avatar ? (
-                                            <img
-                                                key={`${post.author.name}-bio-avatar`}
-                                                src={post.author.avatar}
-                                                alt={post.author.name}
-                                                className="w-16 h-16 rounded-full"
-                                            />
+                                            <div className="relative w-16 h-16 rounded-full overflow-hidden shrink-0">
+                                                <Image
+                                                    src={post.author.avatar}
+                                                    alt={post.author.name}
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="64px"
+                                                />
+                                            </div>
                                         ) : (
                                             <div className="w-16 h-16 rounded-full bg-[var(--bg-tertiary)] flex items-center justify-center">
                                                 <User size={24} className="text-[var(--text-secondary)]" />
