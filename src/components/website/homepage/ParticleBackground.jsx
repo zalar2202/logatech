@@ -147,12 +147,6 @@ export default function ParticleBackground({ className = "" }) {
             }
 
             // Skip every other frame for ~30fps (saves significant CPU)
-            frameCount++;
-            if (frameCount % 2 !== 0) {
-                animationFrameId = requestAnimationFrame(animate);
-                return;
-            }
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw connections first (behind particles)
