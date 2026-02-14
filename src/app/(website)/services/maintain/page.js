@@ -25,7 +25,28 @@ export const metadata = {
 };
 
 export default function MaintainServicePage() {
-    const jsonLd = {
+    
+    // Maintain FAQ Data (Duplicated for SEO Schema)
+    const faqItems = [
+        {
+            question: "What happens if my site is hacked or goes down?",
+            answer: "Our monitoring systems alert us immediately. For hacked sites, we perform a clean restoration from our most recent secure backup and harden the entry point. This is included in all our plans.",
+        },
+        {
+            question: "Do you support sites that LogaTech didn't build?",
+            answer: "Yes. We can manage and maintain sites built by other teams. We'll start with a security and compatibility audit to ensure your current setup can be supported efficiently.",
+        },
+        {
+            question: "What constitutes a 'small fix' or 'dev time'?",
+            answer: "Dev time can be used for CSS tweaks, changing text/images, adding a small feature, or investigating a specific bug. If a request exceeds your plan's hours, we'll provide a transparent quote before starting.",
+        },
+        {
+            question: "How do I communicate with the support team?",
+            answer: "Essential plan users use our email ticketing system. Professional and Enterprise users get access to a private Slack channel for real-time collaboration with our engineers.",
+        },
+    ];
+
+    const serviceSchema = {
         "@context": "https://schema.org",
         "@type": "Service",
         "name": "Website Maintenance & Support",
@@ -33,6 +54,7 @@ export default function MaintainServicePage() {
             "@type": "Organization",
             "name": "LogaTech",
             "url": "https://logatech.net",
+            "logo": "https://logatech.net/assets/favicon/android-chrome-512x512.png"
         },
         "description":
             "Proactive website maintenance, security patching, and 24/7 uptime monitoring. Keep your digital business running smoothly with LogaTech support plans.",
@@ -40,11 +62,51 @@ export default function MaintainServicePage() {
         "areaServed": "Global",
     };
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://logatech.net"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Maintenance Services",
+                "item": "https://logatech.net/services/maintain"
+            }
+        ]
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqItems.map(item => ({
+            "@type": "Question",
+            "name": item.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item.answer
+            }
+        }))
+    };
+
     return (
         <div className="page maintain-page main-content">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
             <MaintainHero />
             <MaintainTargetClients />
