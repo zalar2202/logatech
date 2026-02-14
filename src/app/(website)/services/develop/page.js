@@ -27,7 +27,36 @@ export const metadata = {
 };
 
 export default function DevelopServicePage() {
-    const jsonLd = {
+    
+    // Develop FAQ Data (Duplicated for SEO Schema)
+    const faqItems = [
+        {
+            question: "Do I own the code?",
+            answer: "100%. Once paid for, the repository and IP are yours. We don't lock you in.",
+        },
+        {
+            question: "What tech stack do you use?",
+            answer: "We primarily use the modern JavaScript stack (React, Next.js, Node.js) because it offers the best balance of performance, scalability, and community support.",
+        },
+        {
+            question: "Do you provide hosting?",
+            answer: "We set up hosting for you on your preferred accounts (e.g., Vercel, AWS), so you have full control. We don't resell hosting, so you pay the provider directly.",
+        },
+        {
+            question: "What about maintenance?",
+            answer: "We offer maintenance packages to keep libraries updated, monitor security, and fix any bugs that appear post-launch.",
+        },
+        {
+            question: "Can you take over an existing project?",
+            answer: "Yes, but we'll need to do a code audit first to assess the quality of the current codebase and see if it's viable to build upon or needs refactoring.",
+        },
+        {
+            question: "Is the site mobile-friendly?",
+            answer: "Absolutely. All our development is responsive by default, ensuring it looks perfect on phones, tablets, and desktops.",
+        },
+    ];
+
+    const serviceSchema = {
         "@context": "https://schema.org",
         "@type": "Service",
         "name": "Expert Web Development",
@@ -35,6 +64,7 @@ export default function DevelopServicePage() {
             "@type": "Organization",
             "name": "LogaTech",
             "url": "https://logatech.net",
+            "logo": "https://logatech.net/assets/favicon/android-chrome-512x512.png"
         },
         "description":
             "Build high-performance web applications with robust, scalable, and secure code. We transform ideas into powerful digital products.",
@@ -42,11 +72,51 @@ export default function DevelopServicePage() {
         "areaServed": "Global",
     };
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://logatech.net"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Development Services",
+                "item": "https://logatech.net/services/develop"
+            }
+        ]
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqItems.map(item => ({
+            "@type": "Question",
+            "name": item.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item.answer
+            }
+        }))
+    };
+
     return (
         <div className="page develop-page main-content">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
             <DevelopHero />
             <TargetClients />
