@@ -7,6 +7,7 @@ export default function robots() {
                 userAgent: '*',
                 allow: '/',
                 disallow: ['/panel/', '/api/'], // Hide admin and api from search engines
+                allow: ['/api/files', '/api/blog/'], // Allow images and blog content fetching
             },
             {
                 userAgent: ['GPTBot', 'ClaudeBot', 'Applebot-Extended'],
