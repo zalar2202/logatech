@@ -52,7 +52,7 @@ const invoiceSchema = Yup.object().shape({
         .min(1, "At least one item is required"),
     notes: Yup.string(),
     taxRate: Yup.number().min(0).max(100),
-    currency: Yup.string().oneOf(["USD", "EUR", "CAD", "TRY"]).required("Currency is required"),
+    currency: Yup.string().oneOf(["USD", "EUR", "CAD", "TRY", "AED"]).required("Currency is required"),
     promotion: Yup.object().shape({
         code: Yup.string(),
         discountAmount: Yup.number().min(0),
@@ -574,6 +574,7 @@ function InvoicesPage() {
                                         <option value="EUR">EUR (€)</option>
                                         <option value="CAD">CAD (C$)</option>
                                         <option value="TRY">TRY (₺)</option>
+                                        <option value="AED">AED (د.إ)</option>
                                     </SelectField>
                                 </div>
 

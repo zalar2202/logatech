@@ -33,7 +33,7 @@ const CartSchema = new mongoose.Schema(
         },
         currency: {
             type: String,
-            enum: ['USD', 'EUR', 'CAD', 'TRY'],
+            enum: ['USD', 'EUR', 'CAD', 'TRY', 'AED'],
             default: 'USD',
         },
     },

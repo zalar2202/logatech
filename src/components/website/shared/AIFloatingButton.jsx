@@ -224,7 +224,7 @@ export default function AIFloatingButton() {
                             <Send className="w-5 h-5" />
                         </button>
                     </div>
-                    <p className="text-[10px] text-center text-gray-400 mt-2 font-medium">
+                    <p className="text-[10px] text-center text-gray-400 mt-2 mb-0 font-medium" style={{marginBottom: "0", marginTop:"0.5rem"}}>
                         Powered by Loga AI Engine
                     </p>
                 </form>
