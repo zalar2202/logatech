@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, Clock, ChevronRight, Tag } from "lucide-react";
 
 export const metadata = {
@@ -22,6 +23,9 @@ export const metadata = {
         title: "Blog | LogaTech",
         description: "Read the latest articles, tutorials, and insights from LogaTech.",
         images: ["/assets/favicon/android-chrome-512x512.png"],
+    },
+    alternates: {
+        canonical: "/blog",
     },
 };
 
@@ -87,10 +91,12 @@ function PostCard({ post, featured = false }) {
                 }`}
             >
                 {post.featuredImage?.url ? (
-                    <img
+                    <Image
                         src={post.featuredImage.url}
                         alt={post.featuredImage.alt || post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes={featured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"}
                     />
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[var(--accent-color)] to-purple-600 flex items-center justify-center">

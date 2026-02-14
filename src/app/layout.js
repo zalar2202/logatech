@@ -92,12 +92,12 @@ export default function RootLayout({ children }) {
                 suppressHydrationWarning
             >
                 <Script
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                     src="https://www.googletagmanager.com/gtag/js?id=G-EJ6FKV74BQ"
                 />
                 <Script
                     id="google-analytics"
-                    strategy="afterInteractive"
+                    strategy="lazyOnload"
                 >
                     {`
                         window.dataLayer = window.dataLayer || [];

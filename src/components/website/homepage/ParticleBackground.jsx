@@ -16,6 +16,23 @@ export default function ParticleBackground({ className = "" }) {
         const ctx = canvas.getContext("2d");
         let animationFrameId;
         let particles = [];
+        let frameCount = 0;
+
+        // Cache primary color to avoid reading getComputedStyle every frame
+        let cachedPrimaryColor = getComputedStyle(document.documentElement)
+            .getPropertyValue("--color-primary")
+            .trim() || "#32127a";
+
+        // Watch for theme changes to update cached color
+        const observer = new MutationObserver(() => {
+            cachedPrimaryColor = getComputedStyle(document.documentElement)
+                .getPropertyValue("--color-primary")
+                .trim() || "#32127a";
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["data-theme"],
+        });
 
         // Handle resize
         const handleResize = () => {
@@ -62,15 +79,9 @@ export default function ParticleBackground({ className = "" }) {
             }
 
             draw() {
-                // Get computed primary color from CSS variable
-                const primaryColor =
-                    getComputedStyle(document.documentElement)
-                        .getPropertyValue("--color-primary")
-                        .trim() || "#32127a";
-
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = hexToRgba(primaryColor, this.opacity);
+                ctx.fillStyle = hexToRgba(cachedPrimaryColor, this.opacity);
                 ctx.fill();
             }
         }
@@ -107,10 +118,6 @@ export default function ParticleBackground({ className = "" }) {
             if (isMobile) return; // Completely disable connections on mobile for massive CPU savings
 
             const maxDistance = 150;
-            const primaryColor =
-                getComputedStyle(document.documentElement)
-                    .getPropertyValue("--color-primary")
-                    .trim() || "#32127a";
 
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
@@ -121,7 +128,7 @@ export default function ParticleBackground({ className = "" }) {
                     if (distance < maxDistance) {
                         const opacity = (1 - distance / maxDistance) * 0.15;
                         ctx.beginPath();
-                        ctx.strokeStyle = hexToRgba(primaryColor, opacity);
+                        ctx.strokeStyle = hexToRgba(cachedPrimaryColor, opacity);
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
@@ -135,6 +142,13 @@ export default function ParticleBackground({ className = "" }) {
         function animate() {
             // Stop animation if page is hidden to save battery/resources
             if (document.hidden) {
+                animationFrameId = requestAnimationFrame(animate);
+                return;
+            }
+
+            // Skip every other frame for ~30fps (saves significant CPU)
+            frameCount++;
+            if (frameCount % 2 !== 0) {
                 animationFrameId = requestAnimationFrame(animate);
                 return;
             }
@@ -164,6 +178,7 @@ export default function ParticleBackground({ className = "" }) {
 
         return () => {
             window.removeEventListener("resize", handleResize);
+            observer.disconnect();
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
             }

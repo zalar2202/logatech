@@ -32,14 +32,21 @@ export async function generateMetadata({ params }) {
     };
 
     const title = post.seo?.metaTitle || post.title;
-    const description = post.seo?.metaDescription || post.excerpt || post.content?.replace(/<[^>]*>/g, ' ').substring(0, 160).trim() || post.title;
+    // Robust description fallback: seo field → excerpt → stripped content → title
+    const rawDescription = post.seo?.metaDescription 
+        || post.excerpt 
+        || post.content?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').substring(0, 160).trim();
+    const description = (rawDescription && rawDescription.trim()) ? rawDescription.trim() : (post.title || 'Read this article on LogaTech Blog');
     const ogImage = getAbsoluteImageUrl(post.seo?.ogImage || post.featuredImage?.url);
 
     return {
-        title: `${title} | LogaTech`,
+        title: title,
         description: description,
         keywords: post.seo?.metaKeywords?.join(", ") || post.tags?.join(", "),
         metadataBase: new URL(baseUrl),
+        alternates: {
+            canonical: `/blog/${slug}`,
+        },
         openGraph: {
             title: title,
             description: description,
@@ -47,6 +54,7 @@ export async function generateMetadata({ params }) {
             siteName: "LogaTech",
             type: "article",
             publishedTime: post.publishedAt,
+            modifiedTime: post.updatedAt,
             authors: [post.author?.name],
             images: [
                 {
@@ -222,13 +230,14 @@ export default async function BlogPostPage({ params }) {
                 {/* Featured Image */}
                 {post.featuredImage?.url ? (
                     <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-                        <img
+                        <Image
                             key={`${post._id}-${post.slug}`}
                             src={post.featuredImage.url}
                             alt={post.featuredImage.alt || post.title}
-                            className="w-full h-full object-cover"
-                            loading="eager"
-                            fetchpriority="high"
+                            fill
+                            className="object-cover"
+                            priority
+                            sizes="100vw"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                     </div>
@@ -393,13 +402,15 @@ export default async function BlogPostPage({ params }) {
                                     href={`/blog/${relatedPost.slug}`}
                                     className="group block overflow-hidden rounded-2xl bg-[var(--card-bg)] border border-[var(--border-color)] hover:border-[var(--accent-color)] transition-all duration-300"
                                 >
-                                    <div className="h-40 overflow-hidden">
+                                    <div className="h-40 overflow-hidden relative">
                                         {relatedPost.featuredImage?.url ? (
-                                            <img
+                                            <Image
                                                 key={relatedPost._id}
                                                 src={relatedPost.featuredImage.url}
                                                 alt={relatedPost.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-gradient-to-br from-[var(--accent-color)] to-purple-600" />

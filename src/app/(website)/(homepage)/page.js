@@ -29,6 +29,9 @@ export const metadata = {
         description: "Innovative Digital Solutions & Strategic Web Development.",
         images: ["/assets/favicon/android-chrome-512x512.png"],
     },
+    alternates: {
+        canonical: "/",
+    },
 };
 
 export const dynamic = "force-dynamic";
