@@ -35,8 +35,13 @@ export default function AIFloatingButton() {
                     }
                 }
             } catch (error) {
-                console.error("Failed to load AI settings:", error);
-                // Fallback to defaults if API fails (e.g. no DB connection)
+                // Suppress error logging for bots/crawlers or if blocked by robots.txt (403/499/NetworkError)
+                const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+                if (!isBot) {
+                     console.error("Failed to load AI settings:", error);
+                }
+                
+                // Fallback to defaults if API fails (e.g. no DB connection or blocked by robots.txt)
                 setSettings({
                     isActive: true,
                     title: "Loga Chat",
