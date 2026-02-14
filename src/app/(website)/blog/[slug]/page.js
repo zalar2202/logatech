@@ -199,7 +199,9 @@ export default async function BlogPostPage({ params }) {
             {post.seo?.schema && (
                 <script
                     type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: post.seo.schema }}
+                    dangerouslySetInnerHTML={{ 
+                        __html: post.seo.schema.replace(/<\/?script[^>]*>/gi, "") 
+                    }}
                 />
             )}
 
