@@ -123,12 +123,7 @@ async function getRelatedPosts(categoryId, currentPostId) {
     }
 }
 
-// Helper to process content and add lazy loading to images
-function processContent(content) {
-    if (!content) return "";
-    // detailed regex to capture img tags and inject loading="lazy" if not present
-    return content.replace(/<img((?!.*loading=)[^>]+)>/g, '<img loading="lazy" decoding="async" $1>');
-}
+
 
 function formatDate(dateString) {
     if (!dateString) return "";
@@ -335,7 +330,7 @@ export default async function BlogPostPage({ params }) {
                                     prose-blockquote:border-[var(--color-primary)]
                                     prose-blockquote:text-[var(--color-text-secondary)]
                                     prose-pre:bg-[var(--color-background-tertiary)]"
-                                dangerouslySetInnerHTML={{ __html: processContent(post.content) }}
+                                dangerouslySetInnerHTML={{ __html: post.content }}
                             />
 
                             {/* Tags */}
