@@ -147,7 +147,7 @@ export default function AIFloatingButton() {
                             <Bot className="w-4 h-4" />
                         </div>
                         <div>
-                            <h2 className="font-bold text-base leading-tight m-0">{settings.title}</h2>
+                            <p className="font-bold text-base leading-tight m-0">{settings.title}</p>
                             <div className="flex items-center gap-1.5 mt-0.5">
                                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                                 <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
