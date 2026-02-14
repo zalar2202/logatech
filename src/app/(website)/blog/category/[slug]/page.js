@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Calendar, Clock, ChevronRight, Hash } from "lucide-react";
 
@@ -15,6 +16,14 @@ export async function generateMetadata({ params }) {
     return {
         title: category.seo?.metaTitle || `${category.name} | LogaTech Blog`,
         description: category.seo?.metaDescription || category.description || `Articles in the ${category.name} category.`,
+        alternates: {
+            canonical: `/blog/category/${slug}`,
+        },
+        openGraph: {
+            title: category.seo?.metaTitle || `${category.name} | LogaTech Blog`,
+            description: category.seo?.metaDescription || category.description || `Articles in the ${category.name} category.`,
+            type: "website",
+        },
     };
 }
 
@@ -66,10 +75,12 @@ function PostCard({ post }) {
         >
             <div className="relative h-48 overflow-hidden">
                 {post.featuredImage?.url ? (
-                    <img
+                    <Image
                         src={post.featuredImage.url}
                         alt={post.featuredImage.alt || post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[var(--accent-color)] to-purple-600 flex items-center justify-center">
