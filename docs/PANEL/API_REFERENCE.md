@@ -38,7 +38,12 @@ Protected routes use `verifyAuth(request)` from `@/lib/auth`.
 
 ### Content
 - `api/blog`: Blog posts management
-- `api/media`: Media library (metadata)
+- `api/media`: Media library (upload, bulk actions)
+  - `GET /api/media`: List and filter
+  - `POST /api/media`: Upload one file
+  - `PATCH /api/media/[id]`: Update metadata (alt, caption, tags)
+  - `DELETE /api/media/[id]`: Delete single file
+  - `DELETE /api/media`: Bulk delete
 - `api/files`: File serving/management
 
 ### System

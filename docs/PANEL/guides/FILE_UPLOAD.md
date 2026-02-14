@@ -39,4 +39,20 @@ Uploads use a **storage abstraction** (`src/lib/storage/`). Default is **local**
 ## Panel usage
 
 - **Create user:** `/panel/users/create` – form includes avatar upload; submit sends FormData.
-- **Edit user:** `/panel/users/[id]/edit` – replace avatar; old file is deleted on replace or user delete.
+
+---
+
+## Media Library
+The centralized media library (`/panel/media`) provides advanced management for all uploaded assets.
+
+### Features
+- **Integrated Editor**: Crop, rotate, and resize images directly in the browser.
+- **Metadata Management**: Edit alt text, captions, and tags for better SEO and accessibility.
+- **Advanced Filtering**: Filter by type (image, video, document), folder, or search by name/tags.
+- **Bulk Actions**: Select multiple files for deletion.
+- **Detailed View**: Inspect file metadata (size, dimensions, type) and preview content.
+
+### API Integration
+- Uses `PATCH /api/media/[id]` for updating metadata.
+- Uses `react-easy-crop` for client-side image manipulation before upload.
+
