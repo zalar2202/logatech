@@ -23,6 +23,7 @@ import { Button } from '@/components/common/Button';
 import { ContentWrapper } from '@/components/layout/ContentWrapper';
 import { Pagination } from '@/components/common/Pagination';
 import { ConfirmModal } from '@/components/common/Modal';
+import { MediaDetailsModal } from '@/components/media/MediaDetailsModal';
 
 export default function MediaLibraryPage() {
     const [media, setMedia] = useState([]);
@@ -36,6 +37,27 @@ export default function MediaLibraryPage() {
     const [selectedIds, setSelectedIds] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [detailsMedia, setDetailsMedia] = useState(null);
+
+    const handleMediaUpdate = (item) => {
+        // Optimistic update
+        setMedia(prev => prev.map(m => m._id === item._id ? item : m));
+        // If it was a create (e.g. save copy), we should probably refetch or prepend
+        // But for update metadata, mapping is enough.
+        // For 'save copy', the API returns the new item usually.
+        // If IDs differ, it's a new item.
+        if (detailsMedia && item._id !== detailsMedia._id) {
+             fetchMedia(); 
+        } else {
+             setDetailsMedia(item);
+        }
+    };
+
+    const handleMediaDelete = (id) => {
+        setMedia(prev => prev.filter(m => m._id !== id));
+        setSelectedIds(prev => prev.filter(i => i !== id));
+        if (detailsMedia?._id === id) setDetailsMedia(null);
+    };
 
     const fetchMedia = useCallback(async () => {
         setLoading(true);
@@ -223,12 +245,12 @@ export default function MediaLibraryPage() {
                             {media.map((item) => (
                                 <div key={item._id} className="group relative">
                                     <div 
-                                        onClick={() => toggleSelect(item._id)}
                                         className={`aspect-square rounded-2xl border-2 overflow-hidden cursor-pointer transition-all ${
                                             selectedIds.includes(item._id) 
                                             ? 'border-[var(--color-primary)] ring-4 ring-[var(--color-primary-light)]' 
                                             : 'border-[var(--color-border)] hover:border-[var(--color-primary-light)]'
                                         }`}
+                                        onClick={() => setDetailsMedia(item)}
                                     >
                                         {item.mimeType.startsWith('image/') ? (
                                             <img 
@@ -244,6 +266,19 @@ export default function MediaLibraryPage() {
                                                 </span>
                                             </div>
                                         )}
+
+                                        {/* Selection Checkbox */}
+                                        <div 
+                                            className="absolute top-2 left-2 z-20"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <input 
+                                                type="checkbox"
+                                                checked={selectedIds.includes(item._id)}
+                                                onChange={() => toggleSelect(item._id)}
+                                                className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] focus:ring-[var(--color-primary)] cursor-pointer"
+                                            />
+                                        </div>
 
                                         {/* Actions Overlay */}
                                         <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -295,13 +330,18 @@ export default function MediaLibraryPage() {
                                     </thead>
                                     <tbody className="divide-y divide-[var(--color-border)]">
                                         {media.map((item) => (
-                                            <tr key={item._id} className="hover:bg-[var(--color-background-secondary)] transition-colors">
+                                            <tr 
+                                                key={item._id} 
+                                                className="hover:bg-[var(--color-background-secondary)] transition-colors cursor-pointer"
+                                                onClick={() => setDetailsMedia(item)}
+                                            >
                                                 <td className="px-6 py-4">
                                                     <input 
                                                         type="checkbox" 
                                                         checked={selectedIds.includes(item._id)}
                                                         onChange={() => toggleSelect(item._id)}
-                                                        className="rounded border-[var(--color-border)]"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="rounded border-[var(--color-border)] cursor-pointer"
                                                     />
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -350,6 +390,14 @@ export default function MediaLibraryPage() {
                 </>
             )}
 
+            <MediaDetailsModal
+                isOpen={!!detailsMedia}
+                onClose={() => setDetailsMedia(null)}
+                mediaItem={detailsMedia}
+                onUpdate={handleMediaUpdate}
+                onDelete={handleMediaDelete}
+            />
+            
             <ConfirmModal 
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}

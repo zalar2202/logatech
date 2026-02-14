@@ -42,3 +42,9 @@ General helper functions.
 - Date formatting
 - String manipulation
 - Client-side helpers
+
+### UI Libraries
+- **Lucide React**: Icon pack.
+- **Sonner**: Toast notifications.
+- **React Easy Crop**: Image cropping and manipulation.
+
