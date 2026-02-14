@@ -100,8 +100,80 @@ const faqItems = [
 ];
 
 export default function HomePage() {
+    
+    // JSON-LD Schemas
+    const organizationSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "LogaTech",
+        "url": "https://logatech.net",
+        "logo": "https://logatech.net/assets/favicon/android-chrome-512x512.png",
+        "sameAs": [
+            "https://twitter.com/logatech", 
+            "https://www.linkedin.com/company/logatech",
+            "https://github.com/logatech"
+        ],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+1-555-0123-4567", // Update with real number if available
+            "contactType": "customer service"
+        }
+    };
+
+    const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "LogaTech",
+        "url": "https://logatech.net",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://logatech.net/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    };
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://logatech.net"
+        }]
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqItems.map(item => ({
+            "@type": "Question",
+            "name": item.question,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item.answer
+            }
+        }))
+    };
+
     return (
         <div className="page home-page main-content">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+            />
             <Hero />
             <AboutSection />
             <Services />
