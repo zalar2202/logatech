@@ -208,6 +208,8 @@ export default function AIFloatingButton() {
                     <div className="relative flex items-center gap-2">
                         <input
                             type="text"
+                            id="ai-chat-input"
+                            name="message"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Type your message..."
