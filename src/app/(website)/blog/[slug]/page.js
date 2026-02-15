@@ -197,8 +197,50 @@ export default async function BlogPostPage({ params }) {
         }
     };
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": {
+                    "@type": "WebPage",
+                    "@id": baseUrl,
+                    "name": "LogaTech"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": {
+                    "@type": "WebPage",
+                    "@id": `${baseUrl}/blog`,
+                    "name": "Blog"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": post.title,
+                "item": {
+                    "@type": "WebPage",
+                    "@id": postUrl,
+                    "name": post.title
+                }
+            }
+        ]
+    };
+
     return (
         <article key={post.slug} className="min-h-screen pt-32 md:pt-40 bg-[var(--color-background)] text-[var(--color-text-primary)] transition-colors duration-300">
+            {/* Breadcrumb JSON-LD */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             {/* Default JSON-LD Schema */}
             <script
                 type="application/ld+json"

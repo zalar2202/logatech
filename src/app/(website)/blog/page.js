@@ -167,6 +167,7 @@ function PostCard({ post, featured = false }) {
 }
 
 export default async function BlogPage() {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
     const [{ posts, pagination }, categories] = await Promise.all([
         getPosts(),
         getCategories(),
@@ -175,8 +176,39 @@ export default async function BlogPage() {
     const featuredPost = posts.find((p) => p.isFeatured);
     const regularPosts = posts.filter((p) => p._id !== featuredPost?._id);
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": {
+                    "@type": "WebPage",
+                    "@id": baseUrl,
+                    "name": "LogaTech"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": {
+                    "@type": "WebPage",
+                    "@id": `${baseUrl}/blog`,
+                    "name": "Blog"
+                }
+            }
+        ]
+    };
+
     return (
         <main className="min-h-screen py-20 px-4">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             <div className="max-w-7xl mx-auto">
                 {/* Hero Section */}
                 <section className="text-center mb-16">

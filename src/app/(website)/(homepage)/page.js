@@ -144,7 +144,11 @@ export default function HomePage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://logatech.net"
+            "item": {
+                "@type": "WebPage",
+                "@id": "https://logatech.net",
+                "name": "LogaTech"
+            }
         }]
     };
 
