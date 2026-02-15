@@ -127,8 +127,50 @@ export default async function CategoryPage({ params }) {
 
     const posts = await getPostsByCategory(category._id);
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://logatech.net";
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": {
+                    "@type": "WebPage",
+                    "@id": baseUrl,
+                    "name": "LogaTech"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": {
+                    "@type": "WebPage",
+                    "@id": `${baseUrl}/blog`,
+                    "name": "Blog"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": category.name,
+                "item": {
+                    "@type": "WebPage",
+                    "@id": `${baseUrl}/blog/category/${slug}`,
+                    "name": category.name
+                }
+            }
+        ]
+    };
+
     return (
         <main className="min-h-screen py-20 px-4">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">
