@@ -20,6 +20,8 @@ const PaymentSchema = new mongoose.Schema(
             type: String, 
             default: 'USD' 
         },
+        exchangeRate: { type: Number, default: 1.0 },
+        amountInBaseCurrency: { type: Number, default: 0 },
         method: { 
             type: String, 
             enum: ['cash', 'bank_transfer', 'credit_card', 'paypal', 'crypto', 'check', 'other'], 

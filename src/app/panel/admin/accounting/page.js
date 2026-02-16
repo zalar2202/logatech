@@ -37,15 +37,19 @@ export default function AdminAccountingPage() {
     const metrics = useMemo(() => {
         const revenue = invoices
             .filter(inv => inv.status === 'paid')
-            .reduce((sum, inv) => sum + (inv.total || 0), 0);
+            .reduce((sum, inv) => sum + (inv.totalInBaseCurrency || inv.total || 0), 0);
         
         const outstanding = invoices
             .filter(inv => ['sent', 'overdue', 'partial'].includes(inv.status))
             .reduce((sum, inv) => {
+                const totalBase = inv.totalInBaseCurrency || inv.total || 0;
+                const rate = inv.exchangeRate || 1;
+                
                 if (inv.status === 'partial' && inv.paymentPlan?.isInstallment) {
-                    return sum + (inv.total - (inv.paymentPlan?.downPayment || 0));
+                    const downPaymentBase = (inv.paymentPlan?.downPayment || 0) * rate;
+                    return sum + (totalBase - downPaymentBase);
                 }
-                return sum + (inv.total || 0);
+                return sum + totalBase;
             }, 0);
         
         const totalExpenses = expenses
@@ -54,7 +58,11 @@ export default function AdminAccountingPage() {
 
         const totalPromotions = invoices
             .filter(inv => inv.status === 'paid')
-            .reduce((sum, inv) => sum + (inv.promotion?.discountAmount || 0), 0);
+            .reduce((sum, inv) => {
+                const promoAmt = inv.promotion?.discountAmount || 0;
+                const rate = inv.exchangeRate || 1;
+                return sum + (promoAmt * rate);
+            }, 0);
 
         const netProfit = revenue - totalExpenses;
         const profitMargin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;

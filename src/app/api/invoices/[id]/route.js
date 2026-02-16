@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Invoice from '@/models/Invoice';
+import Payment from '@/models/Payment';
 import Service from '@/models/Service';
 import Client from '@/models/Client';
 import User from '@/models/User';
@@ -113,6 +114,25 @@ export async function PUT(request, { params }) {
         // Logic: If status changed to 'paid' and there's a package linked, activate/upsert service
         if (body.status === 'paid' && oldInvoice.status !== 'paid') {
             const invoiceForProcessing = await Invoice.findById(id).populate('client');
+
+            // 1. Create Payment Record if it doesn't exist
+            const existingPayment = await Payment.findOne({ invoice: id });
+            if (!existingPayment) {
+                await Payment.create({
+                    client: invoiceForProcessing.client?._id,
+                    invoice: id,
+                    amount: invoiceForProcessing.total,
+                    currency: invoiceForProcessing.currency,
+                    amountInBaseCurrency: invoiceForProcessing.totalInBaseCurrency,
+                    exchangeRate: invoiceForProcessing.exchangeRate,
+                    method: invoiceForProcessing.paymentMethod || 'bank_transfer',
+                    status: 'completed',
+                    paymentDate: new Date(),
+                    recordedBy: user._id,
+                    notes: `Automatically recorded from Invoice ${invoiceForProcessing.invoiceNumber}`
+                });
+                console.log(`Payment record created for invoice ${invoiceForProcessing.invoiceNumber}`);
+            }
             
             if (invoiceForProcessing.package) {
                 let targetUserId = invoiceForProcessing.user;

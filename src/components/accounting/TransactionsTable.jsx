@@ -5,6 +5,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton, Menu, MenuItem } from '@mui/material';
+import { formatCurrency } from '@/lib/utils';
 
 const TransactionsTable = ({ transactions, type = 'user' }) => {
     // type: 'user' or 'admin'
@@ -64,7 +65,7 @@ const TransactionsTable = ({ transactions, type = 'user' }) => {
                             const invoiceNo = tx.invoiceNumber || tx.id;
                             const clientName = tx.client?.name || tx.clientName || 'Unknown';
                             const dateStr = tx.issueDate ? new Date(tx.issueDate).toLocaleDateString() : tx.date;
-                            const amountStr = typeof tx.total === 'number' ? `$${tx.total.toLocaleString()}` : tx.amount;
+                            const amountStr = formatCurrency(tx.total || tx.amount, tx.currency || 'USD');
                             const descriptionStr = tx.items?.[0]?.description || tx.description || 'Service Invoice';
 
                             return (

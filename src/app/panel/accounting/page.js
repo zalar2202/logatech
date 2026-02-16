@@ -5,6 +5,7 @@ import AccountingStats from '@/components/accounting/AccountingStats';
 import TransactionsTable from '@/components/accounting/TransactionsTable';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { Loader2 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 export default function UserAccountingPage() {
     const [loading, setLoading] = useState(true);
@@ -18,19 +19,19 @@ export default function UserAccountingPage() {
                 if (data.success) {
                     setInvoices(data.data);
                     
-                    const totalSpent = data.data
+                    const totalSpentBase = data.data
                         .filter(inv => inv.status === 'paid')
-                        .reduce((sum, inv) => sum + (inv.total || 0), 0);
+                        .reduce((sum, inv) => sum + (inv.totalInBaseCurrency || inv.total || 0), 0);
                     
                     const activeServicesCount = data.data.filter(inv => inv.status === 'paid').length;
                     
-                    const pendingInvoice = data.data.find(inv => ['sent', 'overdue'].includes(inv.status));
+                    const pendingInvoice = data.data.find(inv => ['sent', 'overdue', 'partial'].includes(inv.status));
 
                     setStats([
-                        { title: "Total Spent", value: `$${totalSpent.toLocaleString()}`, percentage: "", trend: "up", description: "Lifetime investment" },
+                        { title: "Total Spent", value: formatCurrency(totalSpentBase, 'USD'), percentage: "", trend: "up", description: "Converted to USD" },
                         { 
                             title: "Pending Balance", 
-                            value: pendingInvoice ? `$${pendingInvoice.total.toLocaleString()}` : "$0.00", 
+                            value: pendingInvoice ? formatCurrency(pendingInvoice.total, pendingInvoice.currency) : formatCurrency(0, 'USD'), 
                             percentage: "", 
                             trend: pendingInvoice ? "down" : "neutral", 
                             description: pendingInvoice ? `Next due: ${new Date(pendingInvoice.dueDate).toLocaleDateString()}` : "No outstanding bills" 

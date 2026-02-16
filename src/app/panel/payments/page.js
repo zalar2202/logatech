@@ -13,10 +13,12 @@ import { Formik, Form } from "formik";
 import { toast } from "sonner";
 import { CreditCard, Plus, Search, Trash2, Edit, DollarSign, TrendingUp, Calendar } from "lucide-react";
 import * as Yup from "yup";
+import { formatCurrency } from "@/lib/utils";
 
 const paymentSchema = Yup.object().shape({
     client: Yup.string().required("Client is required"),
     amount: Yup.number().min(0.01, "Amount must be greater than 0").required("Amount is required"),
+    currency: Yup.string().required("Currency is required"),
     method: Yup.string().required("Payment method is required"),
     status: Yup.string(),
     reference: Yup.string(),
@@ -125,8 +127,8 @@ export default function PaymentsPage() {
     );
 
     // Stats
-    const totalReceived = payments.filter(p => p.status === 'completed').reduce((acc, p) => acc + p.amount, 0);
-    const pendingAmount = payments.filter(p => p.status === 'pending').reduce((acc, p) => acc + p.amount, 0);
+    const totalReceived = payments.filter(p => p.status === 'completed').reduce((acc, p) => acc + (p.amountInBaseCurrency || p.amount), 0);
+    const pendingAmount = payments.filter(p => p.status === 'pending').reduce((acc, p) => acc + (p.amountInBaseCurrency || p.amount), 0);
 
     return (
         <ContentWrapper>
@@ -153,7 +155,7 @@ export default function PaymentsPage() {
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Total Received</p>
-                        <p className="text-2xl font-bold text-green-600">${totalReceived.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-green-600">{formatCurrency(totalReceived, 'USD')}</p>
                     </div>
                 </Card>
                 <Card className="p-4 flex items-center gap-4">
@@ -162,7 +164,7 @@ export default function PaymentsPage() {
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Pending</p>
-                        <p className="text-2xl font-bold text-orange-600">${pendingAmount.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-orange-600">{formatCurrency(pendingAmount, 'USD')}</p>
                     </div>
                 </Card>
                 <Card className="p-4 flex items-center gap-4">
@@ -212,7 +214,7 @@ export default function PaymentsPage() {
                                     <tr key={payment._id} className="border-b last:border-0 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                         <td className="p-4 text-sm">{new Date(payment.paymentDate).toLocaleDateString()}</td>
                                         <td className="p-4 font-medium">{payment.client?.name || "Unknown"}</td>
-                                        <td className="p-4 font-bold text-green-600">${payment.amount?.toFixed(2)}</td>
+                                        <td className="p-4 font-bold text-green-600">{formatCurrency(payment.amount, payment.currency || 'USD')}</td>
                                         <td className="p-4 text-sm capitalize">{payment.method?.replace('_', ' ')}</td>
                                         <td className="p-4">
                                             <Badge variant={payment.status === 'completed' ? 'success' : payment.status === 'pending' ? 'warning' : 'danger'} size="sm" className="capitalize">
@@ -243,6 +245,7 @@ export default function PaymentsPage() {
                     initialValues={{
                         client: selectedPayment?.client?._id || "",
                         amount: selectedPayment?.amount || "",
+                        currency: selectedPayment?.currency || "USD",
                         method: selectedPayment?.method || "bank_transfer",
                         status: selectedPayment?.status || "completed",
                         reference: selectedPayment?.reference || "",
@@ -254,7 +257,7 @@ export default function PaymentsPage() {
                     onSubmit={handleSubmit}
                     enableReinitialize
                 >
-                    {({ isSubmitting }) => (
+                    {({ isSubmitting, setFieldValue }) => (
                         <Form className="space-y-4">
                             <SelectField name="client" label="Client">
                                 <option value="">-- Select Client --</option>
@@ -264,7 +267,16 @@ export default function PaymentsPage() {
                             </SelectField>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <InputField type="number" name="amount" label="Amount ($)" min="0" step="0.01" />
+                                <InputField type="number" name="amount" label="Amount" min="0" step="0.01" />
+                                <SelectField name="currency" label="Currency">
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="CAD">CAD (C$)</option>
+                                    <option value="TRY">TRY (₺)</option>
+                                    <option value="AED">AED (د.إ)</option>
+                                </SelectField>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
                                 <SelectField name="method" label="Payment Method">
                                     <option value="bank_transfer">Bank Transfer</option>
                                     <option value="cash">Cash</option>
@@ -274,24 +286,39 @@ export default function PaymentsPage() {
                                     <option value="check">Check</option>
                                     <option value="other">Other</option>
                                 </SelectField>
+                                <InputField type="date" name="paymentDate" label="Payment Date" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <InputField type="date" name="paymentDate" label="Payment Date" />
                                 <SelectField name="status" label="Status">
                                     <option value="completed">Completed</option>
                                     <option value="pending">Pending</option>
                                     <option value="failed">Failed</option>
                                     <option value="refunded">Refunded</option>
                                 </SelectField>
+                                <SelectField 
+                                    name="invoice" 
+                                    label="Link to Invoice (Optional)"
+                                    onChange={(e) => {
+                                        const invId = e.target.value;
+                                        setFieldValue("invoice", invId);
+                                        const selectedInv = invoices.find(i => i._id === invId);
+                                        if (selectedInv) {
+                                            setFieldValue("amount", selectedInv.total);
+                                            setFieldValue("currency", selectedInv.currency);
+                                            setFieldValue("client", selectedInv.client?._id);
+                                            if (selectedInv.paymentMethod) {
+                                                setFieldValue("method", selectedInv.paymentMethod);
+                                            }
+                                        }
+                                    }}
+                                >
+                                    <option value="">-- No Invoice --</option>
+                                    {invoices.map(inv => (
+                                        <option key={inv._id} value={inv._id}>{inv.invoiceNumber} - {formatCurrency(inv.total, inv.currency)}</option>
+                                    ))}
+                                </SelectField>
                             </div>
-
-                            <SelectField name="invoice" label="Link to Invoice (Optional)">
-                                <option value="">-- No Invoice --</option>
-                                {invoices.map(inv => (
-                                    <option key={inv._id} value={inv._id}>{inv.invoiceNumber} - ${inv.total?.toFixed(2)}</option>
-                                ))}
-                            </SelectField>
 
                             <InputField name="reference" label="Reference / Transaction ID" placeholder="e.g., TXN-12345" />
                             <TextareaField name="notes" label="Notes" rows={2} />

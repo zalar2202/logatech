@@ -29,6 +29,7 @@ export async function getExchangeRate(from) {
             'EUR': 1.08,
             'CAD': 0.72,
             'TRY': 0.028,
+            'AED': 0.27,
             'USD': 1.0
         };
         
