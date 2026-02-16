@@ -4,6 +4,7 @@ import Invoice from '@/models/Invoice';
 import Client from '@/models/Client';
 import { verifyAuth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
+import { convertToBaseCurrency } from '@/lib/currency';
 
 export async function GET(request) {
     try {
@@ -48,9 +49,14 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Client and amount are required' }, { status: 400 });
         }
 
+        // Calculate Base Currency values
+        const { amount: amountInBase, rate } = await convertToBaseCurrency(body.amount, body.currency || 'USD');
+
         // Create Payment
         const payment = await Payment.create({
             ...body,
+            amountInBaseCurrency: amountInBase,
+            exchangeRate: rate,
             recordedBy: user._id
         });
 
