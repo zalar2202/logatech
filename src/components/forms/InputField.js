@@ -27,23 +27,27 @@ export const InputField = ({
     return (
         <div className={`space-y-2 ${className}`}>
             {/* Label and Action Header */}
-            <div className="flex items-center justify-between">
-                {label && (
-                    <label
-                        htmlFor={name}
-                        className="block text-sm font-medium"
-                        style={{ color: "var(--color-text-primary)" }}
-                    >
-                        {label}
-                        {required && (
-                            <span className="ml-1" style={{ color: "var(--color-error)" }}>
-                                *
-                            </span>
-                        )}
-                    </label>
-                )}
-                {action && action}
-            </div>
+            {(label || action) && (
+                <div className="flex items-center justify-between h-6 overflow-hidden">
+                    {label ? (
+                        <label
+                            htmlFor={name}
+                            className="block text-sm font-medium leading-none"
+                            style={{ color: "var(--color-text-primary)" }}
+                        >
+                            {label}
+                            {required && (
+                                <span className="ml-1" style={{ color: "var(--color-error)" }}>
+                                    *
+                                </span>
+                            )}
+                        </label>
+                    ) : (
+                        <div /> 
+                    )}
+                    {action && <div className="flex items-center h-full">{action}</div>}
+                </div>
+            )}
 
             {/* Input Wrapper */}
             <div className="relative">

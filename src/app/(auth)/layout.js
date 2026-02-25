@@ -8,8 +8,10 @@ import "@/styles/panel.css";
 export default function AuthLayout({ children }) {
     return (
         <div
-            className="min-h-screen flex items-center justify-center p-4"
+            className="flex items-center justify-center p-4 overflow-hidden"
             style={{
+                height: "100vh",
+                width: "100vw",
                 backgroundColor: "var(--color-background)",
             }}
         >

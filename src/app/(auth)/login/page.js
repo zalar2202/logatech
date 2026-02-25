@@ -1,42 +1,54 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Formik, Form } from "formik";
 import { InputField } from "@/components/forms/InputField";
 import { Button } from "@/components/common/Button";
-import { Card } from "@/components/common/Card";
 import { useAuth } from "@/contexts/AuthContext";
-import { loginSchema, loginInitialValues } from "@/schemas/auth.schema";
-import { LogIn, Shield, AlertCircle, ArrowLeft } from "lucide-react";
+import { loginSchema, loginInitialValues, signupSchema, signupInitialValues } from "@/schemas/auth.schema";
+import { LogIn, UserPlus, AlertCircle, ArrowLeft, Wand2, Chrome, Facebook, Linkedin } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
+import axios from "axios";
 import { Captcha } from "@/components/forms/Captcha";
+import "@/styles/auth-sliding.css";
 
-export default function LoginPage() {
+export default function UnifiedAuthPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { login } = useAuth();
-    const [error, setError] = useState("");
-    const [isCaptchaSolved, setIsCaptchaSolved] = useState(false);
-    const [captchaError, setCaptchaError] = useState("");
+    const [isRightPanelActive, setIsRightPanelActive] = useState(false);
+    
+    // Auth State
+    const [loginError, setLoginError] = useState("");
+    const [signupError, setSignupError] = useState("");
+    const [isLoginCaptchaSolved, setIsLoginCaptchaSolved] = useState(false);
+    const [isSignupCaptchaSolved, setIsSignupCaptchaSolved] = useState(false);
+    const [loginCaptchaError, setLoginCaptchaError] = useState("");
+    const [signupCaptchaError, setSignupCaptchaError] = useState("");
 
     useEffect(() => {
-        // Check for error in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const errorParam = urlParams.get("error");
+        const mode = searchParams.get("mode");
+        if (mode === "signup") {
+            setIsRightPanelActive(true);
+        }
+        
+        // Check for general error in URL
+        const errorParam = searchParams.get("error");
         if (errorParam) {
-            setError(errorParam);
+            setLoginError(errorParam);
             toast.error(errorParam);
         }
-    }, []);
+    }, [searchParams]);
 
-    const handleSubmit = async (values, { setSubmitting }) => {
-        setError("");
-        setCaptchaError("");
+    const handleLoginSubmit = async (values, { setSubmitting }) => {
+        setLoginError("");
+        setLoginCaptchaError("");
 
-        if (!isCaptchaSolved) {
-            setCaptchaError("Please solve the security check correctly.");
+        if (!isLoginCaptchaSolved) {
+            setLoginCaptchaError("Please solve the security check correctly.");
             setSubmitting(false);
             return;
         }
@@ -46,10 +58,7 @@ export default function LoginPage() {
 
             if (result.success) {
                 toast.success("Login successful! Welcome back.");
-
-                // Check if there's a redirect path
                 const redirectPath = sessionStorage.getItem("redirect_after_login");
-
                 if (redirectPath) {
                     sessionStorage.removeItem("redirect_after_login");
                     router.push(redirectPath);
@@ -57,265 +66,285 @@ export default function LoginPage() {
                     router.push("/panel/dashboard");
                 }
             } else {
-                setError(result.message || "Login failed. Please try again.");
+                setLoginError(result.message || "Login failed. Please try again.");
                 toast.error(result.message || "Login failed");
             }
         } catch (err) {
-            setError("An unexpected error occurred. Please try again.");
+            setLoginError("An unexpected error occurred. Please try again.");
             toast.error("An unexpected error occurred");
         } finally {
             setSubmitting(false);
         }
     };
 
+    const handleSignupSubmit = async (values, { setSubmitting }) => {
+        setSignupError("");
+        setSignupCaptchaError("");
+
+        if (!isSignupCaptchaSolved) {
+            setSignupCaptchaError("Please solve the security check correctly.");
+            setSubmitting(false);
+            return;
+        }
+
+        try {
+            const response = await axios.post("/api/auth/signup", {
+                name: values.name,
+                email: values.email,
+                password: values.password,
+            });
+
+            if (response.data.success) {
+                toast.success("Account created successfully! Welcome.");
+                router.push("/panel/dashboard");
+            } else {
+                setSignupError(response.data.message || "Signup failed. Please try again.");
+                toast.error(response.data.message || "Signup failed");
+            }
+        } catch (err) {
+            const message = err.response?.data?.message || "An unexpected error occurred. Please try again.";
+            setSignupError(message);
+            toast.error(message);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const generatePassword = (setFieldValue) => {
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+        let password = "";
+        for (let i = 0; i < 12; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        setFieldValue("password", password);
+        setFieldValue("confirmPassword", password);
+        toast.info("Secure password generated!");
+    };
+
     return (
-        <div className="w-full max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-4 items-center">
-                {/* Left Side - Branding */}
-                <div className="hidden md:block">
-                    <div className="text-center md:text-left">
-                        <div
-                            className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4 overflow-hidden shadow-lg"
-                            style={{ backgroundColor: "var(--color-primary)" }}
-                        >
-                            <Image
-                                src="/assets/logo/LogaTech-512.webp"
-                                alt="LogaTech"
-                                width={48}
-                                height={48}
-                                className="w-12 h-12 object-contain brightness-0 invert"
-                            />
+        <div className={`auth-container ${isRightPanelActive ? "right-panel-active" : ""}`}>
+            {/* Sign Up Form */}
+            <div className="auth-form-container sign-up-container">
+                <div className="auth-form">
+                    <h1 className="text-2xl font-bold">Create Account</h1>
+                    <div className="social-container">
+                        <div className="social inactive" title="Facebook Login (Inactive)">
+                            <Facebook size={20} />
                         </div>
-
-                        <h1
-                            className="text-4xl font-bold mb-4"
-                            style={{ color: "var(--color-text-primary)" }}
+                        <div 
+                            className="social active" 
+                            title="Continue with Google"
+                            onClick={() => (window.location.href = "/api/auth/google")}
                         >
-                            LogaTech Panel
-                        </h1>
-
-                        <p
-                            className="text-lg mb-8"
-                            style={{ color: "var(--color-text-secondary)" }}
-                        >
-                            Secure authentication with httpOnly cookies. Manage your business with
-                            confidence.
-                        </p>
-
-                        <div className="space-y-4">
-                            {[
-                                { icon: "🔒", title: "Secure", desc: "XSS & CSRF protected" },
-                                { icon: "⚡", title: "Fast", desc: "Optimized performance" },
-                                {
-                                    icon: "🎨",
-                                    title: "Modern",
-                                    desc: "Beautiful UI with dark mode",
-                                },
-                            ].map((feature, index) => (
-                                <div key={index} className="flex items-center gap-3">
-                                    <span className="text-3xl">{feature.icon}</span>
-                                    <div>
-                                        <p
-                                            className="font-semibold"
-                                            style={{ color: "var(--color-text-primary)" }}
-                                        >
-                                            {feature.title}
-                                        </p>
-                                        <p
-                                            className="text-sm"
-                                            style={{ color: "var(--color-text-secondary)" }}
-                                        >
-                                            {feature.desc}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
+                            <Chrome size={20} className="text-blue-600" />
+                        </div>
+                        <div className="social inactive" title="LinkedIn Login (Inactive)">
+                            <Linkedin size={20} />
                         </div>
                     </div>
-                </div>
-
-                {/* Right Side - Login Form */}
-                <Card className="w-full relative">
-                    <div className="p-6">
-                        {/* Homepage Button */}
-                        <Link
-                            href="/"
-                            className="absolute top-4 right-6 flex items-center gap-1 text-sm font-medium transition-colors hover:opacity-80"
-                            style={{ color: "var(--color-primary)" }}
-                        >
-                            <ArrowLeft size={16} />
-                            Homepage
-                        </Link>
-
-                        {/* Mobile Logo */}
-                        <div className="md:hidden text-center mb-6">
-                            <div
-                                className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4 overflow-hidden shadow-lg mx-auto"
-                                style={{ backgroundColor: "var(--color-primary)" }}
-                            >
-                                <Image
-                                    src="/assets/logo/LogaTech-512.webp"
-                                    alt="LogaTech"
-                                    width={48}
-                                    height={48}
-                                    className="w-12 h-12 object-contain brightness-0 invert"
-                                />
-                            </div>
-                            <h2
-                                className="text-2xl font-bold"
-                                style={{ color: "var(--color-text-primary)" }}
-                            >
-                                LogaTech Admin
-                            </h2>
+                    <span>or use your email for registration</span>
+                    
+                    {signupError && (
+                        <div className="flex items-center gap-2 text-red-500 text-xs mt-2">
+                            <AlertCircle size={14} />
+                            {signupError}
                         </div>
+                    )}
 
-                        <h2
-                            className="text-xl font-bold mb-1 hidden md:block"
-                            style={{ color: "var(--color-text-primary)" }}
-                        >
-                            Welcome Back
-                        </h2>
-
-                        <p
-                            className="mb-4 hidden md:block"
-                            style={{ color: "var(--color-text-secondary)" }}
-                        >
-                            Sign in to your account
-                        </p>
-
-                        {/* Error Message */}
-                        {error && (
-                            <div
-                                className="mb-6 p-4 rounded-lg flex items-start gap-3"
-                                style={{
-                                    backgroundColor: "var(--color-error-light)",
-                                    borderLeft: "4px solid var(--color-error)",
-                                }}
-                            >
-                                <AlertCircle
-                                    size={20}
-                                    style={{ color: "var(--color-error)" }}
-                                    className="flex-shrink-0 mt-0.5"
+                    <Formik
+                        initialValues={signupInitialValues}
+                        validationSchema={signupSchema}
+                        onSubmit={handleSignupSubmit}
+                    >
+                        {({ isSubmitting, setFieldValue }) => (
+                            <Form className="w-full space-y-3 mt-4">
+                                <InputField
+                                    name="name"
+                                    label="Full Name"
+                                    placeholder="Enter your full name"
+                                    className="!my-1"
                                 />
-                                <p className="text-sm" style={{ color: "var(--color-error)" }}>
-                                    {error}
-                                </p>
-                            </div>
-                        )}
-
-                        <Formik
-                            initialValues={loginInitialValues}
-                            validationSchema={loginSchema}
-                            onSubmit={handleSubmit}
-                        >
-                            {({ isSubmitting }) => (
-                                <Form className="space-y-4">
-                                    <InputField
-                                        name="email"
-                                        type="email"
-                                        label="Email Address"
-                                        placeholder="admin@logatech.net"
-                                        autoComplete="email"
-                                    />
-
+                                <InputField
+                                    name="email"
+                                    type="email"
+                                    label="Email Address"
+                                    placeholder="Enter your email"
+                                    className="!my-1"
+                                />
+                                <div className="grid grid-cols-2 gap-4">
                                     <InputField
                                         name="password"
                                         type="password"
                                         label="Password"
-                                        placeholder="Enter your password"
-                                        autoComplete="current-password"
+                                        placeholder="••••••••"
+                                        className="!my-1"
+                                        action={
+                                            <button
+                                                type="button"
+                                                onClick={() => generatePassword(setFieldValue)}
+                                                className="text-[10px] font-bold text-primary hover:underline flex items-center"
+                                            >
+                                                <Wand2 size={10} className="mr-1" />
+                                                Auto
+                                            </button>
+                                        }
                                     />
-
-                                    <Captcha
-                                        error={captchaError}
-                                        onVerify={(solved) => {
-                                            setIsCaptchaSolved(solved);
-                                            if (solved) setCaptchaError("");
-                                        }}
+                                    <InputField
+                                        name="confirmPassword"
+                                        type="password"
+                                        label="Confirm"
+                                        placeholder="••••••••"
+                                        className="!my-1"
+                                        action={
+                                            <button
+                                                type="button"
+                                                className="invisible text-[10px] font-bold text-primary flex items-center pointer-events-none"
+                                            >
+                                                <Wand2 size={10} className="mr-1" />
+                                                Auto
+                                            </button>
+                                        }
                                     />
+                                </div>
+                                <Captcha
+                                    error={signupCaptchaError}
+                                    onVerify={(solved) => {
+                                        setIsSignupCaptchaSolved(solved);
+                                        if (solved) setSignupCaptchaError("");
+                                    }}
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    loading={isSubmitting}
+                                    fullWidth
+                                    className="mt-4"
+                                >
+                                    SIGN UP
+                                </Button>
+                            </Form>
+                        )}
+                    </Formik>
+                    
+                    <button 
+                        className="md:hidden mt-4 text-xs font-bold"
+                        onClick={() => setIsRightPanelActive(false)}
+                    >
+                        Already have an account? Sign In
+                    </button>
+                </div>
+            </div>
 
-                                    <Button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        loading={isSubmitting}
-                                        fullWidth
-                                        size="lg"
-                                    >
-                                        {!isSubmitting && <LogIn className="mr-2" size={20} />}
-                                        {isSubmitting ? "Signing in..." : "Sign In"}
-                                    </Button>
-                                </Form>
-                            )}
-                        </Formik>
-
-                        {/* Divider */}
-                        <div className="my-6 flex items-center gap-4">
-                            <div className="h-px flex-1 bg-[var(--color-border)]"></div>
-                            <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">
-                                or
-                            </span>
-                            <div className="h-px flex-1 bg-[var(--color-border)]"></div>
+            {/* Sign In Form */}
+            <div className="auth-form-container sign-in-container">
+                <div className="auth-form">
+                    <h1 className="text-2xl font-bold">LogaTech Panel</h1>
+                    <div className="social-container">
+                        <div className="social inactive" title="Facebook Login (Inactive)">
+                            <Facebook size={20} />
                         </div>
-
-                        {/* Google Login Button */}
-                        <Button
-                            variant="secondary"
-                            fullWidth
-                            size="lg"
-                            className="bg-white border border-gray-300 hover:bg-gray-50 flex items-center justify-center gap-3 py-3"
+                        <div 
+                            className="social active" 
+                            title="Continue with Google"
                             onClick={() => (window.location.href = "/api/auth/google")}
                         >
-                            <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M23.5 12.235c0-.822-.066-1.644-.206-2.441H12v4.628h6.456a5.57 5.57 0 0 1-2.407 3.65v3.016h3.882c2.269-2.087 3.569-5.161 3.569-8.853z"
-                                    fill="#4285F4"
-                                />
-                                <path
-                                    d="M12 24c3.24 0 5.957-1.071 7.942-2.912l-3.882-3.016c-1.077.729-2.464 1.156-4.06 1.156-3.114 0-5.751-2.099-6.696-4.918H1.423v3.111C3.401 21.365 7.426 24 12 24z"
-                                    fill="#34A853"
-                                />
-                                <path
-                                    d="M5.304 14.31a7.197 7.197 0 0 1 0-4.619V6.58H1.423a12.003 12.003 0 0 0 0 10.84l3.881-3.11z"
-                                    fill="#FBBC04"
-                                />
-                                <path
-                                    d="M12 4.75c1.763 0 3.344.604 4.588 1.789l3.447-3.447C17.952 1.189 15.234 0 12 0 7.426 0 3.401 2.635 1.423 6.58L5.304 9.69C6.249 6.871 8.886 4.75 12 4.75z"
-                                    fill="#EA4335"
-                                />
-                            </svg>
-                            <span className="text-gray-700 font-medium">Continue with Google</span>
-                        </Button>
-
-                        <div className="mt-6 text-center">
-                            <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                                Don&apos;t have an account?{" "}
-                                <Link
-                                    href="/signup"
-                                    className="font-bold hover:underline"
-                                    style={{ color: "var(--color-primary)" }}
-                                >
-                                    Sign Up
-                                </Link>
-                            </p>
+                            <Chrome size={20} className="text-blue-600" />
                         </div>
-
-                        {/* Security Note */}
-                        <div className="mt-6 text-center">
-                            <p className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
-                                🔒 Secured with httpOnly cookies
-                                <br />
-                                Protected against XSS and CSRF attacks
-                            </p>
+                        <div className="social inactive" title="LinkedIn Login (Inactive)">
+                            <Linkedin size={20} />
                         </div>
                     </div>
-                </Card>
+                    <span>Welcome back!</span>
+                    
+                    {loginError && (
+                        <div className="flex items-center gap-2 text-red-500 text-xs mt-2">
+                            <AlertCircle size={14} />
+                            {loginError}
+                        </div>
+                    )}
+
+                    <Formik
+                        initialValues={loginInitialValues}
+                        validationSchema={loginSchema}
+                        onSubmit={handleLoginSubmit}
+                    >
+                        {({ isSubmitting }) => (
+                            <Form className="w-full space-y-4 mt-6">
+                                <InputField
+                                    name="email"
+                                    type="email"
+                                    label="Email Address"
+                                    placeholder="Enter your email"
+                                />
+                                <InputField
+                                    name="password"
+                                    type="password"
+                                    label="Password"
+                                    placeholder="Enter your password"
+                                />
+                                <Captcha
+                                    error={loginCaptchaError}
+                                    onVerify={(solved) => {
+                                        setIsLoginCaptchaSolved(solved);
+                                        if (solved) setLoginCaptchaError("");
+                                    }}
+                                />
+                                <a href="#" className="text-xs hover:underline block text-center">Forgot your password?</a>
+                                <Button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    loading={isSubmitting}
+                                    fullWidth
+                                >
+                                    SIGN IN
+                                </Button>
+                            </Form>
+                        )}
+                    </Formik>
+                    
+                    <button 
+                        className="md:hidden mt-4 text-xs font-bold"
+                        onClick={() => setIsRightPanelActive(true)}
+                    >
+                        Don&apos;t have an account? Sign Up
+                    </button>
+                </div>
             </div>
+
+            {/* Overlay Panels */}
+            <div className="auth-overlay-container">
+                <div className="auth-overlay">
+                    <div className="auth-overlay-panel auth-overlay-left">
+                        <h1 className="text-3xl font-bold">Welcome Back!</h1>
+                        <p>To keep connected with us please login with your personal info</p>
+                        <button 
+                            className="px-10 py-3 border-2 border-white rounded-full bg-transparent text-white font-bold uppercase tracking-widest transition-transform active:scale-95 focus:outline-none"
+                            onClick={() => setIsRightPanelActive(false)}
+                        >
+                            SIGN IN
+                        </button>
+                    </div>
+                    <div className="auth-overlay-panel auth-overlay-right">
+                        <h1 className="text-3xl font-bold text-white">LogaTech Panel</h1>
+                        <p>Enter your personal details and start journey with us</p>
+                        <button 
+                            className="px-10 py-3 border-2 border-white rounded-full bg-transparent text-white font-bold uppercase tracking-widest transition-transform active:scale-95 focus:outline-none"
+                            onClick={() => setIsRightPanelActive(true)}
+                        >
+                            SIGN UP
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Homepage Link */}
+            <Link 
+                href="/"
+                className="absolute top-4 left-4 z-[200] flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-primary transition-colors"
+            >
+                <ArrowLeft size={14} />
+                HOME
+            </Link>
         </div>
     );
 }
