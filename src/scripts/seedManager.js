@@ -76,7 +76,7 @@ async function seedManager() {
         console.log("   ID:", manager._id);
         console.log("\n🔐 Login Credentials:");
         console.log("   Email:", managerData.email);
-        console.log("   Password:", managerData.password);
+        console.log("   Password: [as set in environment]");
         console.log("\n✨ You can now login with the manager account!\n");
     } catch (error) {
         console.error("❌ Error seeding manager user:", error.message);
