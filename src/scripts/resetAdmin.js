@@ -1,9 +1,9 @@
 /**
- * Reset Admin Password Script
- *
- * This script resets the admin user's password in the database.
- * Run this:
- *   node src/scripts/resetAdmin.js
+ * Reset Admin Password Script (Sanitized)
+ * 
+ * To use this script, set the following environment variables in .env.local:
+ * ADMIN_EMAIL=admin@logatech.net
+ * ADMIN_PASSWORD=your_secure_password
  */
 
 import mongoose from "mongoose";
@@ -24,14 +24,14 @@ try {
 import User from "../models/User.js";
 
 const MONGO_URI = process.env.MONGO_URI;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const NEW_PASSWORD = process.env.ADMIN_PASSWORD;
 
-if (!MONGO_URI) {
-    console.error("❌ Error: MONGO_URI is not defined");
+if (!MONGO_URI || !ADMIN_EMAIL || !NEW_PASSWORD) {
+    console.error("❌ Error: MONGO_URI, ADMIN_EMAIL, or ADMIN_PASSWORD is not defined");
+    console.log("Please set these in your .env.local file.");
     process.exit(1);
 }
-
-const NEW_PASSWORD = "Admin@123";
-const ADMIN_EMAIL = "admin@logatech.net";
 
 async function resetAdmin() {
     try {
@@ -41,7 +41,7 @@ async function resetAdmin() {
         let user = await User.findOne({ email: ADMIN_EMAIL });
 
         if (!user) {
-            console.log("🔄 Creating new admin user...");
+            console.log(`🔄 Creating new admin user: ${ADMIN_EMAIL}...`);
             user = new User({
                 name: "Admin User",
                 email: ADMIN_EMAIL,
@@ -50,16 +50,14 @@ async function resetAdmin() {
                 status: "active"
             });
         } else {
-            console.log("🔄 Resetting existing admin password...");
+            console.log(`🔄 Resetting password for: ${ADMIN_EMAIL}...`);
             user.password = NEW_PASSWORD;
             user.status = "active";
             user.role = "admin";
         }
 
         await user.save();
-        console.log("✅ Admin access restored!");
-        console.log(`📧 Email: ${ADMIN_EMAIL}`);
-        console.log(`🔐 Password: ${NEW_PASSWORD}`);
+        console.log("✅ Admin access updated!");
 
     } catch (error) {
         console.error("❌ Error:", error.message);
