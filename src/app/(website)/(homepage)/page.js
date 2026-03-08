@@ -6,6 +6,10 @@ import ProcessTimeline from "@/components/website/homepage/ProcessTimeline";
 import TechStack from "@/components/website/shared/TechStack";
 import FAQAccordion from "@/components/website/homepage/FAQAccordion";
 import GlobalCTA from "@/components/website/shared/GlobalCTA";
+import MarqueeStrip from "@/components/website/homepage/MarqueeStrip";
+import CounterStats from "@/components/website/homepage/CounterStats";
+import PricingSection from "@/components/website/homepage/PricingSection";
+import ProjectShowcase from "@/components/website/homepage/ProjectShowcase";
 
 export const metadata = {
     title: "LogaTech - From Code to Cloud",
@@ -103,7 +107,7 @@ const faqItems = [
 ];
 
 export default function HomePage() {
-    
+
     // JSON-LD Schemas
     const organizationSchema = {
         "@context": "https://schema.org",
@@ -184,13 +188,18 @@ export default function HomePage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
             <Hero />
+            <MarqueeStrip />
             <AboutSection />
             <Services />
+            <ProjectShowcase />
             <WhyLoga />
+            <CounterStats />
             <ProcessTimeline steps={processSteps} />
             <TechStack />
+            <PricingSection />
             <FAQAccordion items={faqItems} />
             <GlobalCTA />
         </div>
     );
 }
+

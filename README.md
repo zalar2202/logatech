@@ -103,10 +103,11 @@ Optional for notifications (panel): Firebase client + Admin env vars — see [do
 3. **Seed admin user** (for panel login)
 
 ```bash
+# Set ADMIN_EMAIL and ADMIN_PASSWORD in .env.local first
 npm run seed:admin
 ```
 
-Creates: **admin@logatech.net** / **Admin@123**
+Creates an admin user based on your environment variables.
 
 4. **Run dev server**
 
@@ -178,7 +179,7 @@ npm run build        # Production build
 npm run start        # Production server
 npm run lint         # ESLint
 npm run lint:fix     # ESLint --fix
-npm run seed:admin   # Create admin user (admin@logatech.net / Admin@123)
+npm run seed:admin   # Create admin user
 npm run seed:users   # Seed sample users
 ```
 

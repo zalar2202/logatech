@@ -1,36 +1,39 @@
 "use client";
 
 import ServiceCard, { DesignIcon, DevelopIcon, DeployIcon, MaintainIcon } from "./ServiceCard";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 /**
- * Services - Services section with 4 pillars
+ * Services - Premium Services Section (Homepage 5 Inspired)
  */
 export default function Services() {
+    const { ref, isVisible } = useScrollAnimation();
+
     const services = [
         {
             icon: <DesignIcon />,
-            title: "Design",
+            title: "Strategic Design",
             href: "/services/design",
             description:
                 "Beautiful, intuitive interfaces that capture your brand essence and delight your users. From wireframes to polished UI, we craft experiences that stand out.",
         },
         {
             icon: <DevelopIcon />,
-            title: "Develop",
+            title: "Expert Development",
             href: "/services/develop",
             description:
                 "Clean, scalable code built with modern technologies. Whether it's a marketing site, web app, or custom platform, we build it right.",
         },
         {
             icon: <DeployIcon />,
-            title: "Deploy",
+            title: "Cloud Deployment",
             href: "/services/deploy",
             description:
                 "Seamless launch with proper hosting, domain setup, and optimization. We handle the technical details so you can focus on your business.",
         },
         {
             icon: <MaintainIcon />,
-            title: "Maintain",
+            title: "Continuous Care",
             href: "/services/maintain",
             description:
                 "Ongoing support, updates, and improvements to keep your digital presence running smoothly. We're with you for the long haul.",
@@ -38,23 +41,32 @@ export default function Services() {
     ];
 
     return (
-        <section id="services" className="section services-section">
-            <h2 className="section-title">What We Offer</h2>
-            <p className="section-subtitle">
-                A comprehensive suite of services to bring your vision to life
-            </p>
-            <div className="services-grid">
-                {services.map((service, index) => (
-                    <ServiceCard
-                        key={index}
-                        icon={service.icon}
-                        title={service.title}
-                        description={service.description}
-                        href={service.href}
-                        delay={index * 100}
-                    />
-                ))}
+        <section id="services" className="section-premium-services">
+            <div className="container">
+                <div ref={ref} className={`services-header-premium ${isVisible ? "animate-fade-in" : ""}`}>
+                    <span className="premium-subtitle">What We Excel At</span>
+                    <h2 className="premium-h2 text-center mt-2">Comprehensive <span className="title-serif italic">Digital Engineering</span></h2>
+                    <p className="premium-subtitle-text max-w-2xl mx-auto text-center mt-6">
+                        We offer more than just services; we provide solutions that transform
+                        how you do business in the digital age.
+                    </p>
+                </div>
+
+                <div className="services-grid-premium mt-16">
+                    {services.map((service, index) => (
+                        <div key={index} className={`service-item-wrapper ${isVisible ? "animate-fade-in-up" : ""}`} style={{ animationDelay: `${index * 150}ms` }}>
+                            <ServiceCard
+                                icon={service.icon}
+                                title={service.title}
+                                description={service.description}
+                                href={service.href}
+                                delay={0} // Managed by wrapper now
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     );
 }
+

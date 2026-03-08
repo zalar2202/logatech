@@ -33,8 +33,8 @@ if (!MONGO_URI) {
  */
 const managerData = {
     name: "Manager User",
-    email: "manager@logatech.net",
-    password: "Manager@123",
+    email: process.env.MANAGER_EMAIL || "manager@example.com",
+    password: process.env.MANAGER_PASSWORD || "change_me_123",
     role: "manager",
     status: "active",
     phone: "+1234567891",

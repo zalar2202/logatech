@@ -50,6 +50,6 @@ This app uses **httpOnly cookies** for JWT storage (not localStorage). The cooki
 
 ## Testing
 
-1. Log in at **http://localhost:5555/login** (admin@logatech.net / Admin@123).
+1. Log in at **http://localhost:5555/login** with your admin credentials.
 2. Open **http://localhost:5555/panel/debug-auth** → "Check Browser Cookies" should show the cookie; "Test Auth API" should succeed.
 3. Call any protected API with the same origin; cookie is sent automatically (no manual token in headers).
