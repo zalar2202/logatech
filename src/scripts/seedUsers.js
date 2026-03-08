@@ -35,7 +35,7 @@ const sampleUsers = [
     {
         name: 'John Manager',
         email: 'john.manager@example.com',
-        password: 'Manager@123',
+        password: 'Change_Me_Manager_123',
         role: 'manager',
         status: 'active',
         phone: '+1234567891',
@@ -43,7 +43,7 @@ const sampleUsers = [
     {
         name: 'Sarah Smith',
         email: 'sarah.smith@example.com',
-        password: 'User@123',
+        password: 'Change_Me_User_123',
         role: 'user',
         status: 'active',
         phone: '+1234567892',
@@ -51,7 +51,7 @@ const sampleUsers = [
     {
         name: 'Mike Johnson',
         email: 'mike.johnson@example.com',
-        password: 'User@123',
+        password: 'Change_Me_User_123',
         role: 'user',
         status: 'active',
         phone: '+1234567893',
@@ -59,7 +59,7 @@ const sampleUsers = [
     {
         name: 'Emily Davis',
         email: 'emily.davis@example.com',
-        password: 'User@123',
+        password: 'Change_Me_User_123',
         role: 'user',
         status: 'inactive',
         phone: '+1234567894',
@@ -67,7 +67,7 @@ const sampleUsers = [
     {
         name: 'David Wilson',
         email: 'david.wilson@example.com',
-        password: 'Manager@123',
+        password: 'Change_Me_Manager_123',
         role: 'manager',
         status: 'active',
         phone: '+1234567895',
@@ -75,7 +75,7 @@ const sampleUsers = [
     {
         name: 'Lisa Anderson',
         email: 'lisa.anderson@example.com',
-        password: 'User@123',
+        password: 'Change_Me_User_123',
         role: 'user',
         status: 'active',
         phone: '+1234567896',
@@ -83,7 +83,7 @@ const sampleUsers = [
     {
         name: 'Robert Brown',
         email: 'robert.brown@example.com',
-        password: 'User@123',
+        password: 'Change_Me_User_123',
         role: 'user',
         status: 'suspended',
         phone: '+1234567897',
@@ -91,7 +91,7 @@ const sampleUsers = [
     {
         name: 'Jennifer Taylor',
         email: 'jennifer.taylor@example.com',
-        password: 'User@123',
+        password: 'Change_Me_User_123',
         role: 'user',
         status: 'active',
         phone: '+1234567898',
@@ -99,7 +99,7 @@ const sampleUsers = [
     {
         name: 'James Miller',
         email: 'james.miller@example.com',
-        password: 'Manager@123',
+        password: 'Change_Me_Manager_123',
         role: 'manager',
         status: 'active',
         phone: '+1234567899',
@@ -107,7 +107,7 @@ const sampleUsers = [
     {
         name: 'Maria Garcia',
         email: 'maria.garcia@example.com',
-        password: 'User@123',
+        password: 'Change_Me_User_123',
         role: 'user',
         status: 'active',
         phone: '+1234567800',
@@ -149,9 +149,6 @@ async function seedUsers() {
 
         if (created > 0) {
             console.log('\n🎉 Sample users created successfully!');
-            console.log('\n🔐 Default Credentials:');
-            console.log('   Managers: password is "Manager@123"');
-            console.log('   Users: password is "User@123"');
         }
 
         console.log('\n💡 You can now test the user management features!\n');

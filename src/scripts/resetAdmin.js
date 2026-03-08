@@ -2,7 +2,7 @@
  * Reset Admin Password Script (Sanitized)
  * 
  * To use this script, set the following environment variables in .env.local:
- * ADMIN_EMAIL=admin@logatech.net
+ * ADMIN_EMAIL=admin@example.com
  * ADMIN_PASSWORD=your_secure_password
  */
 

@@ -74,8 +74,8 @@ export default function DebugAuthPage() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email: "admin@logatech.net",
-                    password: "Admin@123",
+                    email: "",
+                    password: "",
                 }),
             });
 
@@ -153,18 +153,16 @@ export default function DebugAuthPage() {
 
                             {debugInfo.serverCookieCheck && (
                                 <div
-                                    className={`p-4 border-l-4 rounded ${
-                                        debugInfo.serverCanReadCookie
+                                    className={`p-4 border-l-4 rounded ${debugInfo.serverCanReadCookie
                                             ? "bg-green-50 dark:bg-green-900/20 border-green-500"
                                             : "bg-red-50 dark:bg-red-900/20 border-red-500"
-                                    }`}
+                                        }`}
                                 >
                                     <h3
-                                        className={`font-bold mb-2 ${
-                                            debugInfo.serverCanReadCookie
+                                        className={`font-bold mb-2 ${debugInfo.serverCanReadCookie
                                                 ? "text-green-700 dark:text-green-400"
                                                 : "text-red-700 dark:text-red-400"
-                                        }`}
+                                            }`}
                                     >
                                         {debugInfo.serverCanReadCookie
                                             ? "✅ SERVER CAN READ AUTH COOKIE!"

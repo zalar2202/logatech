@@ -6,7 +6,7 @@
  *   node src/scripts/seedAdmin.js
  * 
  * Required Env Vars in .env.local:
- * ADMIN_EMAIL=admin@logatech.net
+ * ADMIN_EMAIL=admin@example.com
  * ADMIN_PASSWORD=your_secure_password
  */
 

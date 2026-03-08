@@ -150,7 +150,7 @@ export const Header = ({ onMenuClick, sidebarCollapsed }) => {
                                             className="text-xs"
                                             style={{ color: "var(--color-text-secondary)" }}
                                         >
-                                            {user?.email || "admin@logatech.net"}
+                                            {user?.email || "Admin"}
                                         </p>
                                     </div>
 

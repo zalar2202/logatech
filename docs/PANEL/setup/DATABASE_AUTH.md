@@ -31,13 +31,11 @@ Copy the output into `JWT_SECRET` in `.env.local`.
 ### 1. Create first admin user
 
 ```bash
+# Set ADMIN_EMAIL and ADMIN_PASSWORD in .env.local
 npm run seed:admin
 ```
 
-Creates an admin:
-
-- **Email:** `admin@logatech.net`
-- **Password:** `Admin@123`
+Creates an admin user based on your environment variables.
 
 ### 2. Start dev server
 

@@ -15,8 +15,8 @@ export default function TestAxiosPage() {
     const [authChecking, setAuthChecking] = useState(true);
 
     // Login form state
-    const [email, setEmail] = useState("admin@logatech.net");
-    const [password, setPassword] = useState("Admin@123");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     // Check authentication status on mount
     useEffect(() => {
@@ -231,14 +231,14 @@ export default function TestAxiosPage() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="admin@logatech.net"
+                            placeholder="admin-email"
                         />
                         <InputField
                             label="Password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Admin@123"
+                            placeholder="your-password"
                         />
                         <Button type="submit" disabled={loading} fullWidth>
                             {loading ? (
@@ -258,7 +258,7 @@ export default function TestAxiosPage() {
                         className="mt-3 text-sm text-center"
                         style={{ color: "var(--color-text-secondary)" }}
                     >
-                        Use: admin@logatech.net / Admin@123
+                        Use your admin credentials
                     </p>
                 </Card>
             ) : (
@@ -344,17 +344,15 @@ export default function TestAxiosPage() {
                     {result && (
                         <div className="w-full max-w-2xl">
                             <div
-                                className={`rounded-lg p-6 ${
-                                    result.success
+                                className={`rounded-lg p-6 ${result.success
                                         ? "bg-green-50 dark:bg-green-900/20"
                                         : "bg-red-50 dark:bg-red-900/20"
-                                }`}
+                                    }`}
                                 style={{
-                                    borderLeft: `4px solid ${
-                                        result.success
+                                    borderLeft: `4px solid ${result.success
                                             ? "var(--color-success)"
                                             : "var(--color-error)"
-                                    }`,
+                                        }`,
                                 }}
                             >
                                 <div className="flex items-start gap-3">

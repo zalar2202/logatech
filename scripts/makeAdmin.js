@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
 async function makeAdmin() {
-    const email = 'admin@logatech.net';
+    const email = process.env.ADMIN_EMAIL;
     const MONGO_URI = process.env.MONGO_URI;
 
     if (!MONGO_URI) {
@@ -25,7 +25,7 @@ async function makeAdmin() {
         console.log('✅ Connected to MongoDB');
 
         const user = await User.findOne({ email });
-        
+
         if (!user) {
             console.error(`❌ User with email ${email} not found`);
             process.exit(1);
