@@ -3595,11 +3595,92 @@ html {
 }
 
 /* ===================================
+   Hero Two-Column Layout (Spline)
+   =================================== */
+
+.hero-two-col {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    width: 100%;
+}
+
+.hero-text-col {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.hero-text-col .hero-description-premium {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.hero-services-left {
+    justify-content: flex-start !important;
+}
+
+.hero-cta-left {
+    justify-content: flex-start !important;
+}
+
+.hero-spline-col {
+    flex: 1;
+    min-width: 0;
+    height: 550px;
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.spline-loader {
+    width: 40px;
+    height: 40px;
+    border: 3px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+    .hero-two-col {
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .hero-text-col {
+        text-align: center;
+    }
+
+    .hero-text-col .hero-description-premium {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-services-left {
+        justify-content: center !important;
+    }
+
+    .hero-cta-left {
+        justify-content: center !important;
+    }
+
+    .hero-spline-col {
+        width: 100%;
+        height: 320px;
+    }
+}
+
+/* ===================================
    Premium About Section (Homepage 5)
    =================================== */
 
 .section-premium-about {
-    padding: 160px 0 200px;
+    padding: 160px 40px 200px;
     background: var(--color-background-secondary);
     position: relative;
     z-index: 10;
@@ -3732,7 +3813,7 @@ html {
    =================================== */
 
 .section-premium-services {
-    padding: 160px 0;
+    padding: 160px 40px;
     background: var(--color-background);
     position: relative;
     z-index: 10;

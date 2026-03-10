@@ -1,8 +1,15 @@
 /**
  * Utility Functions
- * 
+ *
  * Common helper functions used throughout the application
  */
+
+import { clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs) {
+    return twMerge(clsx(inputs))
+}
 
 /**
  * Format date to relative time (e.g., "2 hours ago")
