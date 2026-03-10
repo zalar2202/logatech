@@ -44,7 +44,10 @@ const nextConfig = {
             base-uri 'self';
             form-action 'self';
             frame-ancestors 'none';
-            connect-src 'self' https://www.google-analytics.com https://*.cloudflare.com https://*.cloudflareinsights.com;
+            connect-src 'self' https://www.google-analytics.com https://*.cloudflare.com https://*.cloudflareinsights.com https://*.spline.design https://unpkg.com;
+            worker-src 'self' blob:;
+            script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://unpkg.com;
+            media-src 'self' data: blob:;
             block-all-mixed-content;
             upgrade-insecure-requests;
         `;

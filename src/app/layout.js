@@ -28,7 +28,7 @@ const themeScript = `
         var theme = localStorage.getItem('theme');
         var resolved = theme;
         if (!theme || theme === 'system') {
-            resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            resolved = 'dark';
         }
         document.documentElement.setAttribute('data-theme', resolved);
     } catch (e) {}

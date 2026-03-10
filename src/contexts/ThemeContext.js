@@ -11,8 +11,8 @@ const ThemeContext = createContext({
 });
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setThemeState] = useState("system");
-    const [resolvedTheme, setResolvedTheme] = useState("light");
+    const [theme, setThemeState] = useState("dark");
+    const [resolvedTheme, setResolvedTheme] = useState("dark");
     const [mounted, setMounted] = useState(false);
 
     const getSystemTheme = () => {
@@ -27,6 +27,8 @@ export const ThemeProvider = ({ children }) => {
         const stored = localStorage.getItem("theme");
         if (stored && ["light", "dark", "system"].includes(stored)) {
             setThemeState(stored);
+        } else {
+            setThemeState("dark");
         }
         setMounted(true);
     }, []);
